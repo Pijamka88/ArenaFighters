@@ -1,186 +1,211 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body { margin: 0; overflow: hidden; }
-    #menu {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(45deg, #2c3e50, #3498db);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 1;
-    }
-    #menu button {
-      padding: 15px 30px;
-      margin: 10px;
-      font-size: 20px;
-      background: #ecf0f1;
-      color: #34495e;
-      border: none;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      border-radius: 5px;
-    }
-    #menu button:hover {
-      background: #bdc3c7;
-    }
-    #canvas {
-      display: block;
-      background: linear-gradient(45deg, #2980b9, #6dd5ed);
-    }
-  </style>
+    <title>Cat Chaos</title>
+    <style>
+        #menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #f0f0f0;
+            opacity: 0.9;
+        }
+        #gameCanvas {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
 </head>
 <body>
-  <div id="menu">
-    <h1 style="color: white;">Chaos Fighters</h1>
-    <button onclick="startGame()">Начать игру</button>
-  </div>
-  <canvas id="canvas"></canvas>
+    <div id="menu">
+        <h1>Cat Chaos</h1>
+        <button onclick="startGame()">Начать игру</button>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let isMenu = true;
+        let player;
+        let enemies = [];
+        let score = 0;
+        let level = 1;
+        let enemyTimer = 0;
+        const enemySpawnInterval = 100;
+        const keys = {};
 
-  <script>
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    const menu = document.getElementById('menu');
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+        });
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
 
-    let player = {
-      x: 100,
-      y: 200,
-      width: 64,
-      height: 64,
-      speed: 4,
-      health: 100,
-      frame: 0
-    };
-
-    let enemies = [];
-    let score = 0;
-    let difficulty = 1;
-    let keys = {};
-
-    function startGame() {
-      menu.style.display = 'none';
-      init();
-      animate();
-    }
-
-    function init() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      player.x = canvas.width / 2 - player.width / 2;
-      player.y = canvas.height - 100;
-      enemies = [];
-      score = 0;
-      difficulty = 1;
-    }
-
-    function animate() {
-      requestAnimationFrame(animate);
-      update();
-      render();
-    }
-
-    function update() {
-      updatePlayer();
-      updateEnemies();
-      checkCollisions();
-      checkGameOver();
-
-      // Генерация врагов
-      if (Math.random() < 0.005 * difficulty) {
-        const enemy = {
-          x: Math.random() * (canvas.width - 32),
-          y: -32,
-          width: 32,
-          height: 32,
-          speed: 2 + difficulty,
-          health: 1 + Math.floor(difficulty / 2)
-        };
-        enemies.push(enemy);
-      }
-    }
-
-    function updatePlayer() {
-      if (keys['ArrowLeft'] && player.x > 0) {
-        player.x -= player.speed;
-      }
-      if (keys['ArrowRight'] && player.x < canvas.width - player.width) {
-        player.x += player.speed;
-      }
-      player.frame = (player.frame + 1) % 4;
-    }
-
-    function updateEnemies() {
-      enemies.forEach(enemy => {
-        enemy.y += enemy.speed;
-        if (enemy.y > canvas.height) {
-          removeEnemy(enemy);
+        function startGame() {
+            isMenu = false;
+            document.getElementById('menu').style.display = 'none';
+            canvas.style.display = 'block';
+            initGame();
+            gameLoop();
         }
-      });
-    }
 
-    function checkCollisions() {
-      enemies.forEach(enemy => {
-        if (player.x < enemy.x + enemy.width &&
-            player.x + player.width > enemy.x &&
-            player.y < enemy.y + enemy.height &&
-            player.y + player.height > enemy.y) {
-          player.health -= 10;
-          removeEnemy(enemy);
+        function initGame() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            player = {
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                size: 50,
+                speed: 3,
+                dx: 0,
+                dy: 0
+            };
+            enemies = [];
+            score = 0;
+            level = 1;
+            enemyTimer = 0;
         }
-      });
-    }
 
-    function removeEnemy(enemy) {
-      const index = enemies.indexOf(enemy);
-      if (index !== -1) {
-        enemies.splice(index, 1);
-        score++;
-        if (score % 10 === 0) difficulty++;
-      }
-    }
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
 
-    function checkGameOver() {
-      if (player.health <= 0) {
-        menu.style.display = 'flex';
-        init();
-      }
-    }
+        function update() {
+            // Обновление игрока
+            player.dx = 0;
+            player.dy = 0;
+            if (keys['ArrowUp'] || keys['w']) player.dy = -player.speed;
+            if (keys['ArrowDown'] || keys['s']) player.dy = player.speed;
+            if (keys['ArrowLeft'] || keys['a']) player.dx = -player.speed;
+            if (keys['ArrowRight'] || keys['d']) player.dx = player.speed;
 
-    function render() {
-      ctx.fillStyle = '#2980b9';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      // Рендер игрока
-      const colors = ['#2ecc71', '#3498db', '#e74c3c', '#f1c40f'];
-      ctx.fillStyle = colors[player.frame];
-      ctx.fillRect(player.x, player.y, player.width, player.height);
-      // Рендер врагов
-      enemies.forEach(enemy => {
-        ctx.fillStyle = 'red';
-        ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
-      });
-      // UI
-      ctx.fillStyle = 'white';
-      ctx.font = '20px Arial';
-      ctx.fillText(`Счёт: ${score}`, 10, 30);
-      ctx.fillText(`Здоровье: ${player.health}`, 10, 60);
-      ctx.fillText(`Уровень: ${difficulty}`, 10, 90);
-    }
+            player.x += player.dx;
+            player.y += player.dy;
 
-    // Обработчики клавиш
-    document.addEventListener('keydown', (e) => {
-      keys[e.key] = true;
-    });
+            // Ограничение перемещения
+            if (player.x < player.size/2) player.x = player.size/2;
+            if (player.x > canvas.width - player.size/2) player.x = canvas.width - player.size/2;
+            if (player.y < player.size/2) player.y = player.size/2;
+            if (player.y > canvas.height - player.size/2) player.y = canvas.height - player.size/2;
 
-    document.addEventListener('keyup', (e) => {
-      keys[e.key] = false;
-    });
-  </script>
+            // Обновление противников
+            enemies.forEach(enemy => {
+                const dx = player.x - enemy.x;
+                const dy = player.y - enemy.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance > 0) {
+                    const speedX = (dx / distance) * enemy.speed;
+                    const speedY = (dy / distance) * enemy.speed;
+                    enemy.x += speedX;
+                    enemy.y += speedY;
+                }
+            });
+
+            // Проверка столкновений
+            const playerRadius = player.size / 2;
+            enemies = enemies.filter(enemy => {
+                const dx = player.x - enemy.x;
+                const dy = player.y - enemy.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance <= playerRadius + enemy.size / 2) {
+                    gameOver();
+                    return false;
+                }
+                return true;
+            });
+
+            // Генерация противников
+            enemyTimer++;
+            if (enemyTimer >= enemySpawnInterval) {
+                createEnemy();
+                enemyTimer = 0;
+            }
+        }
+
+        function createEnemy() {
+            const enemy = {
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: 30,
+                speed: 1 + level * 0.5,
+                health: 1
+            };
+            enemies.push(enemy);
+        }
+
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                const enemy = enemies[i];
+                const dx = mouseX - enemy.x;
+                const dy = mouseY - enemy.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < enemy.size / 2) {
+                    enemies.splice(i, 1);
+                    score += 10;
+                    if (score >= 100 * level) levelUp();
+                    break;
+                }
+            }
+        });
+
+        function levelUp() {
+            level++;
+            score = 0;
+            enemies = [];
+        }
+
+        function gameOver() {
+            isMenu = true;
+            document.getElementById('menu').style.display = 'block';
+            canvas.style.display = 'none';
+            score = 0;
+            level = 1;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Игрок
+            ctx.fillStyle = 'green';
+            ctx.beginPath();
+            ctx.arc(player.x, player.y, player.size / 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Противники
+            ctx.fillStyle = 'red';
+            enemies.forEach(enemy => {
+                ctx.beginPath();
+                ctx.arc(enemy.x, enemy.y, enemy.size / 2, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // Текст
+            ctx.fillStyle = 'white';
+            ctx.font = '20px Arial';
+            ctx.fillText(`Счет: ${score}`, 10, 30);
+            ctx.fillText(`Уровень: ${level}`, 10, 60);
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
 </body>
 </html>
