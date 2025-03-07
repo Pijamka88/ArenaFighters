@@ -3,7 +3,6 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    /* Стили для меню, canvas, персонажа */
     body { margin: 0; overflow: hidden; }
     #menu {
       position: absolute;
@@ -11,7 +10,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: #333;
+      background: linear-gradient(45deg, #2c3e50, #3498db);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -22,43 +21,166 @@
       padding: 15px 30px;
       margin: 10px;
       font-size: 20px;
-      background: #555;
-      color: white;
+      background: #ecf0f1;
+      color: #34495e;
       border: none;
       cursor: pointer;
       transition: all 0.3s ease;
+      border-radius: 5px;
     }
     #menu button:hover {
-      background: #777;
+      background: #bdc3c7;
     }
     #canvas {
       display: block;
-      background: url('arena-bg.png') no-repeat center;
-      background-size: cover;
-    }
-    /* Анимация персонажа */
-    .player {
-      position: absolute;
-      width: 64px;
-      height: 64px;
-      background-image: url('player-sprite.png');
-      animation: player-run 0.5s steps(4) infinite;
-    }
-    @keyframes player-run {
-      from { background-position: 0 0; }
-      to { background-position: -256px 0; } /* 4 кадра по 64px */
+      background: linear-gradient(45deg, #2980b9, #6dd5ed);
     }
   </style>
 </head>
 <body>
   <div id="menu">
-    <h1>Chaos Fighters</h1>
+    <h1 style="color: white;">Chaos Fighters</h1>
     <button onclick="startGame()">Начать игру</button>
   </div>
   <canvas id="canvas"></canvas>
 
   <script>
-    // JavaScript код
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const menu = document.getElementById('menu');
+
+    let player = {
+      x: 100,
+      y: 200,
+      width: 64,
+      height: 64,
+      speed: 4,
+      health: 100,
+      frame: 0
+    };
+
+    let enemies = [];
+    let score = 0;
+    let difficulty = 1;
+    let keys = {};
+
+    function startGame() {
+      menu.style.display = 'none';
+      init();
+      animate();
+    }
+
+    function init() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      player.x = canvas.width / 2 - player.width / 2;
+      player.y = canvas.height - 100;
+      enemies = [];
+      score = 0;
+      difficulty = 1;
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      update();
+      render();
+    }
+
+    function update() {
+      updatePlayer();
+      updateEnemies();
+      checkCollisions();
+      checkGameOver();
+
+      // Генерация врагов
+      if (Math.random() < 0.005 * difficulty) {
+        const enemy = {
+          x: Math.random() * (canvas.width - 32),
+          y: -32,
+          width: 32,
+          height: 32,
+          speed: 2 + difficulty,
+          health: 1 + Math.floor(difficulty / 2)
+        };
+        enemies.push(enemy);
+      }
+    }
+
+    function updatePlayer() {
+      if (keys['ArrowLeft'] && player.x > 0) {
+        player.x -= player.speed;
+      }
+      if (keys['ArrowRight'] && player.x < canvas.width - player.width) {
+        player.x += player.speed;
+      }
+      player.frame = (player.frame + 1) % 4;
+    }
+
+    function updateEnemies() {
+      enemies.forEach(enemy => {
+        enemy.y += enemy.speed;
+        if (enemy.y > canvas.height) {
+          removeEnemy(enemy);
+        }
+      });
+    }
+
+    function checkCollisions() {
+      enemies.forEach(enemy => {
+        if (player.x < enemy.x + enemy.width &&
+            player.x + player.width > enemy.x &&
+            player.y < enemy.y + enemy.height &&
+            player.y + player.height > enemy.y) {
+          player.health -= 10;
+          removeEnemy(enemy);
+        }
+      });
+    }
+
+    function removeEnemy(enemy) {
+      const index = enemies.indexOf(enemy);
+      if (index !== -1) {
+        enemies.splice(index, 1);
+        score++;
+        if (score % 10 === 0) difficulty++;
+      }
+    }
+
+    function checkGameOver() {
+      if (player.health <= 0) {
+        menu.style.display = 'flex';
+        init();
+      }
+    }
+
+    function render() {
+      ctx.fillStyle = '#2980b9';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Рендер игрока
+      const colors = ['#2ecc71', '#3498db', '#e74c3c', '#f1c40f'];
+      ctx.fillStyle = colors[player.frame];
+      ctx.fillRect(player.x, player.y, player.width, player.height);
+      // Рендер врагов
+      enemies.forEach(enemy => {
+        ctx.fillStyle = 'red';
+        ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+      });
+      // UI
+      ctx.fillStyle = 'white';
+      ctx.font = '20px Arial';
+      ctx.fillText(`Счёт: ${score}`, 10, 30);
+      ctx.fillText(`Здоровье: ${player.health}`, 10, 60);
+      ctx.fillText(`Уровень: ${difficulty}`, 10, 90);
+    }
+
+    // Обработчики клавиш
+    document.addEventListener('keydown', (e) => {
+      keys[e.key] = true;
+    });
+
+    document.addEventListener('keyup', (e) => {
+      keys[e.key] = false;
+    });
   </script>
 </body>
 </html>
