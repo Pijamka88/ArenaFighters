@@ -1,362 +1,103 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
+    <title>Chaos Arena</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="telegram:web_app_version" content="1.0">
-    <title>Chaos Arena</title>
+    <meta name="theme-color" content="#1a1a1a">
     <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --neon-blue: #2980b9;
+            --neon-pink: #e74c3c;
+            --neon-green: #2ecc71;
+        }
+
         body {
             margin: 0;
-            padding: 0;
-            background-color: #1a1a1a;
-            color: #e0e0e0;
-            font-family: 'Arial', sans-serif;
-            overflow: hidden;
-        }
-
-        .screen {
-            display: none;
-            position: absolute;
-            width: 100%;
-            height: 100%;
-        }
-
-        .active {
-            display: block;
-        }
-
-        #main-menu {
-            text-align: center;
-            padding-top: 50%;
-        }
-
-        .button {
-            background-color: #333;
-            border: 2px solid #555;
-            padding: 15px 30px;
-            margin: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .button:hover {
-            background-color: #444;
-            border-color: #777;
-        }
-
-        #battle-screen {
-            display: grid;
-            grid-template-rows: 1fr 3fr 1fr;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
             padding: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            min-height: 100vh;
+            color: white;
+            font-family: 'Arial', sans-serif;
         }
 
-        .status-panel {
-            background-color: #2d2d2d;
-            border-radius: 8px;
-            padding: 15px;
-        }
-
-        .player-info { grid-area: 1 / 1 / 2 / 2; }
-        .enemy-info { grid-area: 1 / 2 / 2 / 3; }
-        .battle-log { grid-area: 3 / 1 / 4 / 3; }
-
-        .character {
-            width: 100px;
-            height: 100px;
-            position: relative;
+        .container {
+            max-width: 600px;
             margin: 0 auto;
         }
 
+        .menu {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .menu button {
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-pink));
+            border: none;
+            padding: 15px 30px;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            border-radius: 10px;
+            box-shadow: 0 0 20px var(--neon-blue);
+            transition: 0.3s;
+        }
+
+        .menu button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px var(--neon-pink);
+        }
+
+        .battle-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .stat-box {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            text-align: center;
+        }
+
+        .arena {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(45deg, #2c3e50, #1a1a1a);
+            border: 2px solid var(--neon-blue);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .fighter {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            transition: 0.3s;
+        }
+
         .player {
-            background-color: #4CAF50;
-            border: 2px solid #468a47;
+            background: var(--neon-blue);
+            left: 50px;
+            bottom: 50px;
         }
 
         .enemy {
-            background-color: #f44336;
-            border: 2px solid #c93a31;
-        }
-
-        .health-bar {
-            position: absolute;
-            bottom: -10px;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background-color: #ff5722;
+            background: var(--neon-pink);
+            right: 50px;
+            bottom: 50px;
         }
 
         .attack-anim {
-            animation: attack 0.5s ease;
-        }
-
-        @keyframes attack {
-            0% { transform: translateX(0); }
-            50% { transform: translateX(20px); }
-            100% { transform: translateX(0); }
-        }
-
-        .battle-log {
-            overflow-y: auto;
-            max-height: 150px;
-        }
-
-        #upgrade-screen {
-            text-align: center;
-            padding: 50px;
-        }
-
-        .upgrade-btn {
-            background-color: #2196F3;
-            margin: 10px;
-        }
-
-        .hidden { display: none; }
-    </style>
-</head>
-<body>
-    <div id="main-menu" class="screen active">
-        <h1>CHAOS ARENA</h1>
-        <div class="button" onclick="startBattle()">НАЧАТЬ БОЙ</div>
-        <div class="button" onclick="showUpgrades()">ПРОКАЧКА</div>
-        <div class="button" onclick="resetProgress()">СБРОС ПРОГРЕССА</div>
-    </div>
-
-    <div id="battle-screen" class="screen">
-        <div class="status-panel player-info">
-            <h3>Игрок Lvl <span id="player-lvl">1</span></h3>
-            <div>Атака: <span id="player-atk">10</span></div>
-            <div>Жизнь: <span id="player-hp">100</span></div>
-            <div>Броня: <span id="player-def">5</span></div>
-        </div>
-        
-        <div class="status-panel enemy-info">
-            <h3>Противник Lvl <span id="enemy-lvl">1</span></h3>
-            <div>Атака: <span id="enemy-atk">8</span></div>
-            <div>Жизнь: <span id="enemy-hp">80</span></div>
-            <div>Броня: <span id="enemy-def">3</span></div>
-        </div>
-
-        <div class="battle-area">
-            <div class="character player" id="player"></div>
-            <div class="character enemy" id="enemy"></div>
-        </div>
-
-        <div class="status-panel battle-log" id="battle-log"></div>
-    </div>
-
-    <div id="upgrade-screen" class="screen">
-        <h2>Очки прокачки: <span id="skill-points">0</span></h2>
-        <div class="button upgrade-btn" onclick="upgradeStat('atk')">Атака +2</div>
-        <div class="button upgrade-btn" onclick="upgradeStat('hp')">Жизнь +10</div>
-        <div class="button upgrade-btn" onclick="upgradeStat('def')">Броня +1</div>
-        <div class="button" onclick="showMainMenu()">Назад</div>
-    </div>
-
-    <script>
-        const gameState = {
-            player: {
-                level: 1,
-                xp: 0,
-                hp: 100,
-                maxHp: 100,
-                atk: 10,
-                def: 5
-            },
-            enemy: {
-                level: 1,
-                hp: 80,
-                maxHp: 80,
-                atk: 8,
-                def: 3
-            },
-            skillPoints: 0,
-            battleActive: false
-        };
-
-        function saveProgress() {
-            localStorage.setItem('chaosArenaSave', JSON.stringify(gameState));
-        }
-
-        function loadProgress() {
-            const save = localStorage.getItem('chaosArenaSave');
-            if (save) Object.assign(gameState, JSON.parse(save));
-        }
-
-        loadProgress();
-
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.toggle('active', screen.id === screenId);
-            });
-        }
-
-        function startBattle() {
-            if (gameState.battleActive) return;
-            gameState.battleActive = true;
-            showScreen('battle-screen');
-
-            const enemyLevel = gameState.player.level + Math.floor(Math.random() * 3) - 1;
-            generateEnemy(enemyLevel);
-            updateBattleUI();
-            battleLoop();
-        }
-
-        function generateEnemy(level) {
-            gameState.enemy = {
-                level: Math.max(1, level),
-                hp: 80 + (level - 1) * 20,
-                maxHp: 80 + (level - 1) * 20,
-                atk: 8 + (level - 1) * 2,
-                def: 3 + (level - 1)
-            };
-        }
-
-        function updateBattleUI() {
-            document.getElementById('player-lvl').textContent = gameState.player.level;
-            document.getElementById('player-hp').textContent = gameState.player.hp;
-            document.getElementById('player-atk').textContent = gameState.player.atk;
-            document.getElementById('player-def').textContent = gameState.player.def;
-
-            document.getElementById('enemy-lvl').textContent = gameState.enemy.level;
-            document.getElementById('enemy-hp').textContent = gameState.enemy.hp;
-            document.getElementById('enemy-atk').textContent = gameState.enemy.atk;
-            document.getElementById('enemy-def').textContent = gameState.enemy.def;
-        }
-
-        async function battleLoop() {
-            const log = document.getElementById('battle-log');
-            log.innerHTML = '';
-
-            while (gameState.player.hp > 0 && gameState.enemy.hp > 0) {
-                await attackPhase();
-                await new Promise(r => setTimeout(r, 1000));
-            }
-
-            gameState.battleActive = false;
-
-            if (gameState.player.hp > 0) {
-                handleVictory();
-            } else {
-                logMessage('Игрок погиб!');
-                setTimeout(showMainMenu, 2000);
-            }
-        }
-
-        function attack(attacker, defender, isPlayerAttack) {
-            const damage = Math.max(attacker.atk - defender.def, 1);
-            defender.hp = Math.max(defender.hp - damage, 0);
-
-            const attackerName = isPlayerAttack ? 'Игрок' : 'Противник';
-            logMessage(`${attackerName} наносит ${damage} урона!`);
-
-            if (isPlayerAttack) {
-                document.getElementById('player').classList.add('attack-anim');
-                setTimeout(() => document.getElementById('player').classList.remove('attack-anim'), 500);
-            } else {
-                document.getElementById('enemy').classList.add('attack-anim');
-                setTimeout(() => document.getElementById('enemy').classList.remove('attack-anim'), 500);
-            }
-        }
-
-        async function attackPhase() {
-            updateBattleUI();
-
-            // Player attack
-            attack(gameState.player, gameState.enemy, true);
-            if (gameState.enemy.hp <= 0) return;
-
-            await new Promise(r => setTimeout(r, 500));
-
-            // Enemy attack
-            attack(gameState.enemy, gameState.player, false);
-        }
-
-        function logMessage(message) {
-            const log = document.getElementById('battle-log');
-            const entry = document.createElement('div');
-            entry.textContent = message;
-            log.prepend(entry);
-        }
-
-        function handleVictory() {
-            const xpGain = 10 + gameState.enemy.level * 3;
-            gameState.player.xp += xpGain;
-            logMessage(`Победа! Получено ${xpGain} опыта`);
-
-            const xpNeeded = gameState.player.level * 20;
-            if (gameState.player.xp >= xpNeeded) {
-                gameState.player.level++;
-                gameState.player.xp -= xpNeeded;
-                gameState.skillPoints += 1;
-                logMessage(`Новый уровень! ${gameState.skillPoints} очков прокачки`);
-            }
-
-            saveProgress();
-            setTimeout(() => {
-                if (gameState.skillPoints > 0) {
-                    showUpgrades();
-                } else {
-                    showMainMenu();
-                }
-            }, 2000);
-        }
-
-        function showUpgrades() {
-            document.getElementById('skill-points').textContent = gameState.skillPoints;
-            showScreen('upgrade-screen');
-        }
-
-        function upgradeStat(stat) {
-            if (gameState.skillPoints < 1) return;
-
-            gameState.skillPoints--;
-            switch(stat) {
-                case 'atk':
-                    gameState.player.atk += 2;
-                    break;
-                case 'hp':
-                    gameState.player.maxHp += 10;
-                    gameState.player.hp += 10;
-                    break;
-                case 'def':
-                    gameState.player.def += 1;
-                    break;
-            }
-
-            saveProgress();
-            document.getElementById('skill-points').textContent = gameState.skillPoints;
-            if (gameState.skillPoints === 0) {
-                setTimeout(showMainMenu, 1000);
-            }
-        }
-
-        function resetProgress() {
-            if (confirm('Сбросить весь прогресс?')) {
-                localStorage.removeItem('chaosArenaSave');
-                location.reload();
-            }
-        }
-
-        function showMainMenu() {
-            gameState.battleActive = false;
-            showScreen('main-menu');
-        }
-
-        // Telegram Web App integration
-        if (window.Telegram) {
-            Telegram.WebApp.ready();
-            Telegram.WebApp.expand();
-            Telegram.WebApp.MainButton.setParams({
-                text_color: "#ffffff",
-                color: "#2196F3",
-                is_visible: false
-            });
-        }
-    </script>
-</body>
-</html>
