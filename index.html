@@ -76,4 +76,252 @@
             transition: width 0.5s;
         }
 
-        #player-health { background: linear-gradient(90deg, #00ff00, #
+        #player-health { background: linear-gradient(90deg, #00ff00, #00cc00); }
+        #enemy-health { background: linear-gradient(90deg, #ff0000, #cc0000); }
+
+        .character {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            transition: transform 0.3s;
+        }
+
+        #player {
+            background: linear-gradient(135deg, #00ffea, #008cff);
+            left: 20px;
+            bottom: 20px;
+        }
+
+        #enemy {
+            background: linear-gradient(135deg, #ff0000, #cc0000);
+            right: 20px;
+            bottom: 20px;
+        }
+
+        .attacking {
+            animation: attack 0.5s;
+        }
+
+        @keyframes attack {
+            50% { transform: translateX(20px); }
+        }
+
+        #battle-info {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .stat {
+            text-align: center;
+            padding: 10px;
+            background: rgba(0, 255, 234, 0.1);
+            border-radius: 10px;
+        }
+
+        #log {
+            height: 100px;
+            overflow-y: auto;
+            border: 1px solid #00ffff;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .upgrade-btn {
+            background: linear-gradient(135deg, #00ffea, #008cff);
+            width: 100%;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="mainMenu" class="screen">
+        <h1>CHAOS ARENA</h1>
+        <button onclick="startGame()">НАЧАТЬ БОЙ</button>
+    </div>
+
+    <div id="battleScreen" class="screen hidden">
+        <div id="player-health-bar" class="health-bar">
+            <div id="player-health" class="health-fill"></div>
+        </div>
+        <div id="enemy-health-bar" class="health-bar">
+            <div id="enemy-health" class="health-fill"></div>
+        </div>
+        <div id="arena">
+            <div id="player" class="character"></div>
+            <div id="enemy" class="character"></div>
+        </div>
+        <div id="battle-info">
+            <div class="stat">
+                <div>Уровень: <span id="player-lvl">1</span></div>
+                <div>Атака: <span id="player-atk">10</span></div>
+                <div>Броня: <span id="player-def">5</span></div>
+            </div>
+            <div class="stat">
+                <div>Уровень: <span id="enemy-lvl">1</span></div>
+                <div>Атака: <span id="enemy-atk">8</span></div>
+                <div>Броня: <span id="enemy-def">3</span></div>
+            </div>
+        </div>
+        <div id="log"></div>
+    </div>
+
+    <div id="upgradeScreen" class="screen hidden">
+        <h2>ПРОКАЧКА (Очков: <span id="skillPoints">0</span>)</h2>
+        <button class="upgrade-btn" onclick="upgrade('atk')">Атака +2</button>
+        <button class="upgrade-btn" onclick="upgrade('hp')">Здоровье +20</button>
+        <button class="upgrade-btn" onclick="upgrade('def')">Броня +1</button>
+        <button onclick="startGame()">Следующий бой</button>
+    </div>
+
+    <script>
+        let player = {
+            level: 1,
+            exp: 0,
+            skillPoints: 0,
+            maxHealth: 100,
+            currentHealth: 100,
+            attack: 10,
+            defense: 5
+        };
+
+        let enemy = {
+            level: 1,
+            maxHealth: 80,
+            currentHealth: 80,
+            attack: 8,
+            defense: 3
+        };
+
+        let battleInterval;
+        const expPerLevel = 100;
+
+        function startGame() {
+            toggleScreen('battle');
+            resetCharacters();
+            generateEnemy();
+            updateUI();
+            battleInterval = setInterval(battleLoop, 2000);
+        }
+
+        function toggleScreen(screen) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById(screen+'Screen').classList.remove('hidden');
+        }
+
+        function resetCharacters() {
+            player.currentHealth = player.maxHealth;
+            enemy.currentHealth = enemy.maxHealth;
+            updateHealthBars();
+        }
+
+        function generateEnemy() {
+            enemy.level = player.level + Math.floor(Math.random() * 2);
+            enemy.attack = 8 + enemy.level * 2;
+            enemy.defense = 3 + enemy.level;
+            enemy.maxHealth = 80 + enemy.level * 20;
+            enemy.currentHealth = enemy.maxHealth;
+        }
+
+        function updateUI() {
+            document.getElementById('player-lvl').textContent = player.level;
+            document.getElementById('player-atk').textContent = player.attack;
+            document.getElementById('player-def').textContent = player.defense;
+            document.getElementById('enemy-lvl').textContent = enemy.level;
+            document.getElementById('enemy-atk').textContent = enemy.attack;
+            document.getElementById('enemy-def').textContent = enemy.defense;
+            updateHealthBars();
+        }
+
+        function updateHealthBars() {
+            document.getElementById('player-health').style.width = 
+                (player.currentHealth / player.maxHealth) * 100 + '%';
+            document.getElementById('enemy-health').style.width = 
+                (enemy.currentHealth / enemy.maxHealth) * 100 + '%';
+        }
+
+        function battleLoop() {
+            if (player.currentHealth <= 0 || enemy.currentHealth <= 0) {
+                clearInterval(battleInterval);
+                endBattle();
+                return;
+            }
+
+            attack('player', 'enemy');
+            setTimeout(() => attack('enemy', 'player'), 1000);
+        }
+
+        function attack(attacker, defender) {
+            const attackerObj = attacker === 'player' ? player : enemy;
+            const defenderObj = defender === 'player' ? player : enemy;
+            const attackerDiv = document.getElementById(attacker);
+            const defenderDiv = document.getElementById(defender);
+
+            attackerDiv.classList.add('attacking');
+            setTimeout(() => attackerDiv.classList.remove('attacking'), 500);
+
+            let damage = Math.max(attackerObj.attack - defenderObj.defense, 1);
+            defenderObj.currentHealth = Math.max(defenderObj.currentHealth - damage, 0);
+
+            log(`${attacker === 'player' ? 'Игрок' : 'Враг'} наносит ${damage} урона!`);
+            updateHealthBars();
+
+            if (defenderObj.currentHealth <= 0) {
+                log(`Победа ${attacker === 'player' ? 'игрока' : 'врага'}!`);
+            }
+        }
+
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            logDiv.innerHTML = `<div>${message}</div>` + logDiv.innerHTML;
+        }
+
+        function endBattle() {
+            if (player.currentHealth > 0) {
+                player.exp += enemy.level * 20;
+                log(`Получено опыта: ${enemy.level * 20}`);
+                
+                if (player.exp >= expPerLevel * player.level) {
+                    player.level++;
+                    player.skillPoints++;
+                    player.exp = 0;
+                    log(`Новый уровень! ${player.level}`);
+                }
+            }
+
+            setTimeout(() => {
+                if (player.currentHealth > 0) {
+                    toggleScreen('upgrade');
+                    document.getElementById('skillPoints').textContent = player.skillPoints;
+                } else {
+                    alert('Вы проиграли! Начните заново.');
+                    location.reload();
+                }
+            }, 1000);
+        }
+
+        function upgrade(stat) {
+            if (player.skillPoints <= 0) return;
+
+            player.skillPoints--;
+            document.getElementById('skillPoints').textContent = player.skillPoints;
+
+            switch(stat) {
+                case 'atk':
+                    player.attack += 2;
+                    break;
+                case 'hp':
+                    player.maxHealth += 20;
+                    player.currentHealth = player.maxHealth;
+                    break;
+                case 'def':
+                    player.defense += 1;
+                    break;
+            }
+            updateUI();
+        }
+    </script>
+</body>
+</html>
