@@ -1,285 +1,167 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Arena Fight RPG Pro</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>ASCII Arena</title>
     <style>
-        /* Добавленные стили для эффектов */
-        .fire-effect {
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path fill="%23FF5722" d="M50 15c-10 25-15 40-25 55 20-15 35-5 45 5-15-10-25-25-25-40 15 15 25 30 25 45-5-20-15-35-20-50z"/></svg>');
-            animation: flame 0.8s ease-out;
-            pointer-events: none;
+        body { 
+            margin: 0; 
+            font-family: monospace;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
         }
-
-        @keyframes flame {
-            0% { transform: scale(0); opacity: 1; }
-            100% { transform: scale(2); opacity: 0; }
-        }
-
-        .heal-effect {
-            background: radial-gradient(circle, #00ff0080 0%, transparent 70%);
-            animation: pulse 1s;
-        }
-
-        .shield-effect {
-            border: 3px solid #2196F3;
-            animation: shieldGlow 1.5s infinite;
-        }
-
-        @keyframes shieldGlow {
-            0% { box-shadow: 0 0 10px #2196F3; }
-            50% { box-shadow: 0 0 20px #2196F3; }
-            100% { box-shadow: 0 0 10px #2196F3; }
-        }
-
-        .upgrade-card {
-            background: #34495e;
-            padding: 15px;
-            border-radius: 10px;
+        .menu-btn {
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: #fff;
             cursor: pointer;
-            transition: transform 0.2s;
+            border: none;
+            border-radius: 4px;
+            margin: 5px;
         }
-
-        .upgrade-card:hover {
-            transform: translateY(-5px);
+        #game-container {
+            display: none;
+            height: 100%;
+            width: 100%;
         }
     </style>
 </head>
 <body>
-    <!-- Добавлено окно выбора улучшений -->
-    <div id="upgrade-popup" class="menu" style="display: none;">
-        <h2>Выберите улучшение</h2>
-        <div id="upgrade-options"></div>
+    <div id="menu">
+        <h1 style="color: #FFD700; text-align: center; text-shadow: 1px 1px #000">ASCII Arena</h1>
+        <button class="menu-btn" onclick="startGame()">Новая игра</button>
+        <button class="menu-btn" onclick="showCharacterSelect()">Выбор персонажа</button>
+        <div id="level-display" style="position: fixed; bottom: 10px; right: 10px; color: #fff">Уровень: 1</div>
+    </div>
+
+    <div id="character-select" style="display: none; text-align: center;">
+        <h2 style="color: #FFD700">Выберите персонажа</h2>
+        <button class="menu-btn" onclick="selectCharacter('warrior')">⚔ Воин</button>
+        <button class="menu-btn" onclick="selectCharacter('mage')">✨ Маг</button>
+        <button class="menu-btn" onclick="selectCharacter('rogue')">🗡 Разбойник</button>
+        <button class="menu-btn" onclick="hideCharacterSelect()">Назад</button>
+    </div>
+
+    <div id="game-container">
+        <pre id="game" style="white-space: pre-wrap;"></pre>
     </div>
 
     <script>
-        // Расширенный класс способностей
-        class Ability {
-            constructor(name, type, power, cost, cooldown) {
-                this.name = name;
-                this.type = type;
-                this.power = power;
-                this.cost = cost;
-                this.cooldown = cooldown;
-                this.currentCooldown = 0;
-            }
+        let selectedChar = 'warrior';
+        let level = 1;
+        let exp = 0;
 
-            canUse(energy) {
-                return this.currentCooldown === 0 && energy >= this.cost;
-            }
+        const characters = {
+            warrior: { hp: 150, attack: 25, symbol: '@' },
+            mage: { hp: 100, attack: 40, symbol: '★' },
+            rogue: { hp: 120, attack: 30, symbol: '⚡' }
+        };
 
-            use() {
-                this.currentCooldown = this.cooldown;
-            }
-
-            updateCooldown() {
-                if(this.currentCooldown > 0) this.currentCooldown--;
-            }
+        function startGame() {
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('game-container').style.display = 'block';
+            initGame();
         }
 
-        // Обновлённый класс Fighter
-        class Fighter {
-            constructor(baseStats, elementId, gameState) {
-                this.baseStats = baseStats;
-                this.gameState = gameState;
-                this.element = document.getElementById(elementId);
-                this.abilities = [];
-                this.energy = 100;
-                this.reset();
-            }
-
-            reset() {
-                this.stats = {
-                    health: this.baseStats.health + (this.gameState.upgrades.health * 25),
-                    minDmg: this.baseStats.minDmg + (this.gameState.upgrades.attack * 3),
-                    maxDmg: this.baseStats.maxDmg + (this.gameState.upgrades.attack * 5),
-                    critChance: this.gameState.upgrades.crit * 2,
-                    dodgeChance: this.gameState.upgrades.dodge * 1.5
-                };
-                this.currentHealth = this.stats.health;
-                this.energy = 100;
-            }
-
-            attack(target) {
-                let damage = 0;
-                const ability = this.selectAbility();
-                
-                if(ability && ability.canUse(this.energy)) {
-                    damage = this.useAbility(ability, target);
-                } else {
-                    damage = this.basicAttack(target);
-                }
-
-                this.energy = Math.min(this.energy + 2, 100);
-                return damage;
-            }
-
-            basicAttack(target) {
-                let damage = Math.floor(Math.random() * 
-                    (this.stats.maxDmg - this.stats.minDmg + 1)) + this.stats.minDmg;
-                
-                if(Math.random() * 100 < this.stats.critChance) {
-                    damage *= 2;
-                    this.showEffect('critical');
-                }
-                
-                target.takeDamage(damage);
-                return damage;
-            }
-
-            useAbility(ability, target) {
-                this.energy -= ability.cost;
-                ability.use();
-                let damage = 0;
-
-                switch(ability.type) {
-                    case 'fire':
-                        damage = ability.power + Math.floor(Math.random() * 10);
-                        this.showEffect('fire', target.element);
-                        break;
-                    case 'heal':
-                        this.heal(ability.power);
-                        this.showEffect('heal');
-                        return 0;
-                    case 'shield':
-                        this.addShield(ability.power);
-                        this.showEffect('shield');
-                        return 0;
-                }
-
-                target.takeDamage(damage);
-                return damage;
-            }
-
-            showEffect(type, targetElement = this.element) {
-                const effect = document.createElement('div');
-                switch(type) {
-                    case 'fire':
-                        effect.className = 'fire-effect';
-                        targetElement.appendChild(effect);
-                        setTimeout(() => effect.remove(), 800);
-                        break;
-                    case 'heal':
-                        this.element.classList.add('heal-effect');
-                        setTimeout(() => this.element.classList.remove('heal-effect'), 1000);
-                        break;
-                    case 'shield':
-                        this.element.classList.add('shield-effect');
-                        setTimeout(() => this.element.classList.remove('shield-effect'), 3000);
-                        break;
-                    case 'critical':
-                        const critText = document.createElement('div');
-                        critText.textContent = 'CRIT!';
-                        critText.style.color = '#FFD700';
-                        critText.style.position = 'absolute';
-                        critText.style.top = '-50px';
-                        targetElement.appendChild(critText);
-                        setTimeout(() => critText.remove(), 500);
-                        break;
-                }
-            }
-
-            selectAbility() {
-                return this.abilities
-                    .filter(a => a.canUse(this.energy))
-                    .sort((a, b) => b.power - a.power)[0];
-            }
+        function showCharacterSelect() {
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('character-select').style.display = 'block';
         }
 
-        // Обновлённый класс ArenaGame
-        class ArenaGame {
-            constructor() {
-                this.gameState = new GameState();
-                this.gameState.load();
-                this.initAbilities();
-                this.initTelegram();
-                this.updateUI();
-                this.initLevels();
-                showMainMenu();
-            }
+        function hideCharacterSelect() {
+            document.getElementById('character-select').style.display = 'none';
+            document.getElementById('menu').style.display = 'block';
+        }
 
-            initAbilities() {
-                this.abilities = {
-                    fireStrike: new Ability('Огненный удар', 'fire', 40, 30, 3),
-                    heal: new Ability('Лечение', 'heal', 50, 40, 4),
-                    energyShield: new Ability('Щит', 'shield', 30, 25, 5)
-                };
-            }
+        function selectCharacter(char) {
+            selectedChar = char;
+            hideCharacterSelect();
+        }
 
-            showUpgradeOptions() {
-                const options = document.getElementById('upgrade-options');
-                options.innerHTML = '';
-                
-                const upgrades = this.getRandomUpgrades(3);
-                upgrades.forEach(upgrade => {
-                    const card = document.createElement('div');
-                    card.className = 'upgrade-card';
-                    card.innerHTML = `
-                        <h3>${upgrade.title}</h3>
-                        <p>${upgrade.description}</p>
-                        <button onclick="game.applyUpgrade('${upgrade.type}')">Выбрать</button>
-                    `;
-                    options.appendChild(card);
-                });
+        function initGame() {
+            const game = document.getElementById('game');
+            const player = characters[selectedChar];
+            const enemy = getRandomEnemy();
+            let pHealth = player.hp;
+            let eHealth = enemy.hp;
+            
+            const render = () => {
+                game.textContent = `
+██╗   ██╗███████╗██████╗ ██╗   ██╗
+╚██╗ ██╔╝██╔════╝██╔══██╗╚██╗ ██╔╝
+ ╚████╔╝ █████╗  ██████╔╝ ╚████╔╝ 
+  ╚██╔╝  ██╔══╝  ██╔══██╗  ╚██╔╝  
+   ██║   ██║     ██║  ██║   ██║   
+   ╚═╝   ╚═╝     ╚═╝  ╚═╝   ╚═╝   
+-----------------------------------
+${player.symbol} ${player.name}: ${pHealth}/${player.hp} HP
+${enemy.symbol} ${enemy.name}: ${eHealth}/${enemy.hp} HP
+-----------------------------------
+1. Атаковать
+2. Защититься
+3. Способность
+                `;
+            };
 
-                document.getElementById('upgrade-popup').style.display = 'block';
-            }
-
-            getRandomUpgrades(count) {
-                const possibleUpgrades = [
-                    {
-                        type: 'attack',
-                        title: 'Улучшение атаки',
-                        description: '+5 к минимальному и максимальному урону'
-                    },
-                    {
-                        type: 'health',
-                        title: 'Улучшение здоровья',
-                        description: '+30 к максимальному здоровью'
-                    },
-                    {
-                        type: 'crit',
-                        title: 'Критический удар',
-                        description: '+3% шанс критического удара'
-                    },
-                    {
-                        type: 'dodge',
-                        title: 'Уклонение',
-                        description: '+2% шанс уклонения'
-                    },
-                    {
-                        type: 'ability',
-                        title: 'Новая способность',
-                        description: 'Открывает новую боевую способность'
-                    }
+            const getRandomEnemy = () => {
+                const enemies = [
+                    { name: 'Орк', hp: 100, attack: 20, symbol: '👹' },
+                    { name: 'Лич', hp: 80, attack: 30, symbol: '💀' },
+                    { name: 'Гоблин', hp: 120, attack: 15, symbol: '👺' }
                 ];
+                return enemies[Math.floor(Math.random() * enemies.length)];
+            };
 
-                return possibleUpgrades.sort(() => Math.random() - 0.5).slice(0, count);
-            }
-
-            applyUpgrade(type) {
-                if(type === 'ability') {
-                    const newAbility = Object.values(this.abilities)
-                        .find(a => !this.gameState.playerAbilities.includes(a.name));
-                    if(newAbility) this.gameState.playerAbilities.push(newAbility.name);
-                } else {
-                    this.gameState.upgrades[type]++;
-                }
+            const handleInput = (choice) => {
+                let damage = Math.floor(player.attack * Math.random() * 1.5);
+                eHealth -= damage;
+                game.textContent += `\n\n${player.symbol} Нанес ${damage} урона!`;
                 
-                this.gameState.save();
-                this.updateUI();
-                document.getElementById('upgrade-popup').style.display = 'none';
-                showMainMenu();
-            }
+                if (eHealth <= 0) {
+                    exp += 20;
+                    if (exp >= 100) {
+                        level++;
+                        exp = 0;
+                        document.getElementById('level-display').textContent = `Уровень: ${level}`;
+                    }
+                    return endGame(true);
+                }
+
+                let eDamage = Math.floor(enemy.attack * Math.random() * 1.3);
+                pHealth -= eDamage;
+                game.textContent += `\n\n${enemy.symbol} Атакует на ${eDamage} урона!`;
+
+                if (pHealth <= 0) return endGame(false);
+
+                setTimeout(() => render(), 1000);
+            };
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === '1') handleInput(1);
+            });
+
+            render();
         }
 
-        // Остальной код остаётся аналогичным предыдущей версии
-        // с добавлением новых функций в соответствующие классы
+        function endGame(win) {
+            const game = document.getElementById('game');
+            game.textContent = `
+${win ? '🎉 ПОБЕДА!' : '💀 ПОРАЖЕНИЕ'}
+-----------------------------------
+${win ? `Получено опыта: +20` : ''}
+${win ? `Уровень: ${level + (exp >= 80 ? 1 : 0)}` : ''}
+            `;
+            setTimeout(() => resetGame(), 3000);
+        }
+
+        function resetGame() {
+            document.getElementById('menu').style.display = 'block';
+            document.getElementById('game-container').style.display = 'none';
+            exp = 0;
+            level = 1;
+        }
     </script>
 </body>
 </html>
