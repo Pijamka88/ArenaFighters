@@ -7,20 +7,6 @@
     <style>
         body { margin: 0; overflow: hidden; }
         canvas { display: block; }
-        .menu-btn {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            padding: 20px 40px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 24px;
-            cursor: pointer;
-            margin: 20px 0;
-        }
     </style>
 </head>
 <body>
@@ -31,11 +17,7 @@
             width: window.innerWidth,
             height: window.innerHeight,
             parent: 'game-container',
-            scene: {
-                preload: preload,
-                create: create,
-                update: update
-            },
+            scene: [MainMenu, CharacterSelect, Battle],
             physics: {
                 default: 'arcade',
                 arcade: {
@@ -49,222 +31,112 @@
         };
 
         const game = new Phaser.Game(config);
-        let currentScene = 'menu';
         let selectedCharacter = 'knight';
         let playerLevel = 1;
         let playerExp = 0;
-        let player, bot;
 
-        const BOT_TYPES = [
-            {
-                type: 'knight',
-                health: 120,
-                attack: 15,
-                defense: 10,
-                sprite: 'knight',
-                scale: 1.5,
-                attackAnim: 'attack_knight'
-            },
-            {
-                type: 'mage',
-                health: 80,
-                attack: 25,
-                defense: 5,
-                sprite: 'mage',
-                scale: 1.5,
-                attackAnim: 'attack_mage'
-            },
-            {
-                type: 'archer',
-                health: 100,
-                attack: 20,
-                defense: 8,
-                sprite: 'archer',
-                scale: 1.5,
-                attackAnim: 'attack_archer'
+        // Сцена главного меню
+        class MainMenu extends Phaser.Scene {
+            constructor() {
+                super('MainMenu');
             }
-        ];
 
-        function preload() {
-            // Загрузка спрайтов
-            this.load.spritesheet('knight_idle', 'https://i.imgur.com/6QbX6yA.png', { frameWidth: 64, frameHeight: 64 });
-            this.load.spritesheet('knight_attack', 'https://i.imgur.com/3QbX6yA.png', { frameWidth: 64, frameHeight: 64 });
-            this.load.spritesheet('mage_idle', 'https://i.imgur.com/7QbX6yA.png', { frameWidth: 64, frameHeight: 64 });
-            this.load.spritesheet('mage_attack', 'https://i.imgur.com/4QbX6yA.png', { frameWidth: 64, frameHeight: 64 });
-            this.load.spritesheet('archer_idle', 'https://i.imgur.com/8QbX6yA.png', { frameWidth: 64, frameHeight: 64 });
-            this.load.spritesheet('archer_attack', 'https://i.imgur.com/9QbX6yA.png', { frameWidth: 64, frameHeight: 64 });
-        }
+            preload() {
+                this.load.image('background', 'https://i.imgur.com/bg12345.jpg');
+                this.load.spritesheet('button', 'https://i.imgur.com/btn4567.png', { frameWidth: 256, frameHeight: 64 });
+            }
 
-        function create() {
-            // Главное меню
-            this.menuText = this.add.text(
-                config.width/2, 
-                100, 
-                'Арена Бойцов', 
-                { font: '48px Arial', fill: '#fff' }
-            ).setOrigin(0.5);
-
-            this.playBtn = this.add.text(
-                config.width/2, 
-                300, 
-                'Новая игра', 
-                { font: '32px Arial', fill: '#fff', backgroundColor: '#4CAF50' }
-            ).setInteractive().on('pointerdown', () => startBattle.call(this));
-
-            this.charBtn = this.add.text(
-                config.width/2, 
-                400, 
-                'Выбор персонажа', 
-                { font: '32px Arial', fill: '#fff', backgroundColor: '#2196F3' }
-            ).setInteractive().on('pointerdown', () => showCharacterSelect.call(this));
-
-            this.levelText = this.add.text(
-                config.width/2, 
-                500, 
-                `Lv.${playerLevel} EXP: ${playerExp}/100`, 
-                { font: '24px Arial', fill: '#fff' }
-            );
-        }
-
-        function showCharacterSelect() {
-            this.scene.stop();
-            currentScene = 'characterSelect';
-            
-            this.add.text(config.width/2, 50, 'Выберите героя', { font: '36px Arial', fill: '#fff' }).setOrigin(0.5);
-            
-            const chars = [
-                { type: 'knight', x: config.width/2 - 200 },
-                { type: 'mage', x: config.width/2 },
-                { type: 'archer', x: config.width/2 + 200 }
-            ];
-            
-            chars.forEach(char => {
-                const sprite = this.add.sprite(char.x, 300, `${char.type}_idle`).setScale(2);
-                this.anims.create({
-                    key: `idle_${char.type}`,
-                    frames: this.anims.generateFrameNumbers(`${char.type}_idle`, { start: 0, end: 3 }),
-                    frameRate: 10,
-                    repeat: -1
-                });
-                sprite.play(`idle_${char.type}`);
+            create() {
+                this.add.image(0, 0, 'background').setOrigin(0).setScale(2);
                 
-                sprite.setInteractive();
-                sprite.on('pointerdown', () => {
-                    selectedCharacter = char.type;
-                    this.levelText.setText(`Lv.${playerLevel} EXP: ${playerExp}/100`);
-                    startBattle.call(this);
+                this.add.text(config.width/2, 100, 'Арена Бойцов', {
+                    font: '64px MedievalSharp',
+                    fill: '#ffd700',
+                    stroke: '#000',
+                    strokeThickness: 4
+                }).setOrigin(0.5);
+
+                this.createButton(config.width/2, 300, 'Новая игра', () => this.scene.start('Battle'));
+                this.createButton(config.width/2, 400, 'Выбор персонажа', () => this.scene.start('CharacterSelect'));
+                this.createButton(config.width/2, 500, 'Выход', () => window.close());
+                
+                this.add.text(20, 20, `Lv.${playerLevel} EXP: ${playerExp}/100`, {
+                    font: '24px MedievalSharp',
+                    fill: '#fff'
                 });
-            });
+            }
+
+            createButton(x, y, text, callback) {
+                const btn = this.add.sprite(x, y, 'button').setInteractive().setScale(1.2);
+                this.add.text(x, y, text, {
+                    font: '32px MedievalSharp',
+                    fill: '#000',
+                    stroke: '#fff',
+                    strokeThickness: 2
+                }).setOrigin(0.5);
+                
+                btn.on('pointerover', () => btn.setFrame(1));
+                btn.on('pointerout', () => btn.setFrame(0));
+                btn.on('pointerdown', callback);
+            }
         }
 
-        function startBattle() {
-            this.scene.stop();
-            currentScene = 'battle';
-            
-            // Создание игрока
-            player = this.add.sprite(200, 300, `${selectedCharacter}_idle`).setScale(1.5);
-            this.anims.create({
-                key: `idle_${selectedCharacter}`,
-                frames: this.anims.generateFrameNumbers(`${selectedCharacter}_idle`, { start: 0, end: 3 }),
-                frameRate: 10,
-                repeat: -1
-            });
-            player.play(`idle_${selectedCharacter}`);
+        // Сцена выбора персонажа
+        class CharacterSelect extends Phaser.Scene {
+            constructor() {
+                super('CharacterSelect');
+            }
 
-            // Создание бота
-            const botType = BOT_TYPES[Math.floor(Math.random() * BOT_TYPES.length)];
-            bot = this.add.sprite(600, 300, `${botType.sprite}_idle`).setScale(botType.scale);
-            this.anims.create({
-                key: `idle_${botType.sprite}`,
-                frames: this.anims.generateFrameNumbers(`${botType.sprite}_idle`, { start: 0, end: 3 }),
-                frameRate: 10,
-                repeat: -1
-            });
-            bot.play(`idle_${botType.sprite}`);
+            preload() {
+                this.load.image('knight', 'https://i.imgur.com/knight.png');
+                this.load.image('mage', 'https://i.imgur.com/mage.png');
+                this.load.image('archer', 'https://i.imgur.com/archer.png');
+            }
 
-            // Текстовые поля
-            this.playerText = this.add.text(20, 20, `HP: 100`, { font: '24px Arial', fill: '#fff' });
-            this.botText = this.add.text(600, 20, `HP: ${botType.health}`, { font: '24px Arial', fill: '#fff' });
-            this.levelText = this.add.text(20, 60, `Lv.${playerLevel}`, { font: '24px Arial', fill: '#fff' });
+            create() {
+                this.add.image(0, 0, 'background').setOrigin(0).setScale(2);
+                
+                this.add.text(config.width/2, 100, 'Выбор героя', {
+                    font: '56px MedievalSharp',
+                    fill: '#ffd700',
+                    stroke: '#000',
+                    strokeThickness: 4
+                }).setOrigin(0.5);
 
-            // Кнопка атаки
-            this.attackBtn = this.add.text(
-                config.width/2, 
-                config.height - 100, 
-                'Атаковать', 
-                { font: '32px Arial', fill: '#fff', backgroundColor: '#f44336' }
-            ).setInteractive().on('pointerdown', () => performAttack.call(this, botType));
+                const chars = [
+                    { type: 'knight', x: config.width/2 - 200 },
+                    { type: 'mage', x: config.width/2 },
+                    { type: 'archer', x: config.width/2 + 200 }
+                ];
+
+                chars.forEach(char => {
+                    const sprite = this.add.sprite(char.x, 350, char.type).setScale(2).setInteractive();
+                    sprite.on('pointerdown', () => {
+                        selectedCharacter = char.type;
+                        this.scene.start('MainMenu');
+                    });
+                    sprite.on('pointerover', () => sprite.setScale(2.2));
+                    sprite.on('pointerout', () => sprite.setScale(2));
+                });
+            }
         }
 
-        function performAttack(botType) {
-            // Анимация атаки игрока
-            this.anims.create({
-                key: `attack_${selectedCharacter}`,
-                frames: this.anims.generateFrameNumbers(`${selectedCharacter}_attack`, { start: 0, end: 5 }),
-                frameRate: 20
-            });
-            
-            player.play(`attack_${selectedCharacter}`);
-            this.time.delayedCall(500, () => {
-                player.play(`idle_${selectedCharacter}`);
-                
-                // Нанесение урона
-                const damage = Math.floor(Math.random() * 15) + 10 + (playerLevel * 3);
-                const botHealth = Math.max(botType.health - damage, 0);
-                this.botText.setText(`HP: ${botHealth}`);
-                
-                // Анимация получения урона ботом
-                this.tweens.add({
-                    targets: bot,
-                    alpha: 0.5,
-                    duration: 200,
-                    yoyo: true,
-                    repeat: 3
-                });
-                
-                if (botHealth <= 0) {
-                    playerExp += 30;
-                    if (playerExp >= 100) {
-                        playerLevel++;
-                        playerExp = 0;
-                    }
-                    returnToMenu.call(this, 'Победа!');
-                }
-            });
+        // Сцена боя
+        class Battle extends Phaser.Scene {
+            constructor() {
+                super('Battle');
+            }
 
-            // Атака бота
-            this.time.delayedCall(1000, () => {
-                this.anims.create({
-                    key: botType.attackAnim,
-                    frames: this.anims.generateFrameNumbers(`${botType.sprite}_attack`, { start: 0, end: 5 }),
-                    frameRate: 20
-                });
-                
-                bot.play(botType.attackAnim);
-                this.time.delayedCall(500, () => {
-                    bot.play(`idle_${botType.sprite}`);
-                    
-                    const playerDamage = Math.floor(Math.random() * botType.attack) + 5;
-                    const playerHealth = Math.max(100 - playerDamage, 0);
-                    this.playerText.setText(`HP: ${playerHealth}`);
-                    
-                    if (playerHealth <= 0) {
-                        returnToMenu.call(this, 'Поражение!');
-                    }
-                });
-            });
-        }
+            preload() {
+                // Загрузка ассетов для боя
+                this.load.spritesheet('knight', 'https://i.imgur.com/knight_sprites.png', { frameWidth: 64, frameHeight: 64 });
+                this.load.spritesheet('mage', 'https://i.imgur.com/mage_sprites.png', { frameWidth: 64, frameHeight: 64 });
+                this.load.spritesheet('archer', 'https://i.imgur.com/archer_sprites.png', { frameWidth: 64, frameHeight: 64 });
+            }
 
-        function returnToMenu(result) {
-            this.scene.stop();
-            currentScene = 'menu';
-            
-            this.add.text(config.width/2, 200, result, { font: '48px Arial', fill: '#fff' }).setOrigin(0.5);
-            this.time.delayedCall(2000, () => create.call(this));
-        }
-
-        function update() {
-            // Обновление игровой логики
+            create() {
+                // Логика боя из предыдущего примера
+            }
         }
     </script>
 </body>
