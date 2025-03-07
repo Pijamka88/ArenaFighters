@@ -1,325 +1,214 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>Arena Fight</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arena Fighters</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { margin: 0; overflow: hidden; }
-        canvas { display: block; }
+        body {
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .arena {
+            width: 320px;
+            height: 240px;
+            border: 3px solid #444;
+            border-radius: 10px;
+            margin: 20px;
+            position: relative;
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==');
+        }
+
+        .fighter {
+            position: absolute;
+            width: 60px;
+            height: 80px;
+            bottom: 20px;
+            transition: transform 0.3s;
+            background-color: #3498db;
+            border-radius: 5px;
+        }
+
+        #player {
+            left: 40px;
+        }
+
+        #bot {
+            right: 40px;
+            background-color: #e74c3c;
+        }
+
+        .health-bar {
+            width: 100px;
+            height: 12px;
+            background: #444;
+            position: absolute;
+            top: -30px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .health {
+            height: 100%;
+            background: #27ae60;
+            transition: width 0.3s;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 18px;
+            background: #e74c3c;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            margin: 10px;
+            cursor: pointer;
+        }
+
+        #result {
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin: 20px;
+        }
+
+        .stats {
+            position: absolute;
+            top: -50px;
+            font-size: 12px;
+            color: #95a5a6;
+        }
+
+        .attacking {
+            transform: translateY(-20px);
+        }
     </style>
 </head>
 <body>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+    <div class="arena">
+        <div id="player" class="fighter">
+            <div class="stats">ATK: 10-20</div>
+            <div class="health-bar">
+                <div class="health" id="player-health"></div>
+            </div>
+        </div>
+        <div id="bot" class="fighter">
+            <div class="stats">ATK: 8-15</div>
+            <div class="health-bar">
+                <div class="health" id="bot-health"></div>
+            </div>
+        </div>
+    </div>
+    <button id="start-battle">⚔️ Start Battle</button>
+    <div id="result"></div>
+
     <script>
-        const config = {
-            type: Phaser.AUTO,
-            width: window.innerWidth,
-            height: window.innerHeight,
-            parent: 'game-container',
-            scene: [MainMenu, CharacterSelect, Battle],
-            physics: {
-                default: 'arcade',
-                arcade: {
-                    gravity: { y: 0 }
-                }
-            }
-        };
-
-        const game = new Phaser.Game(config);
-        let selectedCharacter = 'knight';
-        let playerLevel = 1;
-        let playerExp = 0;
-
-        // Сцена главного меню
-        class MainMenu extends Phaser.Scene {
-            constructor() {
-                super('MainMenu');
+        class Fighter {
+            constructor(health, minDmg, maxDmg, elementId) {
+                this.maxHealth = health;
+                this.health = health;
+                this.minDmg = minDmg;
+                this.maxDmg = maxDmg;
+                this.element = document.getElementById(elementId);
             }
 
-            create() {
-                // Фоновый градиент
-                const graphics = this.add.graphics();
-                const gradient = graphics.createLinearGradient(0, 0, 0, config.height);
-                gradient.addColorStop(0, '#3a004f');
-                gradient.addColorStop(1, '#1a002f');
-                graphics.fillRect(0, 0, config.width, config.height);
-                graphics.fillStyle(gradient);
-
-                // Текст заголовка
-                this.add.text(config.width/2, 100, 'Арена Бойцов', {
-                    font: '64px Arial',
-                    fill: '#ffd700',
-                    stroke: '#000',
-                    strokeThickness: 8
-                }).setOrigin(0.5);
-
-                // Кнопки
-                this.createButton(config.width/2, 300, 'Новая игра', '#4CAF50', () => this.scene.start('Battle'));
-                this.createButton(config.width/2, 400, 'Выбор персонажа', '#2196F3', () => this.scene.start('CharacterSelect'));
-                this.createButton(config.width/2, 500, 'Выход', '#f44336', () => window.close());
-                
-                // Уровень игрока
-                this.add.text(20, 20, `Lv.${playerLevel} EXP: ${playerExp}/100`, {
-                    font: '24px Arial',
-                    fill: '#fff'
-                });
+            attack(target) {
+                const damage = Math.floor(Math.random() * (this.maxDmg - this.minDmg + 1)) + this.minDmg;
+                target.takeDamage(damage);
+                this.animateAttack();
+                return damage;
             }
 
-            createButton(x, y, text, color, callback) {
-                const btn = this.add.rectangle(x, y, 300, 80, 0x444444)
-                    .setStrokeStyle(4, 0x000000)
-                    .setInteractive({ useHandCursor: true });
-                
-                const txt = this.add.text(x, y, text, {
-                    font: '32px Arial',
-                    fill: '#fff'
-                }).setOrigin(0.5);
+            takeDamage(amount) {
+                this.health = Math.max(0, this.health - amount);
+                this.updateHealthBar();
+            }
 
-                // Ховер-эффект
-                btn.on('pointerover', () => {
-                    btn.setFillStyle(Phaser.Display.Color.HexStringToColor(color).color);
-                });
-                btn.on('pointerout', () => {
-                    btn.setFillStyle(0x444444);
-                });
-                btn.on('pointerdown', callback);
+            animateAttack() {
+                this.element.classList.add('attacking');
+                setTimeout(() => this.element.classList.remove('attacking'), 300);
+            }
+
+            updateHealthBar() {
+                const healthBar = this.element.querySelector('.health');
+                healthBar.style.width = `${(this.health / this.maxHealth) * 100}%`;
+            }
+
+            isAlive() {
+                return this.health > 0;
             }
         }
 
-        // Сцена выбора персонажа
-        class CharacterSelect extends Phaser.Scene {
+        class ArenaGame {
             constructor() {
-                super('CharacterSelect');
+                this.player = new Fighter(120, 10, 20, 'player');
+                this.bot = new Fighter(100, 8, 15, 'bot');
+                this.battleInterval = null;
+                this.initTelegram();
             }
 
-            create() {
-                // Фон
-                const graphics = this.add.graphics();
-                graphics.fillRect(0, 0, config.width, config.height);
-                graphics.fillStyle(0x1a002f);
+            initTelegram() {
+                Telegram.WebApp.ready();
+                Telegram.WebApp.expand();
+                Telegram.WebApp.MainButton.setText('Close').onClick(() => Telegram.WebApp.close());
+            }
 
-                // Заголовок
-                this.add.text(config.width/2, 100, 'Выбор героя', {
-                    font: '56px Arial',
-                    fill: '#ffd700',
-                    stroke: '#000',
-                    strokeThickness: 6
-                }).setOrigin(0.5);
+            startBattle() {
+                if (this.battleInterval) return;
 
-                // Кнопки персонажей
-                const chars = [
-                    { type: 'knight', x: config.width/2 - 200, color: 0x8B4513 },
-                    { type: 'mage', x: config.width/2, color: 0x4169E1 },
-                    { type: 'archer', x: config.width/2 + 200, color: 0x228B22 }
-                ];
-
-                chars.forEach(char => {
-                    const charGraphics = this.add.graphics();
-                    charGraphics.fillStyle(char.color, 1);
+                this.battleInterval = setInterval(() => {
+                    const playerDmg = this.player.attack(this.bot);
+                    this.logDamage('Player', playerDmg);
                     
-                    // Рисуем персонажа
-                    if (char.type === 'knight') {
-                        charGraphics.fillRect(char.x - 30, 300, 60, 100); // Туловище
-                        charGraphics.fillRect(char.x - 20, 280, 40, 20); // Голова
-                        charGraphics.fillRect(char.x - 40, 350, 80, 10); // Руки
-                    } else if (char.type === 'mage') {
-                        charGraphics.fillCircle(char.x, 300, 30); // Голова
-                        charGraphics.fillRect(char.x - 10, 330, 20, 60); // Тело
-                        charGraphics.fillTriangle(char.x, 330, char.x+30, 360, char.x-30, 360); // Руки
-                    } else {
-                        charGraphics.fillRoundedRect(char.x - 25, 300, 50, 100, 10); // Тело
-                        charGraphics.fillTriangle(char.x, 280, char.x+30, 320, char.x-30, 320); // Лук
+                    if (!this.bot.isAlive()) {
+                        this.endBattle('🎉 You Win!');
+                        return;
                     }
 
-                    // Текст
-                    this.add.text(char.x, 420, char.type, {
-                        font: '24px Arial',
-                        fill: '#fff'
-                    }).setOrigin(0.5);
+                    setTimeout(() => {
+                        const botDmg = this.bot.attack(this.player);
+                        this.logDamage('Bot', botDmg);
+                        
+                        if (!this.player.isAlive()) {
+                            this.endBattle('💀 Bot Wins!');
+                        }
+                    }, 500);
+                }, 1500);
+            }
 
-                    // Интерактивность
-                    const hitArea = new Phaser.Geom.Rectangle(char.x - 50, 250, 100, 200);
-                    const zone = this.add.zone(char.x, 350, 100, 200)
-                        .setRectangleDropZone(hitArea.width, hitArea.height)
-                        .setInteractive(hitArea, Phaser.Geom.Rectangle.Contains);
+            endBattle(result) {
+                clearInterval(this.battleInterval);
+                this.battleInterval = null;
+                document.getElementById('result').textContent = result;
+                Telegram.WebApp.MainButton.show();
+            }
 
-                    zone.on('pointerdown', () => {
-                        selectedCharacter = char.type;
-                        this.scene.start('MainMenu');
-                    });
+            logDamage(source, damage) {
+                console.log(`${source} hits for ${damage} damage!`);
+            }
 
-                    zone.on('pointerover', () => charGraphics.setAlpha(0.7));
-                    zone.on('pointerout', () => charGraphics.setAlpha(1));
-                });
+            resetGame() {
+                this.player = new Fighter(120, 10, 20, 'player');
+                this.bot = new Fighter(100, 8, 15, 'bot');
+                document.getElementById('result').textContent = '';
+                Telegram.WebApp.MainButton.hide();
             }
         }
 
-        // Сцена боя
-        class Battle extends Phaser.Scene {
-            constructor() {
-                super('Battle');
-            }
+        const game = new ArenaGame();
 
-            create() {
-                // Фон арены
-                const arena = this.add.rectangle(config.width/2, config.height/2, 600, 400, 0x333333)
-                    .setStrokeStyle(4, 0xFFD700);
-
-                // Игрок
-                const playerGraphics = this.add.graphics();
-                playerGraphics.fillStyle(0x8B4513, 1);
-                if (selectedCharacter === 'knight') {
-                    playerGraphics.fillRect(100, 250, 60, 100); // Туловище
-                    playerGraphics.fillRect(110, 230, 40, 20); // Голова
-                    playerGraphics.fillRect(80, 300, 80, 10); // Руки
-                } else if (selectedCharacter === 'mage') {
-                    playerGraphics.fillCircle(150, 300, {
- { constructor = {
-('...'
-init() {
- {
- {
- create() {
- {
-112 {
-.create(()lineей {
-('create() {
- {
- {
- create() {
-0ive 'createover new PIXI.Gameover new create(0);
- {
-30ure 'createBattleText("С120 00004еружить
-0
- main = new MainMenu(this: Phaser
-ст overcreateText('createScene new Battlely {
- create2D {
- {
-init ожож new Phaser.Text('Battle {
-new Image80('robot.add2d {
- new Battle # = {
-000('createSceneюvar createScene: PhasercreateText('new Battle() {
- new Image('create() {
- {
-5:3 {
-00 10
- {
-new:Battlee: 
-new Battle('22110ож Battle3 {
-0р10.create('250('create({
-.createTrwith 'create({
-name: 'create()00 new Character('red createCharacter new create({
-00 main'newcreateText('white0('mainn00 {
-create()('createText('createText('new Character new2d create'300('create('3 {
-   20ис
- 3 {
- {
-new0 'createText('player.createText   20 '2 50   : create530' new Game
- mainue 0 'newGame2 'old menu0('createText('create('new Game('new Game {
-Text('createText.newcreate()new('createText('createMainMenu 'create()    'main('createText('new createText("create() {
-0('2_gamecreateTextnewgameoverстей 'createText('new('200 new Group('new Phaser.createText('game20('new_game400_text
- 'new GamejSpreloadTexture0Rect.createText0 new MainMenu.createText('create 'createScene('new createText('new (.new 'createScene('new10ext {
- createText('new Game('create5
- new Game('new'new 'new 'create: 'new_game('create' 'new Game('new Phaser
- new Game.create('game'new Phaser.Scene('createText('new PIXI.Gameож create {
- 'newgame.new create0.01ож 'use('kноперож 'new="new Game new Game00 createText('new': Phaser createTextа createорей
- new5ей('new 'new Game 'createText('new Game('new (4ю 20 Phaserад
- newож
- new Phaser('create('new PIXI.Game('new PIXI
- new Text('add
-   34004 new Game {
- Phaser createText.new Phaser.GameoneText('newров: createText('new Phaser('new game0 new Phaserус00с이 new PIXI.Game('new MainMenu
- new MainMenu: new MainMenu
- new main: new Phaser.add('newGame('createText, 'createText('create() newGame.createText('newText('new0('200('new0 main4200text(20x('new_game('graphics {
-    new new Game: new Game('create {
-
- 'new_game
- '2D @createText0.new('create 'useк newPREт ей 'new Image('new Image.create ae
- 'new0 Menu {
-ive {
-('20ст new Phaser.createText('2020('new PIXI.Game('new Game('new PIXI.Gameетожен '200ext('2 new GameOf('new'new5
- new0 new Phaser
-2 Game0Text('2 new Game.createText('new Image('button: new Image('new createText('new Game200 new PIXI.Game200 new50 new20 new Phaser.createElement('new Gameone20 new0000
--1201ю new Game('new Game2new Game('new Nуладож('2 'newGame.new Image('new'new' { new Gameiv
- 'new Image('create()('new Game('2 new PIXI
-new Game('new'newt
-80 new Image('new Menuюем: new Image10 new Game.new Image('buttonnew Image('new ImageBuilder
-31init new PIXI
- newat('new Image.new new Game new Image.newst create() {
- 'new Phaser('new'new('2 new Image.create('new Image1ize 'new Game('createText('newg new.create() {
-Exists: new Game('new Image, newtex: new Phaser.swing.create'2Dеб new000 new Image('new Image('new Phaser'2('20('player('new Game( 'new Image('240 _enter { new Game('new Image('24j- 'new Game.create()
- true
- 'create() new Game.new Game new Image('2 createText('new Pixelей200nей
- new Create('2 new Game.createText('new Gameover('2ст new Image( 'create() {
-new Image
- 'new Game newод new Image.create()t('20цожс new Image('createText('new Image('20nex'new Image('create.Imagenew Game('new Image('create()'new Image, 'newImage.new Gamest new Image('new Image('new' newt00('20 '20 'new Game('button('new Image('new Image('newst newtext('useText('new Game'new Imagejейnew Game('new00text('new Game newmеж('newx('createText('200 {
-'2Image2('new Image('new PIXI.Game('createText('2('new Image.newset('whiteанext'new Image('new PIXI new Image('new Imagetext('create() new PIXInew 'new PIXI::н'new Image('new0'new Image('new Image new new Phaser.text('new2ст {
- newGame
- {
- 'new Phaser('new Game('new Image('new Gameoverмениж20 'new _new Phaser('new Image('new game' new Image('createText('new Image('new0 new Image('new Phaser::Event('2'new Image('new Phaser.Game.Text('new Image('new_game2 'new Image('create() new Image('new Image('new Image('new0Рим
- 'new Image('create()ив'new Image('new Image newgame.new Image('new Image('new Image('new Phasernew Image('new Game('new Image('new Image('new GameoverText('new Image
-    {
-'new Game4new Image('new Image('new ( new Geometry {
- new Game('new Staten1  new Image('new Image('new Image('new Image new new Game newImage('self, 'new new '200('new Game, key
- new0('create()2 new Image('new Gamestoverн new'new Image('newImage('new Gameover {
-'new Game {
- new Image('new PS {
-0 {
-'new Phaser('new Imagej,    new new Image('new Image('create() new new4new Phaser('new Image('new Image('new Gameexnew Imagenу new Image new Phaser('new Image('create() newImage('new Gameovertext('new Image {
-    newImage('new Game('new Image('new Phaser('new'0('main('new Phaser, new 'new Game 'new Image('new ImagejQuery('new Imagej: new Game.add {
- newGame0('new Image4('new Imagenей create() new Image('new Phaser('new00'new Image {
-new Image('new0'new Phaser('new Gameover('2 new'0('new Image({
-('new GameoverText('new 'new Gameovernewисить('newниеТож with new Image('new0 'create()3 new Image('new Image, preload: new Image('new Image('new Image(newGame: new Text'new Phaser new Image('new Image('new Image('createText('new Game.add new Image('new Image('new Image('create()new Image('new Image('new Image('new Image0'24 new Phaser('new Game('create( new Image('create' new Image('new Image('new Image'new Game new Game.new Game('create() new game.new Game over '200('new Image('create('new Image('newимnew Image('20 canvas.create('new Image('2 new Image('20 'new Image('use strictор newImage('new Image('create('new Image('new Image
-0('new Image('createText('В' new Image('new Image('new Image('new Image.new0'new Game('new Image('new Image.new Image('new Image('new Image('new PhasernewGame('new Image('new Game'new Image('create('new Pixel {
- {
-: 'new Image('new Game.create() {
- new Game {
- new Game new'new Image('new Image('new Image('new Image('new Image('new Image('create() {
-new Image('new Game.new Image('newImage0'new Image('create() new Image('new Game('new Image('new Image.newstex('new Image('create() 'new Game.new Game('new Game( 'new Image('new Image('new Image('new Image('new Image('new Text.new Image('new Image00 newGame('create()0 'new Image('new Image('new Image('new Player
- new Image('new create('new0'  newImage('new'over 'new Image('create'new Image('new0 wxPosition: 'newst newxnew 'new800 new00 'new 'new Image('new Image('newImage1:Game0 'new Image('new Image('new Image('new Image('new1 {
-   20 'new Image('new Image('new00'new0n0'new Image('new Image('new0ext  new Image'new Image('new Image('new Image('new Image('new Phaser.create('new Image('new Image('new Image('new Image('new Image('2'new Image0'new Image.newImage('newcreateText'new Image('2 new Image('new Image('new Image('2 new Image('new0 new Image0('new0newImage('new Image('create()new Image('create('new Image('new Image('new Game.new0 '2000. new Image('new Phaser('new Image('new Game.add('new Image('new Imagen2.createText.new Image('new'new Image0 new Image('new Image('create()'new create() {
- new Phaser('new Image('new Image('new Game.new Image('new Game('new Image('new Game.new create()0 {
-('new new 'new Image2('new Image('new00new Imagen {
-new00 'new Image('Клик
-й {
-'new00('new Image('new Game.newImage('new Image('new Image('new0 'new Image'newText('create() {
-('new Image('new('new0 new00 _new Image('new0 3 create() => 'new Image('new0('new'new ('new Image'new Image('new Image('new Image('new0 new Game('С 'new Image('new Image('new Image('new('new'new 'new Image('new Pixel
- new Image('new Image('new Game new createText('new Image('new State0 new Image('new Image('new Image('new('new0'new Image('new Image('create() 'new Image('new'new Image('new Image('new Game_new Image('new Game('new Image('new'new'new Image('create('new Game.new Imagej
-.create('new Image('new Image('new Phaser
-   : 'new Image('new'new Image('new create('new Image('new 'new Phaser('new Image('new0 0('new Image('new Characternewn2D new Image('new Image('new Image.new Image('new Image('create('new Image('new0);
-new0('new0'new Image('new Image('new0('create'new Image('new24 new Image('new Image('new0 new Game00 'new0'    'new Image('new0('new0' {
- new Image('new Image('create() new Image('new0('new 'new Game('new0('new Game('new Image('new Image('new0('new Image('new Image('new Game('new Image('ИMinecraft('new Image'new gним.create('new Image('new Image newImage('new Image('new Image('new'new'new Image new 'new Image new0('new'new Image('new0' newатex4ex('new 'new Game('new Image.new new('new PhasernewImage('new Game('new Image'перив0'new Game('new0'new4)
-_new Image('Рnew Image new0'j'new Image('new0'new Image('new Image('new Image('new0xnewImage('new Image('new__new 'new Image('new Image('create() =>емн newText.new Image('new Image('new Image('new02 new5 newImage('newигерnew'newImage('new Image('create'new Game('new Image.newImage('new Image('create('new Image0wnew Image.create('new Gameover   : newGame new'new'new0('new0 'new'new('new Game('new Game('new'new'new Image('new0'20('new0('new 'new0ив newGamenex new'new Game'new Imagenew00('new'new'new 'new Image('new Game overem newstейемож Image('new Image('new Fontарсыатор.new Image('new'енИн'new Game('new Game
-new'new'new Image('newGamenew Image0'2new'new new new'2'new Image('new0'new('new' new'2'newImage('new0n(0'4ей '20('new Image.newnew'new Image('new0nож' new Image('new Game('new Image new Image('new0ив new('new0('new Image('new Game('new Image('new Game'new Image('Н'new Image('main' @new4 newImage('new Image.create('new Image('newImage('new'new Image('new Image'new Image('new01new'new'new0new Image('new Image('new Image('new Image('new'new0 тр'new Image('new0('new Image('new'2'new05 new Image('new ImagenewnewImage('new Imagenew Image('2'new Image('new Image('new'new'new Image'new Image('new Image'new0('new Image('new Image('new'newk"new'new Image('new Image.new new00main {
-('new Imagenew Game'new 'new Image('new Image('new Image('new new new' new 'new Image('new new Phaser.create('new0 new '2' new Image new Image('new' {
- new Create('new Image('new create'new Image'new 'new Image('new Image('new Game.create('new 'newImage20('new Image('new Game('new Image('new Game('new'new Image('create'new Image('new'new Image('new Image('new Game
- new0('new Image new Image('new'new 'new'2 newImage('new00 'new Image('2 new5'3'new0 new 'new5('new Game('new' new Game newGame'new new'new 'new5
-    newImage'new Image('newImage('newImage 'new0('new Image('new Image('new Image('new Image.new0'new Image('new'new Image'new0new Image('new Imagenew Image('new('new0nue('new0('newImage('new'new Image('new0'new 'new0('newImage('new'new0m new Game'new Image('createText('new'new Image('new Image.new Image('20'new Image new Image('new'new'new Image('new'new Image('newст {
-new0('new0 {
- new create('new Image('create('new'new 'new'iv'new Image('newnож'new Image('new0('new 'new'60реж'new Image('new0'new Image('new Image('new new new'new Image('new 'new Image('new Image('new'new'  new'new Image('new Image('new Image('new 'new Image('createText.new 'new Image('new Image('newImage('new Image'new Image('new 'newImage('new Image('new0('new Image('new'new Image('new new'newImage('new Image2'new Game.new('new Game'new Image('new Image('new 'new Image('new'new Image('new Image('new Image('new Image.new Image('new Image'new Image('create() =>new Image('new0('new create'new Image('new Image('new'new Image('new'new Image('newImage('create() new Game('new Image('new Image('20 'new Image('new' newImage('newImage('new 'new Image('new Image('new'new Image('new'new Game'create'new Image('new Game('new Image('new main'new'new Image('new Image('create('new Image('new Image('new'new Image('create()new0'у new 'new Image('new Image('new Image('new Image20('new Image('new Image('new'('new Image('new Image('new Image('new Game.new Image('new Image('new 'new'new Image('new Image('new Image('new'20'newImage new Image('new Game.new 'create('new Image.new Image('new Image'new Image('new'new0wGR'create('new Image('create()0 newImage('new Image'new Image('new const {
- 'new Image('newImage('new Image('create('new'new Image('new Image('newImage('new Image('new'new Image('new Image('create'new Image('new Image('new Image.new Image('new Image('create('new Image('new Image('И2Image 'new Image('new Image('create() new Image('new Image('new Image('createText('new Image('create'new Image.new 'createImagenew Image new Image.new 'new 'new Image new Image'new Image new Image('new Image('new0 'new000    'new Image.new Game('createText'new Image.new Image('new Image('new Image'create('new Image('new Image('new Game('new 'new Image('createImage('new Image('new Image new'mnew Image('new Image('new Image('new Image('create('new0('new Image('new0 new Image('new Image('new Image('newt new Image('new Imagenew0' new Image 'new Image('new Image('new Image('new0 new Phaser.Game('newImage'new Image('new Image('new Game('create('new Image('new Image('new Image'snewImage('new Image('new Image('new Image'new Image('new Image newnew Image('new Image new new new Image('new create('new Image('new Image new Image('new Image newImage('new Image('new Image('new Image('new Image('new Image('new'new Image.create('new Image('new Image('create() new Image('create('new Image('new Image('create()new Image('new'new Imagenew'new Image('new Game'new Image('new Image('new Image('new0 'new Image('new Image('new Image('create()   ('newImage('new'new Image('create() 'new Image('create('new Image('new Image('new Image('new Image('create('new Image('new 'new Image('new Image('new Game('new Image('new 'new Image('new Image('new Image('new Image'create('new Game('new'newImage('new' new'new0n2'new Image('create() {
- 'new Image('3 new 'new Image('new Image('create()' new: 'new Phaser('new'
- new Image('create('new 'new' 'create('new'new 'newImage('new0n'new Image('new Image('new 'new'new 'new'new Image('new0'new 'new Image('new0 'new Image('new Image('new Image'new 'new class'new Image('create()'new'new 'new new new'0'2('createImage('new Image('new Image('new Image('new Image('new' new'new Image('new 'new Phaser'new5 {
-'new Image'new Game('newImage('new' new2' new'new Image('new 'new' new Image('new'newat('new'new'new 'new0'new Image'new Image('new 'new 'new Image 'new Image('new' new'new'e' new Image('new' new Gamen'new'new'new'   'new Game'new'new'New' {
-'new ' newImage('new 'new Image('create()('new4new Image('new'new 'new Image('new Game('new'new Image('new Image('new 'new Game'new 'new Image('new Image('new'new Image.new Game'new 'new'new Image('create()new Image new.' new 'new' 'new 'new Image('new Game'new 'new'new'newImage('new Game.new Image'new Image('new Image('new Image new 'new Image'new'new Image('new Image'new'new Game('new Image new 'new010д'у('new Image('new Image' new'2'new Image('create'new Image('new Gamej: new Game {
- 'new'new Image('new Image('new'new 'new Game
-'new Image'new Image('new0'new Game new 'new Game newImage('new0'new Image'new'new0('new Image('new 'new Image('new'newу'new'в'new Image('new Image('create('create('new Game('new 'new Image('new Image('new'new0'new Image('new 'new Image('new Image'create('new Phaserст {
-'create {
-'new Image('new Image'new Image('new Image.newник('new Image 'new'new Image('create 'new'n'new0н 'create'new Image('new Image('new Game('new Image'create'new Image('new Image('new 'new Image'new Image'new'ю
- 'newер new'newImage'new Game
-'new Phaserст new Game('new Image('new Game'new Image'newалюраex 'new Image'new Game'createкн 'new Image('new Image.new Image('new Image.new'create'new Game.createtext('new Image('new0'create('new Game {
-'new Image('new Image('new Image('new Image('new Image('Нuем84 'new0'new Image('new0'new Image('newген('2.exports('new'newImage() {
-'newатив 'new Image('newImage'new'2 {
-
- 'create'new Game('new Image('new Image('new Image('new Image'new Image('new Image('new Image('new Image('new Image('create('new Image('new Image('new Image('new Image('new 'ож0nимен'new0'new Image('create()new Image('create'new Image('new'new Image('new Image('new Image('new Image('new Image('new Image('create('new Image('new 'new 'new Image('new Image'new Image('new Image('new Image('new Image('new Image('new Image('new Image'new 'new'new Image('new Image('new Game'new Image('new' new Image('new 'new Phaser
-'20'new Image('new Image('new0'create {
-('new Image('new0('new Game 'new Image'new Game'new Image('new0
-('new Image('new'new Image('new'new Image'new Image'v new Image('createText'new Image'new 'new Game'new' new0'new Image('create('new Image('createText
-new Image'new Image'new 'new 'new Game('new Image('new0'new Game {
- new'new Image'new MainMenuthis'new Image('new Image('new Phaser('new Image('new Image'new Image'new Image('new Image). new Image('new Image('new Image('new Image('new Image'new ': new Image('new'new Image('new Image new Image('new Image('new Image'new'new 'new Game.new'в' new 'new Image('new 'new Image'new 'new Image('new 'new'new Image('new Image'new Image'new Image('new'new Image('new'new Image('new Image('new Image('new'new Image('new Phaser
-new 'new Image('new Image('new'newtext('new Image('create()'new GameState('new Image('create('new Image('new Image('new Image('new'new Image('new Image('new Image'new Image('new Image('create() {
-'new Image'new'new Image('new'2 'new Image('new 'new Image new Image('new'new Image.create()2 'new Image'new'new Image('new'new Game('new Image('new Image('new Game('new Image'new Image.new Image('new Image('new Game('new Image('new'new'new 'new Image('new Image.new Image('new Image('new Image('new Image('new Image('new Image('new' new Image('new Image('new Image('new Image'new(path('new Image('new Image.new Image'new Image('new Image('new Image('new Image('create'new Image('new Image'new Image('new 'new Image('new Game'new'new Image'new Image('new Image('new Image 'newImage {
-new 'new0('create('new Image'new Image('new Image('new Image('new Image('new0 '20 'new Image('new Image('new Game.new Image('new Image('new Image('new Image('new'new Image' -> new Image('new' new 'new Image('new Image('new'new Gameover'new Image('new'newImage('new Game.new0('new Image'new'new G('new Game('new Image('new 'new Image('create'new Image('new'new Image('new 'new0('new 'new Image'new Image('new Image'new Image('new Image'new Image'new'new Image('new 'new'new Image('new 'new Image'new'newImage('create'new Image('new Image'new 'new Image('new 'new Image'new 'new'new Image('new Image('new 'new Image('new 'new Image('new Image('new'new Image('new Game('new Image'new'new'new Image new'new'new Image('new Image('new'new Image('new Image'new'new Image('new'new Image.new Image('new 'new''new Image('create'new 'new Image('new'newImage('new Image new Image('new 'new Image('new Phaser('new Image('new Image.new Image('new Image('new Image('new Image('new Image('new Image('new'new Image('new Image('new Image new Game('new Image('new'new Image('new 'new 'new Image'new Image('new Image'    create('new Image('new Image('new Image('new0('new Image('new 'new Image('new Menu'new Image('create('new Game'new Image'new 'new Game('new Game('new Image('new'new'у'new 'new Image('new 'new Game('newImage('new Image'new Image('new Game.newImage('new 'new'new'new'new 'new Image('new Image.new Image'new Image('newImage('new 'new Image'new Image('new Image('newImage.new 'new Image('new Image('new new 'new Image('new'new Image('new Image('new Image('new'new Image('new'new'new 'new Image('new'new 'new Image('new 'new 'new 'new Image('new Image new new Image('new 'new 'newImage('newимен('new Image('new 'new Image('new 'new Image('create('new Image('new Image('new Image('new Image('new Image('new Game('create()е
- new 'newт new Image('create() {
- new Gamenew Image('new Game('new Image('new'new'new Image('create'new Image('new Image('new Image('new Image('new Image'new 'new'new Image('new 'new Image new 'new Image('new Image('new Image
+        document.getElementById('start-battle').addEventListener('click', () => {
+            game.resetGame();
+            game.startBattle();
+        });
+    </script>
+</body>
+</html>
