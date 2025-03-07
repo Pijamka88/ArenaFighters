@@ -1,211 +1,271 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Cat Chaos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chaos Fighter</title>
     <style>
-        #menu {
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #f0f0f0;
+        }
+
+        #app {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #f0f0f0;
-            opacity: 0.9;
+            min-height: 100vh;
         }
-        #gameCanvas {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
+
+        .interface {
             width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .health-bar, .energy-bar {
+            width: 100%;
+            height: 20px;
+            background: #eee;
+            margin: 10px 0;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        .health-bar .bar {
             height: 100%;
+            background: green;
+        }
+
+        .energy-bar .bar {
+            height: 100%;
+            background: blue;
+        }
+
+        .battle-log {
+            width: 100%;
+            height: 200px;
+            overflow-y: auto;
+            margin: 20px 0;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        .log {
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .log p {
+            margin: 5px 0;
+        }
+
+        .log p.player { color: green; }
+        .log p.enemy { color: red; }
+        .log p.system { color: blue; font-weight: bold; }
+
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 20px;
+            margin: 5px;
+            width: 100%;
+            max-width: 300px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .characters {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .player-character, .enemy-character {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+        }
+
+        .player-character { background: green; }
+        .enemy-character { background: red; }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .attack-animation {
+            animation: pulse 0.5s;
         }
     </style>
 </head>
 <body>
-    <div id="menu">
-        <h1>Cat Chaos</h1>
-        <button onclick="startGame()">Начать игру</button>
+    <div id="app">
+        <div class="interface">
+            <div class="health-bar">
+                <div class="bar player-health" style="width: 100%"></div>
+            </div>
+            <div class="energy-bar">
+                <div class="bar player-energy" style="width: 100%"></div>
+            </div>
+            <div class="characters">
+                <div class="player-character"></div>
+                <div class="enemy-character"></div>
+            </div>
+            <div class="battle-log">
+                <div class="log"></div>
+            </div>
+            <div class="buttons">
+                <button id="start-button">Начать игру</button>
+            </div>
+        </div>
     </div>
-    <canvas id="gameCanvas"></canvas>
+
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        let isMenu = true;
-        let player;
-        let enemies = [];
-        let score = 0;
-        let level = 1;
-        let enemyTimer = 0;
-        const enemySpawnInterval = 100;
-        const keys = {};
+        let player = {
+            level: 1,
+            health: 100,
+            maxHealth: 100,
+            attack: 10,
+            energy: 50,
+            maxEnergy: 50,
+            specialCD: 0
+        };
 
-        document.addEventListener('keydown', (e) => {
-            keys[e.key] = true;
-        });
-        document.addEventListener('keyup', (e) => {
-            keys[e.key] = false;
-        });
+        let currentEnemy = null;
 
-        function startGame() {
-            isMenu = false;
-            document.getElementById('menu').style.display = 'none';
-            canvas.style.display = 'block';
-            initGame();
-            gameLoop();
-        }
+        const log = document.querySelector('.log');
 
-        function initGame() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            player = {
-                x: canvas.width / 2,
-                y: canvas.height / 2,
-                size: 50,
-                speed: 3,
-                dx: 0,
-                dy: 0
+        function generateEnemy() {
+            return {
+                level: player.level,
+                health: 100 + player.level * 20,
+                attack: 10 + player.level * 5
             };
-            enemies = [];
-            score = 0;
-            level = 1;
-            enemyTimer = 0;
         }
 
-        function gameLoop() {
-            update();
-            draw();
-            requestAnimationFrame(gameLoop);
+        function updateBars() {
+            document.querySelector('.player-health').style.width = (player.health / player.maxHealth * 100) + '%';
+            document.querySelector('.player-energy').style.width = (player.energy / player.maxEnergy * 100) + '%';
         }
 
-        function update() {
-            // Обновление игрока
-            player.dx = 0;
-            player.dy = 0;
-            if (keys['ArrowUp'] || keys['w']) player.dy = -player.speed;
-            if (keys['ArrowDown'] || keys['s']) player.dy = player.speed;
-            if (keys['ArrowLeft'] || keys['a']) player.dx = -player.speed;
-            if (keys['ArrowRight'] || keys['d']) player.dx = player.speed;
+        function logMessage(text, type = 'system') {
+            const msg = document.createElement('p');
+            msg.textContent = text;
+            msg.className = type;
+            log.appendChild(msg);
+            log.scrollTop = log.scrollHeight;
+        }
 
-            player.x += player.dx;
-            player.y += player.dy;
+        function showAttackButtons() {
+            const buttons = document.querySelector('.buttons');
+            buttons.innerHTML = `
+                <button id="normal-attack">Обычная атака</button>
+                <button id="special-attack" ${player.energy < 20 || player.specialCD > 0 ? 'disabled' : ''}>Специальная атака</button>
+            `;
 
-            // Ограничение перемещения
-            if (player.x < player.size/2) player.x = player.size/2;
-            if (player.x > canvas.width - player.size/2) player.x = canvas.width - player.size/2;
-            if (player.y < player.size/2) player.y = player.size/2;
-            if (player.y > canvas.height - player.size/2) player.y = canvas.height - player.size/2;
+            document.getElementById('normal-attack').addEventListener('click', () => performAttack('normal'));
+            document.getElementById('special-attack').addEventListener('click', () => performAttack('special'));
+        }
 
-            // Обновление противников
-            enemies.forEach(enemy => {
-                const dx = player.x - enemy.x;
-                const dy = player.y - enemy.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance > 0) {
-                    const speedX = (dx / distance) * enemy.speed;
-                    const speedY = (dy / distance) * enemy.speed;
-                    enemy.x += speedX;
-                    enemy.y += speedY;
-                }
-            });
+        function performAttack(type) {
+            if (type === 'special' && (player.energy < 20 || player.specialCD > 0)) return;
 
-            // Проверка столкновений
-            const playerRadius = player.size / 2;
-            enemies = enemies.filter(enemy => {
-                const dx = player.x - enemy.x;
-                const dy = player.y - enemy.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance <= playerRadius + enemy.size / 2) {
-                    gameOver();
-                    return false;
-                }
-                return true;
-            });
-
-            // Генерация противников
-            enemyTimer++;
-            if (enemyTimer >= enemySpawnInterval) {
-                createEnemy();
-                enemyTimer = 0;
+            if (type === 'special') {
+                player.energy -= 20;
+                player.specialCD = 3;
             }
-        }
 
-        function createEnemy() {
-            const enemy = {
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                size: 30,
-                speed: 1 + level * 0.5,
-                health: 1
-            };
-            enemies.push(enemy);
-        }
+            const damage = type === 'normal' ? player.attack : player.attack * 2;
+            currentEnemy.health -= damage;
 
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
+            logMessage(`Вы нанесли ${damage} урона!`, 'player');
+            document.querySelector('.player-character').classList.add('attack-animation');
+            setTimeout(() => document.querySelector('.player-character').classList.remove('attack-animation'), 500);
 
-            for (let i = enemies.length - 1; i >= 0; i--) {
-                const enemy = enemies[i];
-                const dx = mouseX - enemy.x;
-                const dy = mouseY - enemy.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-                if (distance < enemy.size / 2) {
-                    enemies.splice(i, 1);
-                    score += 10;
-                    if (score >= 100 * level) levelUp();
-                    break;
-                }
+            updateBars();
+
+            if (currentEnemy.health <= 0) {
+                endBattle('victory');
+                return;
             }
-        });
+
+            setTimeout(() => {
+                const enemyDamage = currentEnemy.attack;
+                player.health -= enemyDamage;
+                logMessage(`Враг нанес ${enemyDamage} урона!`, 'enemy');
+                document.querySelector('.enemy-character').classList.add('attack-animation');
+                setTimeout(() => document.querySelector('.enemy-character').classList.remove('attack-animation'), 500);
+
+                updateBars();
+
+                if (player.health <= 0) {
+                    endBattle('defeat');
+                    return;
+                }
+
+                showAttackButtons();
+                player.specialCD--;
+            }, 1000);
+        }
+
+        function startBattle() {
+            currentEnemy = generateEnemy();
+            logMessage('Начало боя!', 'system');
+            showAttackButtons();
+        }
+
+        function endBattle(result) {
+            if (result === 'victory') {
+                logMessage('Победа! Вы получили новый уровень!', 'system');
+                levelUp();
+            } else {
+                logMessage('Поражение! Игра окончена.', 'system');
+            }
+
+            resetUI();
+        }
 
         function levelUp() {
-            level++;
-            score = 0;
-            enemies = [];
+            player.level++;
+            player.maxHealth += 20;
+            player.health = player.maxHealth;
+            player.attack += 5;
+            player.maxEnergy += 10;
+            player.energy = player.maxEnergy;
+            logMessage(`Уровень ${player.level}!`, 'system');
         }
 
-        function gameOver() {
-            isMenu = true;
-            document.getElementById('menu').style.display = 'block';
-            canvas.style.display = 'none';
-            score = 0;
-            level = 1;
+        function resetUI() {
+            document.querySelector('.buttons').innerHTML = '<button id="start-button">Начать новый бой</button>';
+            document.getElementById('start-button').addEventListener('click', startBattle);
+            document.querySelector('.log').innerHTML = '';
         }
 
-        function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        document.getElementById('start-button').addEventListener('click', startBattle);
 
-            // Игрок
-            ctx.fillStyle = 'green';
-            ctx.beginPath();
-            ctx.arc(player.x, player.y, player.size / 2, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Противники
-            ctx.fillStyle = 'red';
-            enemies.forEach(enemy => {
-                ctx.beginPath();
-                ctx.arc(enemy.x, enemy.y, enemy.size / 2, 0, Math.PI * 2);
-                ctx.fill();
-            });
-
-            // Текст
-            ctx.fillStyle = 'white';
-            ctx.font = '20px Arial';
-            ctx.fillText(`Счет: ${score}`, 10, 30);
-            ctx.fillText(`Уровень: ${level}`, 10, 60);
-        }
-
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
+        setInterval(() => {
+            if (player.energy < player.maxEnergy) player.energy++;
+            if (player.specialCD > 0) player.specialCD--;
+            updateBars();
+        }, 1000);
     </script>
 </body>
 </html>
