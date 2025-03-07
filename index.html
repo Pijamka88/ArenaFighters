@@ -2,286 +2,161 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chaos Fighters</title>
+    <title>Chaos Battle</title>
     <style>
-        body {
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: #282c34;
-            color: white;
-            font-family: Arial, sans-serif;
-        }
-        #menu {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-            padding: 20px;
-            background: rgba(0,0,0,0.8);
-            border-radius: 8px;
-        }
-        #menu button {
-            padding: 10px 20px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        #battleContainer {
-            position: relative;
-            width: 600px;
-            height: 400px;
-        }
-        #battleCanvas {
-            border: 1px solid white;
-        }
-        #interface {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 10px;
-            background: rgba(0,0,0,0.5);
-        }
-        #log {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 300px;
-            height: 400px;
-            overflow-y: auto;
-            padding: 10px;
-            background: rgba(0,0,0,0.5);
-        }
-        #upgradeMenu {
-            display: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.8);
-            padding: 20px;
-            border-radius: 8px;
-        }
-        .log-entry {
-            margin: 5px 0;
-        }
+        body { font-family: Arial; margin: 0; padding: 0; background: #1a1a1a; }
+        .menu { padding: 20px; text-align: center; }
+        .menu button { padding: 10px 20px; margin: 5px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        #gameArea { display: none; padding: 20px; }
+        #playerInfo, #enemyInfo { margin: 10px; padding: 10px; background: #2c2c2c; color: white; border-radius: 5px; }
+        #log { margin: 10px; padding: 10px; background: #333; color: white; min-height: 100px; overflow-y: auto; }
+        .damage { color: red; }
+        .heal { color: green; }
+        #statsModal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #333; padding: 20px; border-radius: 5px; }
+        #statsModal button { margin: 5px; }
     </style>
 </head>
 <body>
-<div id="menu">
-    <h1>Chaos Fighters</h1>
-    <button onclick="startGame()">Начать игру</button>
-    <button onclick="showUpgrades()">Прокачка</button>
-</div>
-
-<div id="battleContainer">
-    <canvas id="battleCanvas" width="600" height="400"></canvas>
-    <div id="interface">
-        <div>Жизни: <span id="playerHp">100</span></div>
-        <div>Броня: <span id="playerArmor">10</span></div>
-        <div>Опыт: <span id="playerExp">0</span></div>
+    <div class="menu">
+        <button onclick="startGame()">Начать бой</button>
+        <button onclick="showStats()">Прокачка</button>
     </div>
-    <div id="log"></div>
-</div>
 
-<div id="upgradeMenu">
-    <h2>Прокачка</h2>
-    <button onclick="upgradeHealth()">+10 к здоровью (100 exp)</button>
-    <button onclick="upgradeArmor()">+2 к броне (100 exp)</button>
-    <button onclick="closeUpgrade()">Закрыть</button>
-</div>
+    <div id="gameArea">
+        <div id="playerInfo">Игрок: Жизни: <span id="playerHealth">100</span> | Броня: <span id="playerArmor">10</span></div>
+        <div id="enemyInfo">Бот: Жизни: <span id="enemyHealth">100</span></div>
+        <div id="log"></div>
+        <button onclick="endBattle()">Завершить бой</button>
+    </div>
 
-<script>
-const canvas = document.getElementById('battleCanvas');
-const ctx = canvas.getContext('2d');
+    <div id="statsModal">
+        <h3>Прокачка</h3>
+        <button onclick="upgrade('health')">Жизни (+10)</button>
+        <button onclick="upgrade('armor')">Броня (+5)</button>
+        <button onclick="upgrade('energy')">Энергия (+5)</button>
+    </div>
 
-let player = {
-    x: 50,
-    y: 200,
-    width: 50,
-    height: 50,
-    hp: 100,
-    maxHp: 100,
-    armor: 10,
-    exp: 0,
-    attackPower: 15,
-    speed: 1.5
-};
+    <script>
+        let player = {
+            health: 100,
+            energy: 50,
+            armor: 10,
+            level: 1,
+            exp: 0,
+            points: 0
+        };
 
-let bot = {
-    x: 550,
-    y: 200,
-    width: 50,
-    height: 50,
-    hp: 80,
-    attackPower: 10,
-    speed: 1.2
-};
+        let enemy = {
+            health: 0,
+            attackPower: 0
+        };
 
-let battleRunning = false;
-let particles = [];
-let log = [];
+        let battleInterval;
 
-function updateLog(message) {
-    log.push(message);
-    document.getElementById('log').innerHTML = log.slice(-10).map((msg, i) => 
-        `<div class="log-entry">${msg}</div>`
-    ).join('');
-}
+        function startGame() {
+            resetBattle();
+            const enemyLevel = Math.floor(Math.random() * 3) + 1;
+            enemy.health = 100 + enemyLevel * 10;
+            enemy.attackPower = 20 + enemyLevel * 5;
+            document.getElementById('enemyInfo').innerHTML = `Бот: Жизни: ${enemy.health}`;
+            document.getElementById('gameArea').style.display = 'block';
+            document.querySelector('.menu').style.display = 'none';
+            battleInterval = setInterval(combatRound, 1000);
+        }
 
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+        function combatRound() {
+            if (player.health <= 0 || enemy.health <= 0) return;
 
-    // Рисуем частицы
-    particles.forEach(p => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI*2);
-        ctx.fillStyle = `rgba(255, 0, 0, ${p.alpha})`;
-        ctx.fill();
-        p.radius -= 0.5;
-        p.alpha -= 0.1;
-    });
-    particles = particles.filter(p => p.radius > 0);
+            // Игрок атакует
+            const damage = player.energy - enemy.attackPower/2;
+            if (damage > 0) {
+                enemy.health -= damage;
+                logMessage(`Вы нанесли ${damage} урона!`, 'damage');
+            } else {
+                logMessage('Броня противника поглотила урон!', 'heal');
+            }
 
-    // Игрок
-    ctx.fillStyle = '#1890ff';
-    ctx.fillRect(player.x, player.y, player.width, player.height);
+            // Бот атакует
+            const playerDamage = enemy.attackPower - player.armor;
+            if (playerDamage > 0) {
+                player.health -= playerDamage;
+                logMessage(`Противник нанес ${playerDamage} урона!`, 'damage');
+            } else {
+                logMessage('Ваша броня поглотила атаку!', 'heal');
+            }
 
-    // Бот
-    ctx.fillStyle = '#f5222d';
-    ctx.fillRect(bot.x, bot.y, bot.width, bot.height);
-}
+            updateUI();
+        }
 
-function moveEntities() {
-    // Движение игрока
-    if (player.x < bot.x) player.x += player.speed;
-    else player.x -= player.speed;
+        function updateUI() {
+            document.getElementById('playerHealth').textContent = player.health;
+            document.getElementById('enemyHealth').textContent = enemy.health;
+            document.getElementById('playerArmor').textContent = player.armor;
+        }
 
-    // Движение бота
-    if (bot.x > player.x) bot.x -= bot.speed;
-    else bot.x += bot.speed;
-}
+        function logMessage(text, className) {
+            const log = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.textContent = text;
+            if (className) entry.classList.add(className);
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
 
-function checkCollision() {
-    return (player.x < bot.x + bot.width &&
-            player.x + player.width > bot.x &&
-            player.y < bot.y + bot.height &&
-            player.y + player.height > bot.y);
-}
+        function endBattle() {
+            clearInterval(battleInterval);
+            if (enemy.health <= 0) {
+                logMessage('ПОБЕДА!', 'heal');
+                player.exp += 10;
+                checkLevelUp();
+            } else {
+                logMessage('Поражение...', 'damage');
+            }
+            document.getElementById('gameArea').style.display = 'none';
+            document.querySelector('.menu').style.display = 'block';
+        }
 
-function attack() {
-    if (!checkCollision()) return;
+        function checkLevelUp() {
+            const levels = [50, 150, 300, 500]; // Опыт для уровней
+            while (player.exp >= levels[player.level-1]) {
+                player.level++;
+                player.points++;
+                logMessage(`Уровень повышен до ${player.level}!`, 'heal');
+            }
+        }
 
-    // Атака игрока
-    if (Math.random() < 0.15) {
-        let damage = player.attackPower - bot.armor;
-        bot.hp -= damage > 0 ? damage : 1;
-        particles.push({
-            x: bot.x + 25,
-            y: bot.y + 25,
-            radius: 15,
-            alpha: 0.7
-        });
-        updateLog(`Вы нанесли ${damage} урона`);
-    }
+        function showStats() {
+            if (player.points > 0) {
+                document.getElementById('statsModal').style.display = 'block';
+            } else {
+                alert('Нет доступных очков!');
+            }
+        }
 
-    // Атака бота
-    if (Math.random() < 0.1) {
-        let damage = bot.attackPower - player.armor;
-        player.hp -= damage > 0 ? damage : 1;
-        particles.push({
-            x: player.x + 25,
-            y: player.y + 25,
-            radius: 15,
-            alpha: 0.7
-        });
-        updateLog(`Бот нанес ${damage} урона`);
-    }
-}
+        function upgrade(stat) {
+            if (player.points <= 0) return;
+            switch(stat) {
+                case 'health':
+                    player.health += 10;
+                    player.points--;
+                    break;
+                case 'armor':
+                    player.armor += 5;
+                    player.points--;
+                    break;
+                case 'energy':
+                    player.energy += 5;
+                    player.points--;
+                    break;
+            }
+            updateUI();
+            document.getElementById('statsModal').style.display = 'none';
+        }
 
-function battleLoop() {
-    if (!battleRunning) return;
-
-    moveEntities();
-    attack();
-    
-    draw();
-    
-    if (player.hp <= 0) endBattle(false);
-    else if (bot.hp <= 0) endBattle(true);
-    
-    requestAnimationFrame(battleLoop);
-}
-
-function startGame() {
-    resetBattle();
-    document.getElementById('menu').style.display = 'none';
-    battleRunning = true;
-    requestAnimationFrame(battleLoop);
-}
-
-function resetBattle() {
-    player.hp = player.maxHp;
-    bot.hp = 80;
-    player.x = 50;
-    bot.x = 550;
-    log = [];
-    particles = [];
-    updateInterface();
-}
-
-function endBattle(won) {
-    battleRunning = false;
-    if (won) {
-        player.exp += 100;
-        updateLog('Победа! Получено 100 опыта.');
-        showUpgrades();
-    } else {
-        updateLog('Поражение!');
-    }
-    resetBattle();
-}
-
-function showUpgrades() {
-    document.getElementById('upgradeMenu').style.display = 'flex';
-}
-
-function closeUpgrade() {
-    document.getElementById('upgradeMenu').style.display = 'none';
-}
-
-function upgradeHealth() {
-    if (player.exp >= 100) {
-        player.maxHp += 10;
-        player.exp -= 100;
-        updateInterface();
-        closeUpgrade();
-    }
-}
-
-function upgradeArmor() {
-    if (player.exp >= 100) {
-        player.armor += 2;
-        player.exp -= 100;
-        updateInterface();
-        closeUpgrade();
-    }
-}
-
-function updateInterface() {
-    document.getElementById('playerHp').textContent = player.hp;
-    document.getElementById('playerArmor').textContent = player.armor;
-    document.getElementById('playerExp').textContent = player.exp;
-}
-
-// Инициализация
-updateInterface();
-</script>
+        function resetBattle() {
+            enemy.health = 0;
+            clearInterval(battleInterval);
+        }
+    </script>
 </body>
 </html>
