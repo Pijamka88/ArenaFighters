@@ -3,34 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="telegram:web_app_version" content="1">
     <title>Arena Fighters</title>
     <style>
         body { margin: 0; overflow: hidden; }
         canvas { display: block; }
-        .tg-web-app { width: 100vw; height: 100vh; }
-        .menu-btn { 
+        .menu-btn {
             position: absolute;
-            bottom: 20px;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
-            padding: 15px 30px;
+            transform: translate(-50%, -50%);
+            padding: 20px 40px;
             background: #4CAF50;
             color: white;
             border: none;
             border-radius: 8px;
-            font-size: 18px;
+            font-size: 24px;
             cursor: pointer;
+            margin: 20px 0;
         }
     </style>
 </head>
-<body class="tg-web-app">
+<body>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
     <script>
         const config = {
             type: Phaser.AUTO,
             width: window.innerWidth,
             height: window.innerHeight,
+            parent: 'game-container',
             scene: {
                 preload: preload,
                 create: create,
@@ -41,71 +41,164 @@
                 arcade: {
                     gravity: { y: 0 }
                 }
+            },
+            scale: {
+                mode: Phaser.Scale.FIT,
+                autoCenter: Phaser.Scale.CENTER_BOTH
             }
         };
 
         const game = new Phaser.Game(config);
-        let player, bot, cursors, attackButton;
-        let playerHealth = 100, botHealth = 100;
-        let playerText, botText;
+        let currentScene = 'menu';
+        let selectedCharacter = 'knight';
+        let playerLevel = 1;
+        let playerExp = 0;
+
+        // Спрайты в base64
+        const ASSETS = {
+            knight: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAA...',
+            mage: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAA...',
+            archer: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAA...',
+            attackBtn: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAA...'
+        };
 
         function preload() {
-            this.load.image('knight', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAA...');
-            this.load.image('mage', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAA...');
-            this.load.image('archer', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAA...');
-            this.load.image('button', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAA...');
+            // Загрузка всех необходимых ассетов
+            Object.keys(ASSETS).forEach(key => {
+                this.load.image(key, ASSETS[key]);
+            });
         }
 
         function create() {
-            // Создаем спрайты
-            player = this.physics.add.sprite(200, 300, 'knight');
-            bot = this.physics.add.sprite(600, 300, 'mage');
+            // Начальное меню
+            this.menuText = this.add.text(
+                config.width/2, 
+                100, 
+                'Арена Бойцов', 
+                { font: '48px Arial', fill: '#fff' }
+            ).setOrigin(0.5);
+
+            // Кнопки меню
+            this.playBtn = this.add.text(
+                config.width/2, 
+                300, 
+                'Новая игра', 
+                { font: '32px Arial', fill: '#fff', backgroundColor: '#4CAF50' }
+            ).setInteractive().on('pointerdown', () => showCharacterSelect.call(this));
+
+            this.charBtn = this.add.text(
+                config.width/2, 
+                400, 
+                'Выбор персонажа', 
+                { font: '32px Arial', fill: '#fff', backgroundColor: '#2196F3' }
+            ).setInteractive().on('pointerdown', () => showCharacterSelect.call(this));
+
+            this.levelBtn = this.add.text(
+                config.width/2, 
+                500, 
+                `Уровень: ${playerLevel} (EXP: ${playerExp}/100)`, 
+                { font: '24px Arial', fill: '#fff' }
+            );
+        }
+
+        function showCharacterSelect() {
+            this.scene.stop();
+            currentScene = 'characterSelect';
             
-            // Создаем текстовые поля
-            playerText = this.add.text(20, 20, 'Игрок: 100 HP', { font: '20px Arial', fill: '#fff' });
-            botText = this.add.text(600, 20, 'Бот: 100 HP', { font: '20px Arial', fill: '#fff' });
+            // Очистка экрана
+            this.children.removeAll();
+            
+            // Создание экрана выбора
+            this.add.text(config.width/2, 50, 'Выберите героя', { font: '36px Arial', fill: '#fff' }).setOrigin(0.5);
+            
+            // Кнопки персонажей
+            const chars = ['knight', 'mage', 'archer'];
+            chars.forEach((char, index) => {
+                const btn = this.add.image(
+                    config.width/2, 
+                    200 + index*150, 
+                    char
+                ).setScale(0.5).setInteractive();
+                
+                btn.on('pointerdown', () => {
+                    selectedCharacter = char;
+                    this.levelBtn.setText(`Уровень: ${playerLevel} (EXP: ${playerExp}/100)`);
+                    startBattle.call(this);
+                });
+            });
+        }
+
+        function startBattle() {
+            this.scene.stop();
+            currentScene = 'battle';
+            
+            // Инициализация персонажей
+            const player = this.physics.add.sprite(200, 300, selectedCharacter);
+            const bot = this.physics.add.sprite(600, 300, 'mage');
+            
+            // Текстовые поля
+            this.playerText = this.add.text(20, 20, `HP: 100`, { font: '24px Arial', fill: '#fff' });
+            this.botText = this.add.text(600, 20, `HP: 100`, { font: '24px Arial', fill: '#fff' });
+            this.levelText = this.add.text(20, 60, `Lv.${playerLevel}`, { font: '24px Arial', fill: '#fff' });
             
             // Кнопка атаки
-            attackButton = this.add.text(config.width/2, config.height - 50, 'Атаковать', {
-                font: '24px Arial',
-                fill: '#fff',
-                backgroundColor: '#4CAF50',
-                padding: { x: 20, y: 10 }
-            }).setInteractive().on('pointerdown', attack);
+            this.attackBtn = this.add.text(
+                config.width/2, 
+                config.height - 100, 
+                'Атаковать', 
+                { font: '32px Arial', fill: '#fff', backgroundColor: '#f44336' }
+            ).setInteractive().on('pointerdown', () => performAttack.call(this, player, bot));
         }
 
-        function attack() {
-            if (playerHealth <= 0 || botHealth <= 0) return;
-            
-            // Атака игрока
-            const damage = Math.floor(Math.random() * 15) + 10;
-            botHealth = Math.max(botHealth - damage, 0);
-            botText.setText(`Бот: ${botHealth} HP`);
-            
+        function performAttack(player, bot) {
+            // Анимация атаки игрока
+            this.tweens.add({
+                targets: player,
+                x: '+=' + (selectedCharacter === 'archer' ? 50 : 100),
+                duration: 200,
+                yoyo: true,
+                ease: 'Power1',
+                onComplete: () => {
+                    const damage = calculateDamage(playerLevel);
+                    bot.health = Math.max(bot.health - damage, 0);
+                    this.botText.setText(`HP: ${bot.health}`);
+                    
+                    // Проверка победы
+                    if (bot.health <= 0) {
+                        playerExp += 30;
+                        if (playerExp >= 100) {
+                            playerLevel++;
+                            playerExp = 0;
+                        }
+                        returnToMenu.call(this, 'Победа!');
+                    }
+                }
+            });
+
             // Атака бота
-            const botDamage = Math.floor(Math.random() * 10) + 5;
-            playerHealth = Math.max(playerHealth - botDamage, 0);
-            playerText.setText(`Игрок: ${playerHealth} HP`);
+            this.time.delayedCall(500, () => {
+                const botDamage = Math.floor(Math.random() * 10) + 5;
+                player.health = Math.max(player.health - botDamage, 0);
+                this.playerText.setText(`HP: ${player.health}`);
+                
+                if (player.health <= 0) {
+                    returnToMenu.call(this, 'Поражение!');
+                }
+            });
+        }
+
+        function calculateDamage(level) {
+            return Math.floor(Math.random() * 15) + 10 + (level * 3);
+        }
+
+        function returnToMenu(result) {
+            this.scene.stop();
+            currentScene = 'menu';
             
-            checkWinner();
-        }
-
-        function checkWinner() {
-            if (playerHealth <= 0) {
-                alert('Вы проиграли!');
-                resetGame();
-            }
-            if (botHealth <= 0) {
-                alert('Вы победили!');
-                resetGame();
-            }
-        }
-
-        function resetGame() {
-            playerHealth = 100;
-            botHealth = 100;
-            playerText.setText('Игрок: 100 HP');
-            botText.setText('Бот: 100 HP');
+            // Очистка и показ меню
+            this.children.removeAll();
+            this.add.text(config.width/2, 200, result, { font: '48px Arial', fill: '#fff' }).setOrigin(0.5);
+            this.time.delayedCall(2000, () => create.call(this));
         }
 
         function update() {
