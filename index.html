@@ -1,247 +1,141 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chaos Arena</title>
     <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #282c34;
-        }
-
-        #menu {
-            display: flex;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 5px;
-            font-size: 16px;
-        }
-
-        #arena {
-            position: relative;
-            width: 100%;
-            height: 400px;
-            background: #333;
-            border: 2px solid #555;
-        }
-
-        .fighter {
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            background: red;
-            transition: transform 0.2s;
-        }
-
-        #player {
-            left: 50px;
-            top: 150px;
-            background-image: url('player.png');
-        }
-
-        #enemy {
-            right: 50px;
-            top: 150px;
-            background-image: url('enemy.png');
-        }
-
-        #status {
-            padding: 10px;
-            color: white;
-            background: #222;
-        }
-
-        .bar {
-            height: 20px;
-            background: #555;
-            margin: 5px 0;
-        }
-
-        .health {
-            background: #f44336;
-        }
-
-        .energy {
-            background: #2196F3;
-        }
-
-        #statsModal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            text-align: center;
-            padding: 20px;
-        }
-
-        #characterSheet {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            max-width: 300px;
-            margin: 100px auto;
-        }
+        body { font-family: Arial; margin: 0; padding: 0; }
+        #menu { position: fixed; top: 10px; right: 10px; }
+        #arena { width: 600px; height: 400px; background: #f0f0f0; margin: 20px auto; }
+        #battleCanvas { width: 100%; height: 100%; }
+        #interface { position: fixed; bottom: 10px; left: 10px; }
+        .progress-bar { height: 20px; background: #ddd; border-radius: 5px; }
+        .progress-bar div { height: 100%; background: #4CAF50; transition: width 0.3s; }
     </style>
 </head>
 <body>
     <div id="menu">
-        <button class="btn" onclick="startFight()">Начать бой</button>
-        <button class="btn" onclick="showStats()">Характеристики</button>
+        <button onclick="startBattle()">Начать бой</button>
+        <button onclick="showStats()">Характеристики</button>
     </div>
 
     <div id="arena">
-        <div id="player" class="fighter"></div>
-        <div id="enemy" class="fighter"></div>
+        <canvas id="battleCanvas" width="600" height="400"></canvas>
     </div>
 
-    <div id="status">
-        <div>Уровень: <span id="level">1</span></div>
-        <div>Ход: <span id="turn">0</span></div>
-        <div class="bar health" id="healthBar"></div>
-        <div class="bar energy" id="energyBar"></div>
-        <div id="combatLog"></div>
-    </div>
-
-    <div id="statsModal">
-        <div id="characterSheet">
-            <h3>Характеристики</h3>
-            <p>Уровень: <span id="modalLevel"></span></p>
-            <p>Здоровье: <span id="modalHealth"></span></p>
-            <p>Энергия: <span id="modalEnergy"></span></p>
-            <p>Опыт: <span id="modalExp"></span></p>
-            <button class="btn" onclick="hideStats()">Закрыть</button>
+    <div id="interface">
+        <div id="healthBars">
+            <div class="progress-bar">
+                <div id="playerHP" style="width: 100%"></div>
+            </div>
+            <div class="progress-bar">
+                <div id="enemyHP" style="width: 100%"></div>
+            </div>
+        </div>
+        <div id="battleInfo">
+            <p>Уровень: <span id="playerLevel">1</span></p>
+            <p>Опыт: <span id="exp">0</span></p>
+            <p>Ход боя: <span id="turn">0</span></p>
         </div>
     </div>
 
-<script>
-class Character {
-    constructor(name, level=1, maxHealth=100, energy=50, exp=0) {
-        this.name = name;
-        this.level = level;
-        this.maxHealth = maxHealth;
-        this.currentHealth = maxHealth;
-        this.energy = energy;
-        this.exp = exp;
-    }
-}
-
-const player = new Character('Герой');
-const enemy = new Character('Враг');
-
-let turn = 0;
-let isFighting = false;
-
-function startFight() {
-    if (isFighting) return;
-
-    isFighting = true;
-    turn = 0;
-    const enemyLevel = player.level;
-    enemy.maxHealth = 80 + enemyLevel * 10;
-    enemy.currentHealth = enemy.maxHealth;
-    enemy.attackPower = 10 + enemyLevel * 2;
-
-    updateBars();
-    updateStatus();
-
-    const fightInterval = setInterval(() => {
-        if (!isFighting) return clearInterval(fightInterval);
-        
-        turn++;
-        const playerDamage = Math.floor(Math.random() * (5 + player.level * 2));
-        const enemyDamage = Math.floor(Math.random() * (4 + enemy.level));
-
-        enemy.currentHealth -= playerDamage;
-        player.currentHealth -= enemyDamage;
-
-        updateBars();
-        updateLog(`Ты нанес ${playerDamage} урона`);
-        updateLog(`Враг атаковал на ${enemyDamage}`);
-
-        if (enemy.currentHealth <= 0 || player.currentHealth <= 0) {
-            clearInterval(fightInterval);
-            isFighting = false;
-            endFight();
+    <script>
+        class Character {
+            constructor(name, level, maxHP, attack, defense, energy) {
+                this.name = name
+                this.level = level
+                this.maxHP = maxHP
+                this.currentHP = maxHP
+                this.attack = attack
+                this.defense = defense
+                this.energy = energy
+            }
         }
-    }, 1500);
-}
 
-function endFight() {
-    if (player.currentHealth > 0) {
-        player.exp += enemy.level * 10;
-        updateLog('Победа! Получено опыта: ' + (enemy.level * 10));
-        levelUp();
-    } else {
-        updateLog('Поражение!');
-    }
+        let player = new Character("Герой", 1, 100, 10, 5, 100)
+        let currentEnemy
+        let isBattleActive = false
+        let turnCount = 0
+        const canvas = document.getElementById('battleCanvas')
+        const ctx = canvas.getContext('2d')
 
-    resetStats();
-}
+        function startBattle() {
+            if (isBattleActive) return
+            currentEnemy = new Character("Бот", player.level, 80 + player.level*10, 8 + player.level*2, 4 + player.level, 80)
+            isBattleActive = true
+            turnCount = 0
+            updateUI()
+            battleLoop()
+        }
 
-function levelUp() {
-    while (player.exp >= 100 * player.level) {
-        player.level++;
-        player.maxHealth += 20;
-        player.exp -= 100 * (player.level - 1);
-        updateLog('Уровень повышен до ' + player.level);
-    }
-}
+        function battleLoop() {
+            if (!isBattleActive) return
+            turnCount++
+            
+            // Игрок атакует
+            const damage = Math.max(player.attack - currentEnemy.defense, 0)
+            currentEnemy.currentHP -= damage
+            drawAttackAnimation(100, 200, damage)
+            
+            // Проверка победы
+            if (currentEnemy.currentHP <= 0) {
+                endBattle(true)
+                return
+            }
 
-function updateBars() {
-    const healthBar = document.getElementById('healthBar');
-    const energyBar = document.getElementById('energyBar');
-    
-    healthBar.style.width = `${(player.currentHealth / player.maxHealth) * 100}%`;
-    energyBar.style.width = '50%'; // Тут можно добавить логику энергии
-}
+            // Бот атакует
+            const enemyDamage = Math.max(currentEnemy.attack - player.defense, 0)
+            player.currentHP -= enemyDamage
+            drawAttackAnimation(400, 200, enemyDamage)
+            
+            // Проверка поражения
+            if (player.currentHP <= 0) {
+                endBattle(false)
+                return
+            }
 
-function updateStatus() {
-    document.getElementById('level').textContent = player.level;
-    document.getElementById('turn').textContent = turn;
-}
+            updateUI()
+            setTimeout(battleLoop, 1000)
+        }
 
-function updateLog(text) {
-    const log = document.getElementById('combatLog');
-    log.textContent = text;
-    setTimeout(() => log.textContent = '', 1500);
-}
+        function endBattle(won) {
+            isBattleActive = false
+            if (won) {
+                player.exp += 50 + player.level*10
+                if (player.exp >= 100) {
+                    player.level++
+                    player.exp -= 100
+                }
+            }
+            currentEnemy = null
+            updateUI()
+        }
 
-function resetStats() {
-    player.currentHealth = player.maxHealth;
-    enemy.currentHealth = enemy.maxHealth;
-    updateBars();
-}
+        function updateUI() {
+            document.getElementById('playerHP').style.width = (player.currentHP/player.maxHP)*100 + '%'
+            document.getElementById('enemyHP').style.width = (currentEnemy?.currentHP/currentEnemy?.maxHP || 100)*100 + '%'
+            document.getElementById('playerLevel').innerText = player.level
+            document.getElementById('exp').innerText = player.exp
+            document.getElementById('turn').innerText = turnCount
+        }
 
-function showStats() {
-    document.getElementById('statsModal').style.display = 'block';
-    document.getElementById('modalLevel').textContent = player.level;
-    document.getElementById('modalHealth').textContent = player.currentHealth + '/' + player.maxHealth;
-    document.getElementById('modalEnergy').textContent = player.energy;
-    document.getElementById('modalExp').textContent = player.exp;
-}
+        function drawAttackAnimation(x, y, damage) {
+            ctx.fillStyle = '#ff0000';
+            ctx.beginPath();
+            ctx.arc(x, y, 20, 0, Math.PI*2);
+            ctx.fill();
+            setTimeout(() => ctx.clearRect(x-25, y-25, 50, 50), 200);
+        }
 
-function hideStats() {
-    document.getElementById('statsModal').style.display = 'none';
-}
-
-// Инициализация
-document.addEventListener('DOMContentLoaded', () => {
-    updateBars();
-});
-</script>
+        function showStats() {
+            alert(`
+                Уровень: ${player.level}
+                Здоровье: ${player.currentHP}/${player.maxHP}
+                Атака: ${player.attack}
+                Защита: ${player.defense}
+                Энергия: ${player.energy}
+                Опыт: ${player.exp}
+            `)
+        }
+    </script>
 </body>
 </html>
