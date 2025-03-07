@@ -1,361 +1,247 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Arena Battle Pro</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <title>Chaos Arena</title>
     <style>
-        /* Основные стили */
         body {
-            background: #1a1a1a;
-            color: white;
-            font-family: 'Arial', sans-serif;
             margin: 0;
-            padding: 0;
-            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background: #282c34;
         }
 
-        /* Контейнер арены */
-        .arena-container {
+        #menu {
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 16px;
+        }
+
+        #arena {
             position: relative;
             width: 100%;
-            height: 70vh;
-            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==');
-            overflow: hidden;
+            height: 400px;
+            background: #333;
+            border: 2px solid #555;
         }
 
-        /* Персонажи */
-        .character {
+        .fighter {
             position: absolute;
-            width: 80px;
+            width: 100px;
             height: 100px;
-            bottom: 50px;
-            background-size: contain;
-            background-repeat: no-repeat;
-            transition: all 0.3s;
+            background: red;
+            transition: transform 0.2s;
         }
 
         #player {
-            left: 20%;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%233498db" d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>');
-            filter: drop-shadow(0 0 10px #3498db);
+            left: 50px;
+            top: 150px;
+            background-image: url('player.png');
         }
 
-        .enemy {
-            right: 20%;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23e74c3c" d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>');
-            filter: drop-shadow(0 0 10px #e74c3c);
-            transform: scaleX(-1);
+        #enemy {
+            right: 50px;
+            top: 150px;
+            background-image: url('enemy.png');
         }
 
-        /* Панели статусов */
-        .status-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0,0,0,0.8);
+        #status {
             padding: 10px;
-            display: flex;
-            justify-content: space-around;
+            color: white;
+            background: #222;
         }
 
-        .health-container {
-            width: 200px;
-            position: relative;
-        }
-
-        .health-bar {
+        .bar {
             height: 20px;
-            background: #444;
-            border-radius: 10px;
-            overflow: hidden;
-            position: relative;
+            background: #555;
+            margin: 5px 0;
         }
 
-        .health-fill {
-            height: 100%;
-            transition: width 0.3s ease;
+        .health {
+            background: #f44336;
         }
 
-        .player-health { background: #2ecc71; }
-        .enemy-health { background: #e74c3c; }
-
-        .abilities {
-            display: flex;
-            gap: 10px;
+        .energy {
+            background: #2196F3;
         }
 
-        .ability-icon {
-            width: 40px;
-            height: 40px;
-            background: #2980b9;
-            border-radius: 8px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .cooldown-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0,0,0,0.7);
-            transition: height 0.3s;
-        }
-
-        /* Статистика боя */
-        .battle-stats {
+        #statsModal {
             position: fixed;
-            top: 10px;
-            right: 10px;
-            background: rgba(0,0,0,0.7);
-            padding: 15px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #characterSheet {
+            background: white;
+            padding: 20px;
             border-radius: 8px;
-            width: 200px;
-        }
-
-        /* Эффекты атак */
-        .attack-effect {
-            position: absolute;
-            pointer-events: none;
-            animation: attackEffect 0.6s ease-out;
-        }
-
-        @keyframes attackEffect {
-            0% { opacity: 1; transform: scale(0); }
-            50% { opacity: 1; transform: scale(1); }
-            100% { opacity: 0; transform: scale(1.5); }
-        }
-
-        .critical-effect {
-            animation: criticalHit 0.4s;
-        }
-
-        @keyframes criticalHit {
-            0% { filter: brightness(100%); }
-            50% { filter: brightness(300%); }
-            100% { filter: brightness(100%); }
-        }
-
-        .screen-shake {
-            animation: screenShake 0.3s;
-        }
-
-        @keyframes screenShake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
+            max-width: 300px;
+            margin: 100px auto;
         }
     </style>
 </head>
 <body>
-    <div class="arena-container">
-        <div class="character" id="player"></div>
-        <div class="character enemy" id="enemy"></div>
+    <div id="menu">
+        <button class="btn" onclick="startFight()">Начать бой</button>
+        <button class="btn" onclick="showStats()">Характеристики</button>
+    </div>
+
+    <div id="arena">
+        <div id="player" class="fighter"></div>
+        <div id="enemy" class="fighter"></div>
+    </div>
+
+    <div id="status">
+        <div>Уровень: <span id="level">1</span></div>
+        <div>Ход: <span id="turn">0</span></div>
+        <div class="bar health" id="healthBar"></div>
+        <div class="bar energy" id="energyBar"></div>
+        <div id="combatLog"></div>
+    </div>
+
+    <div id="statsModal">
+        <div id="characterSheet">
+            <h3>Характеристики</h3>
+            <p>Уровень: <span id="modalLevel"></span></p>
+            <p>Здоровье: <span id="modalHealth"></span></p>
+            <p>Энергия: <span id="modalEnergy"></span></p>
+            <p>Опыт: <span id="modalExp"></span></p>
+            <button class="btn" onclick="hideStats()">Закрыть</button>
+        </div>
+    </div>
+
+<script>
+class Character {
+    constructor(name, level=1, maxHealth=100, energy=50, exp=0) {
+        this.name = name;
+        this.level = level;
+        this.maxHealth = maxHealth;
+        this.currentHealth = maxHealth;
+        this.energy = energy;
+        this.exp = exp;
+    }
+}
+
+const player = new Character('Герой');
+const enemy = new Character('Враг');
+
+let turn = 0;
+let isFighting = false;
+
+function startFight() {
+    if (isFighting) return;
+
+    isFighting = true;
+    turn = 0;
+    const enemyLevel = player.level;
+    enemy.maxHealth = 80 + enemyLevel * 10;
+    enemy.currentHealth = enemy.maxHealth;
+    enemy.attackPower = 10 + enemyLevel * 2;
+
+    updateBars();
+    updateStatus();
+
+    const fightInterval = setInterval(() => {
+        if (!isFighting) return clearInterval(fightInterval);
         
-        <div class="battle-stats">
-            <h3>Статистика боя</h3>
-            <div>Нанесено урона: <span id="damage-dealt">0</span></div>
-            <div>Получено урона: <span id="damage-taken">0</span></div>
-            <div>Критические удары: <span id="crit-count">0</span></div>
-            <div>Выживание: <span id="survival-rate">100%</span></div>
-        </div>
-    </div>
+        turn++;
+        const playerDamage = Math.floor(Math.random() * (5 + player.level * 2));
+        const enemyDamage = Math.floor(Math.random() * (4 + enemy.level));
 
-    <div class="status-bar">
-        <div class="health-container">
-            <div class="health-bar">
-                <div class="health-fill player-health" style="width: 100%"></div>
-            </div>
-            <div>HP: <span id="player-hp-value">100</span>/100</div>
-        </div>
+        enemy.currentHealth -= playerDamage;
+        player.currentHealth -= enemyDamage;
 
-        <div class="abilities">
-            <div class="ability-icon" data-ability="attack">
-                <div class="cooldown-overlay"></div>
-            </div>
-            <div class="ability-icon" data-ability="shield">
-                <div class="cooldown-overlay"></div>
-            </div>
-        </div>
+        updateBars();
+        updateLog(`Ты нанес ${playerDamage} урона`);
+        updateLog(`Враг атаковал на ${enemyDamage}`);
 
-        <div class="health-container">
-            <div class="health-bar">
-                <div class="health-fill enemy-health" style="width: 100%"></div>
-            </div>
-            <div>HP: <span id="enemy-hp-value">100</span>/100</div>
-        </div>
-    </div>
-
-    <script>
-        class BattleSystem {
-            constructor() {
-                this.stats = {
-                    damageDealt: 0,
-                    damageTaken: 0,
-                    critCount: 0,
-                    startTime: Date.now()
-                };
-                
-                this.player = {
-                    hp: 100,
-                    maxHp: 100,
-                    attack: [15, 25],
-                    critChance: 0.1,
-                    abilities: {
-                        attack: { cooldown: 0 },
-                        shield: { cooldown: 3 }
-                    }
-                };
-
-                this.enemy = {
-                    hp: 150,
-                    maxHp: 150,
-                    attack: [10, 20],
-                    type: 'Демон'
-                };
-
-                this.initEffects();
-                this.updateUI();
-                this.startBattleCycle();
-            }
-
-            initEffects() {
-                this.attackEffects = {
-                    normal: ['#3498db', '#2980b9'],
-                    critical: ['#FFD700', '#FFA500'],
-                    enemy: ['#e74c3c', '#c0392b']
-                };
-            }
-
-            createEffect(x, y, type) {
-                const effect = document.createElement('div');
-                effect.className = 'attack-effect';
-                effect.style.background = `radial-gradient(circle, ${this.attackEffects[type][0]}, ${this.attackEffects[type][1]})`;
-                effect.style.left = `${x}px`;
-                effect.style.top = `${y}px`;
-                document.querySelector('.arena-container').appendChild(effect);
-                setTimeout(() => effect.remove(), 600);
-            }
-
-            attack(source, target) {
-                const isCritical = Math.random() < (source.critChance || 0);
-                let damage = Math.floor(
-                    source.attack[0] + Math.random() * (source.attack[1] - source.attack[0])
-                );
-
-                if(isCritical) {
-                    damage = Math.floor(damage * 1.5);
-                    this.stats.critCount++;
-                    document.querySelector('.arena-container').classList.add('critical-effect');
-                    setTimeout(() => {
-                        document.querySelector('.arena-container').classList.remove('critical-effect');
-                    }, 400);
-                }
-
-                target.hp = Math.max(0, target.hp - damage);
-                this.updateStats(source.type, damage);
-                this.createVisualEffect(target, damage, isCritical);
-                this.updateUI();
-
-                return damage;
-            }
-
-            createVisualEffect(target, damage, isCritical) {
-                const rect = document.getElementById(target.type === 'player' ? 'player' : 'enemy')
-                    .getBoundingClientRect();
-                const x = rect.left + rect.width/2;
-                const y = rect.top + rect.height/2;
-
-                // Эффект удара
-                this.createEffect(x, y, target.type === 'player' ? 'enemy' : 'normal');
-
-                // Текст урона
-                const damageText = document.createElement('div');
-                damageText.style.position = 'absolute';
-                damageText.style.left = `${x}px`;
-                damageText.style.top = `${y}px`;
-                damageText.style.color = isCritical ? '#FFD700' : '#FFFFFF';
-                damageText.textContent = damage;
-                damageText.style.fontWeight = 'bold';
-                damageText.style.animation = 'floatUp 1s ease-out';
-                document.body.appendChild(damageText);
-                setTimeout(() => damageText.remove(), 1000);
-
-                // Эффект тряски экрана
-                if(damage > 25) {
-                    document.body.classList.add('screen-shake');
-                    setTimeout(() => {
-                        document.body.classList.remove('screen-shake');
-                    }, 300);
-                }
-            }
-
-            updateStats(type, damage) {
-                if(type === 'player') {
-                    this.stats.damageDealt += damage;
-                } else {
-                    this.stats.damageTaken += damage;
-                }
-
-                const timePassed = (Date.now() - this.stats.startTime) / 1000;
-                const survivalRate = 100 - Math.floor((this.stats.damageTaken / this.player.maxHp) * 100);
-                document.getElementById('survival-rate').textContent = `${Math.max(0, survivalRate)}%`;
-
-                this.updateUI();
-            }
-
-            updateUI() {
-                // Обновление HP
-                document.getElementById('player-hp-value').textContent = this.player.hp;
-                document.querySelector('.player-health').style.width = 
-                    `${(this.player.hp / this.player.maxHp) * 100}%`;
-
-                document.getElementById('enemy-hp-value').textContent = this.enemy.hp;
-                document.querySelector('.enemy-health').style.width = 
-                    `${(this.enemy.hp / this.enemy.maxHp) * 100}%`;
-
-                // Обновление статистики
-                document.getElementById('damage-dealt').textContent = this.stats.damageDealt;
-                document.getElementById('damage-taken').textContent = this.stats.damageTaken;
-                document.getElementById('crit-count').textContent = this.stats.critCount;
-            }
-
-            startBattleCycle() {
-                setInterval(() => {
-                    if(this.player.hp > 0 && this.enemy.hp > 0) {
-                        // Атака игрока
-                        const playerDamage = this.attack(
-                            { attack: this.player.attack, critChance: this.player.critChance, type: 'player' },
-                            this.enemy
-                        );
-
-                        // Ответная атака врага
-                        if(this.enemy.hp > 0) {
-                            setTimeout(() => {
-                                this.attack(
-                                    { attack: this.enemy.attack, type: 'enemy' },
-                                    this.player
-                                );
-                            }, 500);
-                        }
-                    }
-                }, 1500);
-            }
+        if (enemy.currentHealth <= 0 || player.currentHealth <= 0) {
+            clearInterval(fightInterval);
+            isFighting = false;
+            endFight();
         }
+    }, 1500);
+}
 
-        // Инициализация игры
-        const battle = new BattleSystem();
+function endFight() {
+    if (player.currentHealth > 0) {
+        player.exp += enemy.level * 10;
+        updateLog('Победа! Получено опыта: ' + (enemy.level * 10));
+        levelUp();
+    } else {
+        updateLog('Поражение!');
+    }
 
-        // Инициализация Telegram Web App
-        Telegram.WebApp.ready();
-        Telegram.WebApp.expand();
-        Telegram.WebApp.MainButton.show().setParams({
-            text: 'В главное меню',
-            color: '#2980b9'
-        }).onClick(() => window.location.reload());
-    </script>
+    resetStats();
+}
+
+function levelUp() {
+    while (player.exp >= 100 * player.level) {
+        player.level++;
+        player.maxHealth += 20;
+        player.exp -= 100 * (player.level - 1);
+        updateLog('Уровень повышен до ' + player.level);
+    }
+}
+
+function updateBars() {
+    const healthBar = document.getElementById('healthBar');
+    const energyBar = document.getElementById('energyBar');
+    
+    healthBar.style.width = `${(player.currentHealth / player.maxHealth) * 100}%`;
+    energyBar.style.width = '50%'; // Тут можно добавить логику энергии
+}
+
+function updateStatus() {
+    document.getElementById('level').textContent = player.level;
+    document.getElementById('turn').textContent = turn;
+}
+
+function updateLog(text) {
+    const log = document.getElementById('combatLog');
+    log.textContent = text;
+    setTimeout(() => log.textContent = '', 1500);
+}
+
+function resetStats() {
+    player.currentHealth = player.maxHealth;
+    enemy.currentHealth = enemy.maxHealth;
+    updateBars();
+}
+
+function showStats() {
+    document.getElementById('statsModal').style.display = 'block';
+    document.getElementById('modalLevel').textContent = player.level;
+    document.getElementById('modalHealth').textContent = player.currentHealth + '/' + player.maxHealth;
+    document.getElementById('modalEnergy').textContent = player.energy;
+    document.getElementById('modalExp').textContent = player.exp;
+}
+
+function hideStats() {
+    document.getElementById('statsModal').style.display = 'none';
+}
+
+// Инициализация
+document.addEventListener('DOMContentLoaded', () => {
+    updateBars();
+});
+</script>
 </body>
 </html>
