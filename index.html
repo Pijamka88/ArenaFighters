@@ -1,167 +1,298 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>Arena Battle</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ASCII Arena</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { 
-            margin: 0; 
-            font-family: monospace;
-            background: #000;
-            color: #fff;
+        body {
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 50px;
+        }
+
+        .menu-button {
+            padding: 15px 30px;
+            font-size: 18px;
+            background: #2980b9;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .menu-button:hover {
+            transform: scale(1.05);
+        }
+
+        .arena {
+            display: none;
+            width: 100%;
+            max-width: 400px;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .health-bar {
+            width: 100%;
+            height: 20px;
+            background: #444;
+            border-radius: 10px;
             overflow: hidden;
         }
-        .menu-btn {
-            padding: 10px 20px;
-            background: #4CAF50;
-            color: #fff;
-            cursor: pointer;
-            border: none;
-            border-radius: 4px;
-            margin: 5px;
-        }
-        #game-container {
-            display: none;
+
+        .health {
             height: 100%;
-            width: 100%;
+            background: #27ae60;
+            transition: width 0.3s;
+        }
+
+        .battle-info {
+            text-align: center;
+            padding: 10px;
+            background: #2c3e50;
+            border-radius: 8px;
+        }
+
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .action-button {
+            padding: 12px;
+            font-size: 16px;
+            background: #e74c3c;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .status-bar {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            border-radius: 8px;
         }
     </style>
 </head>
 <body>
-    <div id="menu">
-        <h1 style="color: #FFD700; text-align: center; text-shadow: 1px 1px #000">ASCII Arena</h1>
-        <button class="menu-btn" onclick="startGame()">Новая игра</button>
-        <button class="menu-btn" onclick="showCharacterSelect()">Выбор персонажа</button>
-        <div id="level-display" style="position: fixed; bottom: 10px; right: 10px; color: #fff">Уровень: 1</div>
+    <div class="status-bar">
+        Уровень: <span id="player-level">1</span>
     </div>
 
-    <div id="character-select" style="display: none; text-align: center;">
-        <h2 style="color: #FFD700">Выберите персонажа</h2>
-        <button class="menu-btn" onclick="selectCharacter('warrior')">⚔ Воин</button>
-        <button class="menu-btn" onclick="selectCharacter('mage')">✨ Маг</button>
-        <button class="menu-btn" onclick="selectCharacter('rogue')">🗡 Разбойник</button>
-        <button class="menu-btn" onclick="hideCharacterSelect()">Назад</button>
+    <div class="menu" id="main-menu">
+        <button class="menu-button" id="start-battle">Начать бой</button>
+        <button class="menu-button" id="stats-button">Статистика</button>
     </div>
 
-    <div id="game-container">
-        <pre id="game" style="white-space: pre-wrap;"></pre>
+    <div class="arena" id="arena">
+        <div class="battle-info">
+            <div>Противник</div>
+            <div class="health-bar">
+                <div class="health" id="enemy-health" style="width: 100%"></div>
+            </div>
+        </div>
+
+        <div class="battle-info">
+            <div>Игрок</div>
+            <div class="health-bar">
+                <div class="health" id="player-health" style="width: 100%"></div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="action-button" id="attack-button">Атака</button>
+            <button class="action-button" id="defend-button">Защита</button>
+        </div>
     </div>
 
     <script>
-        let selectedChar = 'warrior';
-        let level = 1;
-        let exp = 0;
+        class GameState {
+            constructor() {
+                this.playerLevel = 1;
+                this.exp = 0;
+                this.load();
+            }
 
-        const characters = {
-            warrior: { hp: 150, attack: 25, symbol: '@' },
-            mage: { hp: 100, attack: 40, symbol: '★' },
-            rogue: { hp: 120, attack: 30, symbol: '⚡' }
-        };
+            save() {
+                localStorage.setItem('gameState', JSON.stringify({
+                    playerLevel: this.playerLevel,
+                    exp: this.exp
+                }));
+            }
 
-        function startGame() {
-            document.getElementById('menu').style.display = 'none';
-            document.getElementById('game-container').style.display = 'block';
-            initGame();
+            load() {
+                const saved = localStorage.getItem('gameState');
+                if(saved) {
+                    const data = JSON.parse(saved);
+                    this.playerLevel = data.playerLevel;
+                    this.exp = data.exp;
+                }
+            }
+
+            addExp(amount) {
+                this.exp += amount;
+                while(this.exp >= this.requiredExp()) {
+                    this.exp -= this.requiredExp();
+                    this.playerLevel++;
+                }
+                this.save();
+                this.updateUI();
+            }
+
+            requiredExp() {
+                return this.playerLevel * 100;
+            }
+
+            updateUI() {
+                document.getElementById('player-level').textContent = this.playerLevel;
+            }
         }
 
-        function showCharacterSelect() {
-            document.getElementById('menu').style.display = 'none';
-            document.getElementById('character-select').style.display = 'block';
-        }
+        class BattleSystem {
+            constructor(gameState) {
+                this.gameState = gameState;
+                this.playerHealth = 100;
+                this.enemyHealth = 0;
+                this.isDefending = false;
+            }
 
-        function hideCharacterSelect() {
-            document.getElementById('character-select').style.display = 'none';
-            document.getElementById('menu').style.display = 'block';
-        }
+            startBattle() {
+                this.playerHealth = 100;
+                this.enemyHealth = 50 + (this.gameState.playerLevel * 10);
+                this.isDefending = false;
+                this.updateHealthBars();
+            }
 
-        function selectCharacter(char) {
-            selectedChar = char;
-            hideCharacterSelect();
-        }
+            playerAttack() {
+                const baseDamage = 10 + (this.gameState.playerLevel * 2);
+                const damage = Math.floor(baseDamage * (0.8 + Math.random() * 0.4));
+                this.enemyHealth = Math.max(0, this.enemyHealth - damage);
+                return damage;
+            }
 
-        function initGame() {
-            const game = document.getElementById('game');
-            const player = characters[selectedChar];
-            const enemy = getRandomEnemy();
-            let pHealth = player.hp;
-            let eHealth = enemy.hp;
-            
-            const render = () => {
-                game.textContent = `
-██╗   ██╗███████╗██████╗ ██╗   ██╗
-╚██╗ ██╔╝██╔════╝██╔══██╗╚██╗ ██╔╝
- ╚████╔╝ █████╗  ██████╔╝ ╚████╔╝ 
-  ╚██╔╝  ██╔══╝  ██╔══██╗  ╚██╔╝  
-   ██║   ██║     ██║  ██║   ██║   
-   ╚═╝   ╚═╝     ╚═╝  ╚═╝   ╚═╝   
------------------------------------
-${player.symbol} ${player.name}: ${pHealth}/${player.hp} HP
-${enemy.symbol} ${enemy.name}: ${eHealth}/${enemy.hp} HP
------------------------------------
-1. Атаковать
-2. Защититься
-3. Способность
-                `;
-            };
-
-            const getRandomEnemy = () => {
-                const enemies = [
-                    { name: 'Орк', hp: 100, attack: 20, symbol: '👹' },
-                    { name: 'Лич', hp: 80, attack: 30, symbol: '💀' },
-                    { name: 'Гоблин', hp: 120, attack: 15, symbol: '👺' }
-                ];
-                return enemies[Math.floor(Math.random() * enemies.length)];
-            };
-
-            const handleInput = (choice) => {
-                let damage = Math.floor(player.attack * Math.random() * 1.5);
-                eHealth -= damage;
-                game.textContent += `\n\n${player.symbol} Нанес ${damage} урона!`;
+            enemyAttack() {
+                const baseDamage = 8 + (this.gameState.playerLevel * 1.5);
+                let damage = Math.floor(baseDamage * (0.7 + Math.random() * 0.6));
                 
-                if (eHealth <= 0) {
-                    exp += 20;
-                    if (exp >= 100) {
-                        level++;
-                        exp = 0;
-                        document.getElementById('level-display').textContent = `Уровень: ${level}`;
-                    }
-                    return endGame(true);
+                if(this.isDefending) {
+                    damage = Math.floor(damage * 0.5);
                 }
 
-                let eDamage = Math.floor(enemy.attack * Math.random() * 1.3);
-                pHealth -= eDamage;
-                game.textContent += `\n\n${enemy.symbol} Атакует на ${eDamage} урона!`;
+                this.playerHealth = Math.max(0, this.playerHealth - damage);
+                return damage;
+            }
 
-                if (pHealth <= 0) return endGame(false);
+            checkBattleResult() {
+                if(this.playerHealth <= 0) return 'lose';
+                if(this.enemyHealth <= 0) return 'win';
+                return null;
+            }
 
-                setTimeout(() => render(), 1000);
-            };
-
-            document.addEventListener('keydown', (e) => {
-                if (e.key === '1') handleInput(1);
-            });
-
-            render();
+            updateHealthBars() {
+                document.getElementById('player-health').style.width = 
+                    `${(this.playerHealth / 100) * 100}%`;
+                document.getElementById('enemy-health').style.width = 
+                    `${(this.enemyHealth / (50 + (this.gameState.playerLevel * 10))) * 100}%`;
+            }
         }
 
-        function endGame(win) {
-            const game = document.getElementById('game');
-            game.textContent = `
-${win ? '🎉 ПОБЕДА!' : '💀 ПОРАЖЕНИЕ'}
------------------------------------
-${win ? `Получено опыта: +20` : ''}
-${win ? `Уровень: ${level + (exp >= 80 ? 1 : 0)}` : ''}
-            `;
-            setTimeout(() => resetGame(), 3000);
+        const gameState = new GameState();
+        const battleSystem = new BattleSystem(gameState);
+
+        // Инициализация Telegram Web App
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+
+        // Обработчики событий
+        document.getElementById('start-battle').addEventListener('click', () => {
+            document.getElementById('main-menu').style.display = 'none';
+            document.getElementById('arena').style.display = 'flex';
+            battleSystem.startBattle();
+        });
+
+        document.getElementById('attack-button').addEventListener('click', () => {
+            battleSystem.isDefending = false;
+            const playerDamage = battleSystem.playerAttack();
+            showBattleMessage(`Вы нанесли ${playerDamage} урона!`);
+
+            if(battleSystem.checkBattleResult()) {
+                endBattle();
+                return;
+            }
+
+            setTimeout(() => {
+                const enemyDamage = battleSystem.enemyAttack();
+                showBattleMessage(`Противник нанес ${enemyDamage} урона!`);
+                battleSystem.updateHealthBars();
+
+                if(battleSystem.checkBattleResult()) {
+                    endBattle();
+                }
+            }, 500);
+        });
+
+        document.getElementById('defend-button').addEventListener('click', () => {
+            battleSystem.isDefending = true;
+            showBattleMessage('Вы приготовились к защите!');
+            
+            setTimeout(() => {
+                const enemyDamage = battleSystem.enemyAttack();
+                showBattleMessage(`Противник нанес ${enemyDamage} урона (защита)!`);
+                battleSystem.updateHealthBars();
+
+                if(battleSystem.checkBattleResult()) {
+                    endBattle();
+                }
+            }, 500);
+        });
+
+        function endBattle() {
+            const result = battleSystem.checkBattleResult();
+            if(result === 'win') {
+                const expGained = 20 + (gameState.playerLevel * 5);
+                gameState.addExp(expGained);
+                alert(`Победа! Получено ${expGained} опыта!`);
+            } else {
+                alert('Поражение! Попробуйте снова!');
+            }
+
+            document.getElementById('main-menu').style.display = 'flex';
+            document.getElementById('arena').style.display = 'none';
         }
 
-        function resetGame() {
-            document.getElementById('menu').style.display = 'block';
-            document.getElementById('game-container').style.display = 'none';
-            exp = 0;
-            level = 1;
+        function showBattleMessage(message) {
+            const battleInfo = document.createElement('div');
+            battleInfo.textContent = message;
+            battleInfo.style.color = '#fff';
+            battleInfo.style.textAlign = 'center';
+            battleInfo.style.marginTop = '10px';
+            document.getElementById('arena').appendChild(battleInfo);
+            setTimeout(() => battleInfo.remove(), 2000);
         }
+
+        // Инициализация UI
+        gameState.updateUI();
     </script>
 </body>
 </html>
