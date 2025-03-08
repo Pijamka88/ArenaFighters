@@ -7,296 +7,293 @@
     <style>
         body {
             margin: 0;
-            overflow: hidden;
-            background: linear-gradient(135deg, #1a1a1a, #2d004d);
-            font-family: 'Arial', sans-serif;
+            padding: 0;
+            background: #1a1a1a;
             color: #e0e0e0;
+            font-family: 'Courier New', Courier, monospace;
+            overflow: hidden;
         }
 
         #menu {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             text-align: center;
+            padding-top: 30vh;
         }
 
-        .menu-button {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid #6a00ff;
+        .menu-btn {
+            background: #4a4a4a;
+            border: 2px solid #6a6a6a;
             padding: 15px 30px;
             margin: 10px;
-            border-radius: 10px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: all 0.3s ease;
             font-size: 1.2em;
+            transition: all 0.3s;
         }
 
-        .menu-button:hover {
-            background: rgba(106, 0, 255, 0.3);
-            transform: scale(1.1);
+        .menu-btn:hover {
+            background: #6a6a6a;
+            transform: scale(1.05);
         }
 
-        #game-screen {
+        #game-container {
             display: none;
             position: relative;
-            width: 100vw;
             height: 100vh;
         }
 
         .health-bar {
             position: absolute;
-            top: 20px;
-            width: 30%;
-            height: 30px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 2px solid #ff0000;
-            border-radius: 15px;
+            width: 80%;
+            margin: 20px auto;
+            left: 10%;
         }
 
-        #player-health {
-            left: 20px;
-        }
-
-        #enemy-health {
-            right: 20px;
-        }
-
-        .health-fill {
-            height: 100%;
-            background: linear-gradient(to right, #ff0000, #ff4d00);
-            border-radius: 15px;
+        .health {
+            height: 20px;
+            background: #4CAF50;
             transition: width 0.5s;
-        }
-
-        .character {
-            position: absolute;
-            bottom: 50px;
-            width: 200px;
-            height: 200px;
-            background-size: cover;
-            animation: float 2s infinite ease-in-out;
-        }
-
-        #player {
-            left: 50px;
-            background-image: url('https://i.imgur.com/6QbX6yA.png');
-        }
-
-        #enemy {
-            right: 50px;
-            background-image: url('https://i.imgur.com/3uRfL8n.png');
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
         }
 
         .damage-text {
             position: absolute;
-            color: #ff4d4d;
+            color: red;
             font-weight: bold;
-            font-size: 24px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
             animation: floatUp 1s forwards;
         }
 
         @keyframes floatUp {
-            0% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-50px); }
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-30px); opacity: 0; }
         }
 
-        #upgrade-menu {
-            display: none;
+        .character {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            width: 100px;
+            height: 100px;
+            transition: transform 0.2s;
+        }
+
+        #player {
+            left: 20%;
+            bottom: 20%;
+            background: #2196F3;
+            border-radius: 5px;
+        }
+
+        #enemy {
+            right: 20%;
+            bottom: 20%;
+            background: #f44336;
+            border-radius: 5px;
+        }
+
+        #upgrade-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
             text-align: center;
+            padding-top: 30vh;
         }
 
         .upgrade-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid #00ff99;
-            padding: 10px 20px;
+            background: #6a6a6a;
+            border: 2px solid #8a8a8a;
+            padding: 15px 30px;
             margin: 10px;
-            border-radius: 8px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: all 0.3s ease;
             font-size: 1em;
+            transition: all 0.3s;
         }
 
-        .upgrade-btn:hover {
-            background: rgba(0, 255, 153, 0.3);
-            transform: scale(1.05);
-        }
-
-        #status {
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            font-size: 1.2em;
+        .stat-value {
+            color: #00ff00;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
     <div id="menu">
-        <div class="menu-button" onclick="startGame()">Начать бой</div>
-        <div class="menu-button" onclick="showUpgrades()">Прокачка</div>
+        <h1>CHAOS ARENA</h1>
+        <div class="menu-btn" onclick="startGame()">НАЧАТЬ БОЙ</div>
+        <div class="menu-btn" onclick="showUpgrades()">ПРОКАЧКА</div>
     </div>
 
-    <div id="game-screen">
-        <div id="player-health" class="health-bar">
-            <div class="health-fill" id="player-health-fill"></div>
+    <div id="game-container">
+        <div class="health-bar" id="player-health-bar">
+            <div class="health" style="width: 100%;"></div>
         </div>
-        <div id="enemy-health" class="health-bar">
-            <div class="health-fill" id="enemy-health-fill"></div>
+        <div class="health-bar" id="enemy-health-bar" style="left: 20%;">
+            <div class="health" style="width: 100%;"></div>
         </div>
         
-        <div id="player" class="character"></div>
-        <div id="enemy" class="character"></div>
-        
-        <div id="status"></div>
+        <div class="character" id="player"></div>
+        <div class="character" id="enemy"></div>
     </div>
 
-    <div id="upgrade-menu">
-        <div class="upgrade-btn" onclick="upgrade('attack')">Атака (+1)</div>
-        <div class="upgrade-btn" onclick="upgrade('health')">Жизнь (+10)</div>
-        <div class="upgrade-btn" onclick="upgrade('armor')">Броня (+1)</div>
-        <div class="menu-button" onclick="showMenu()">Назад</div>
+    <div id="upgrade-screen">
+        <h2>Очки прокачки: <span id="upgrade-points">0</span></h2>
+        <div class="upgrade-btn" onclick="upgradeStat('attack')">АТАКА: <span class="stat-value" id="attack-value">1</span></div>
+        <div class="upgrade-btn" onclick="upgradeStat('health')">ЗДОРОВЬЕ: <span class="stat-value" id="health-value">100</span></div>
+        <div class="upgrade-btn" onclick="upgradeStat('armor')">БРОНЯ: <span class="stat-value" id="armor-value">0</span></div>
+        <div class="upgrade-btn" onclick="closeUpgrades()">ПРОДОЛЖИТЬ</div>
     </div>
 
     <script>
-        let player = {
-            level: 1,
-            xp: 0,
-            xpRequired: 10,
-            attack: 5,
-            maxHealth: 100,
-            health: 100,
-            armor: 0,
-            skillPoints: 0
+        const gameState = {
+            player: {
+                level: 1,
+                xp: 0,
+                xpNeeded: 100,
+                attack: 1,
+                maxHealth: 100,
+                currentHealth: 100,
+                armor: 0
+            },
+            enemy: {
+                level: 1,
+                attack: 1,
+                maxHealth: 100,
+                currentHealth: 100,
+                armor: 0
+            },
+            upgrades: {
+                points: 0
+            }
         };
 
-        let enemy = {
-            level: 1,
-            attack: 4,
-            maxHealth: 80,
-            health: 80,
-            armor: 0
-        };
-
-        let gameInterval;
-        const damageTextPool = [];
+        let battleInterval;
+        let isPlayerTurn = true;
 
         function startGame() {
             document.getElementById('menu').style.display = 'none';
-            document.getElementById('game-screen').style.display = 'block';
+            document.getElementById('game-container').style.display = 'block';
+            
             resetBattle();
-            gameLoop();
+            startBattle();
         }
 
         function resetBattle() {
-            enemy.level = player.level;
-            enemy.attack = 4 + Math.floor(player.level * 1.5);
-            enemy.maxHealth = 80 + player.level * 20;
-            enemy.health = enemy.maxHealth;
-            enemy.armor = Math.floor(player.level * 0.5);
+            gameState.enemy.level = gameState.player.level;
+            gameState.enemy.attack = gameState.player.level;
+            gameState.enemy.armor = Math.floor(gameState.player.level * 0.5);
+            gameState.enemy.maxHealth = 100 + (gameState.player.level - 1) * 20;
+            gameState.enemy.currentHealth = gameState.enemy.maxHealth;
             
-            updateUI();
+            updateHealthBar('player');
+            updateHealthBar('enemy');
         }
 
-        function gameLoop() {
-            if (gameInterval) clearInterval(gameInterval);
-            gameInterval = setInterval(() => {
-                playerAttack();
-                if (enemy.health <= 0) endBattle();
-                setTimeout(() => {
-                    enemyAttack();
-                    if (player.health <= 0) endBattle();
-                }, 500);
-            }, 2000);
+        function startBattle() {
+            battleInterval = setInterval(() => {
+                if (isPlayerTurn) {
+                    attack('player', 'enemy');
+                } else {
+                    attack('enemy', 'player');
+                }
+                isPlayerTurn = !isPlayerTurn;
+            }, 1500);
         }
 
-        function playerAttack() {
-            const damage = Math.max(1, player.attack - enemy.armor);
-            enemy.health = Math.max(0, enemy.health - damage);
-            showDamageText(damage, 'enemy');
-            updateUI();
-        }
-
-        function enemyAttack() {
-            const damage = Math.max(1, enemy.attack - player.armor);
-            player.health = Math.max(0, player.health - damage);
-            showDamageText(damage, 'player');
-            updateUI();
-        }
-
-        function endBattle() {
-            clearInterval(gameInterval);
-            if (enemy.health <= 0) {
-                player.xp += enemy.level * 5;
-                checkLevelUp();
+        function attack(attacker, defender) {
+            const attackerStats = gameState[attacker];
+            const defenderStats = gameState[defender];
+            
+            let damage = attackerStats.attack - defenderStats.armor;
+            damage = Math.max(1, damage);
+            
+            defenderStats.currentHealth = Math.max(0, defenderStats.currentHealth - damage);
+            
+            showDamageText(defender, damage);
+            updateHealthBar(defender);
+            
+            if (defenderStats.currentHealth <= 0) {
+                endBattle(attacker === 'player');
             }
-            setTimeout(() => {
-                document.getElementById('game-screen').style.display = 'none';
-                document.getElementById('menu').style.display = 'block';
-                resetBattle();
-            }, 2000);
+        }
+
+        function showDamageText(target, damage) {
+            const element = document.getElementById(target);
+            const text = document.createElement('div');
+            text.className = 'damage-text';
+            text.textContent = `-${damage}`;
+            text.style.left = `${element.offsetLeft + 50}px`;
+            text.style.top = `${element.offsetTop}px`;
+            document.getElementById('game-container').appendChild(text);
+            
+            setTimeout(() => text.remove(), 1000);
+        }
+
+        function updateHealthBar(character) {
+            const bar = document.getElementById(`${character}-health-bar`);
+            const healthPercent = (gameState[character].currentHealth / gameState[character].maxHealth) * 100;
+            bar.querySelector('.health').style.width = `${healthPercent}%`;
+        }
+
+        function endBattle(victory) {
+            clearInterval(battleInterval);
+            
+            if (victory) {
+                gameState.player.xp += 50 * gameState.enemy.level;
+                checkLevelUp();
+                gameState.upgrades.points += 1;
+                showUpgrades();
+            } else {
+                alert('Вы проиграли!');
+                resetGame();
+            }
         }
 
         function checkLevelUp() {
-            if (player.xp >= player.xpRequired) {
-                player.level++;
-                player.skillPoints++;
-                player.xp = 0;
-                player.xpRequired = Math.floor(10 * Math.pow(1.5, player.level));
-                alert(`Уровень повышен! Текущий уровень: ${player.level}`);
+            if (gameState.player.xp >= gameState.player.xpNeeded) {
+                gameState.player.level++;
+                gameState.player.xp -= gameState.player.xpNeeded;
+                gameState.player.xpNeeded = Math.floor(100 * Math.pow(1.2, gameState.player.level));
+                gameState.upgrades.points += 1;
             }
         }
 
-        function showDamageText(damage, target) {
-            const element = document.createElement('div');
-            element.className = 'damage-text';
-            element.textContent = `-${damage}`;
-            element.style.left = target === 'player' ? '100px' : 'calc(100vw - 100px)';
-            document.body.appendChild(element);
-            setTimeout(() => element.remove(), 1000);
-        }
-
-        function updateUI() {
-            document.getElementById('player-health-fill').style.width = 
-                (player.health / player.maxHealth) * 100 + '%';
-            document.getElementById('enemy-health-fill').style.width = 
-                (enemy.health / enemy.maxHealth) * 100 + '%';
-            
-            document.getElementById('status').innerHTML = 
-                `Ур. ${player.level} | Опыт: ${player.xp}/${player.xpRequired}<br>
-                Здоровье: ${player.health}/${player.maxHealth}`;
-        }
-
         function showUpgrades() {
-            document.getElementById('menu').style.display = 'none';
-            document.getElementById('upgrade-menu').style.display = 'block';
+            document.getElementById('upgrade-screen').style.display = 'block';
+            document.getElementById('upgrade-points').textContent = gameState.upgrades.points;
+            document.getElementById('attack-value').textContent = gameState.player.attack;
+            document.getElementById('health-value').textContent = gameState.player.maxHealth;
+            document.getElementById('armor-value').textContent = gameState.player.armor;
         }
 
-        function showMenu() {
-            document.getElementById('upgrade-menu').style.display = 'none';
-            document.getElementById('menu').style.display = 'block';
+        function closeUpgrades() {
+            document.getElementById('upgrade-screen').style.display = 'none';
+            resetBattle();
+            startBattle();
         }
 
-        function upgrade(stat) {
-            if (player.skillPoints <= 0) return;
-            player.skillPoints--;
-            
-            if (stat === 'attack') player.attack += 1;
-            if (stat === 'health') player.maxHealth += 10;
-            if (stat === 'armor') player.armor += 1;
-            
-            updateUI();
+        function upgradeStat(stat) {
+            if (gameState.upgrades.points > 0) {
+                gameState.upgrades.points--;
+                
+                switch(stat) {
+                    case 'attack':
+                        gameState.player.attack += 1;
+                        break;
+                    case 'health':
+                        gameState.player.maxHealth += 10;
+                        gameState.player.currentHealth += 10;
+                        break;
+                    case 'armor':
+                        gameState.player.armor += 1;
+                        break;
+                }
+                
+                showUpgrades();
+            }
+        }
+
+        function resetGame() {
+            // Реализация сброса игры при необходимости
         }
     </script>
 </body>
