@@ -257,4 +257,82 @@
             });
         }
 
-        function calculateDamage(attack, armor
+        function calculateDamage(attack, armor) {
+            return Math.max(1, attack - armor);
+        }
+
+        function showDamageText(targetId, damage) {
+            const target = document.getElementById(targetId);
+            const text = document.createElement('div');
+            text.className = 'damage-text';
+            text.textContent = `-${damage}`;
+            target.appendChild(text);
+            setTimeout(() => text.remove(), 1000);
+        }
+
+        function handleVictory() {
+            gameState.player.xp += 50 * gameState.enemy.level;
+            if(gameState.player.xp >= gameState.player.level * 100) {
+                gameState.player.level++;
+                gameState.player.skillPoints++;
+                gameState.player.xp = 0;
+            }
+            gameState.battleInProgress = false;
+            updateDisplays();
+            saveGame();
+            document.getElementById('battleScreen').classList.add('hidden');
+            document.getElementById('mainMenu').classList.remove('hidden');
+        }
+
+        function handleDefeat() {
+            alert('Игрок проиграл!');
+            resetPlayer();
+            saveGame();
+            document.getElementById('battleScreen').classList.add('hidden');
+            document.getElementById('mainMenu').classList.remove('hidden');
+        }
+
+        function resetPlayer() {
+            gameState.player.currentHealth = gameState.player.maxHealth;
+        }
+
+        function showUpgrades() {
+            if(gameState.player.skillPoints > 0) {
+                document.getElementById('mainMenu').classList.add('hidden');
+                document.getElementById('upgradeScreen').classList.remove('hidden');
+            }
+        }
+
+        function upgradeStat(stat) {
+            if(gameState.player.skillPoints > 0) {
+                gameState.player[stat] += (stat === 'maxHealth' ? 20 : 2);
+                gameState.player.currentHealth = gameState.player.maxHealth;
+                gameState.player.skillPoints--;
+                updateDisplays();
+                saveGame();
+                if(gameState.player.skillPoints === 0) backToMenu();
+            }
+        }
+
+        function backToMenu() {
+            document.getElementById('upgradeScreen').classList.add('hidden');
+            document.getElementById('mainMenu').classList.remove('hidden');
+        }
+
+        function continueBattle() {
+            if(gameState.battleInProgress) {
+                generateEnemy();
+                updateBattleUI();
+                battleLoop();
+            }
+        }
+
+        function saveGame() {
+            localStorage.setItem('arenaSave', JSON.stringify(gameState.player));
+        }
+
+        // Инициализация
+        updateDisplays();
+    </script>
+</body>
+</html>
