@@ -4,108 +4,96 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arena Fighters</title>
-    <script src="https://kit.fontawesome.com/4e9b4b5d3c.js" crossorigin="anonymous"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body {
             margin: 0;
-            padding: 0;
-            font-family: 'Courier New', Courier, monospace;
+            min-height: 100vh;
             background: #1a1a1a;
-            color: #fff;
-            overflow: hidden;
+            color: #f0e6d2;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .container {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            display: flex;
+            display: none;
             flex-direction: column;
             align-items: center;
+            width: 90vw;
+            max-width: 400px;
         }
 
-        .menu {
+        .active {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-            padding: 20px;
         }
 
-        .player-stats {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 40px;
-        }
-
-        .stat {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .menu button, .upgrade button {
+            background: #4a4a4a;
+            border: 2px solid #6a4a3c;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 5px;
+            color: #f0e6d2;
             font-size: 1.2em;
-        }
-
-        button {
-            background: #444;
-            border: 2px solid #666;
-            padding: 12px 24px;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 1.1em;
             cursor: pointer;
             transition: all 0.3s;
         }
 
         button:hover {
-            background: #555;
-            border-color: #888;
+            background: #6a4a3c;
         }
 
-        .battle-screen {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .characters {
-            position: relative;
-            width: 100%;
-            height: 60%;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-
-        .character {
+        .player-stats {
+            margin: 20px 0;
             text-align: center;
         }
 
+        .stat-icon {
+            margin-right: 8px;
+        }
+
+        .battle-container {
+            position: relative;
+            width: 100%;
+            height: 60vh;
+        }
+
+        .character {
+            position: absolute;
+            bottom: 0;
+            width: 45%;
+            text-align: center;
+        }
+
+        .player {
+            left: 0;
+        }
+
+        .enemy {
+            right: 0;
+        }
+
         .health-bar {
-            width: 200px;
+            background: #6a4a3c;
             height: 20px;
-            background: #444;
-            border: 2px solid #666;
             border-radius: 10px;
             margin: 10px 0;
         }
 
-        .health-fill {
+        .health {
+            background: #8bc34a;
             height: 100%;
-            background: #f00;
             border-radius: 10px;
-            transition: width 0.3s;
+            transition: width 0.5s;
         }
 
         .damage-text {
             position: absolute;
+            top: 50%;
             font-size: 2em;
-            color: #ff0;
-            text-shadow: 2px 2px #444;
+            color: red;
             animation: floatUp 1s ease-out;
         }
 
@@ -114,116 +102,85 @@
             100% { transform: translateY(-50px); opacity: 0; }
         }
 
-        .enemy {
-            text-align: right;
-        }
-
-        .battle-log {
-            position: absolute;
-            bottom: 20px;
-            display: flex;
-            gap: 20px;
-        }
-
-        .popup {
+        .modal {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: rgba(0,0,0,0.8);
-            display: none;
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            gap: 20px;
-            font-size: 2em;
-            color: #ff0;
-            text-shadow: 2px 2px #444;
         }
 
-        @media (max-width: 600px) {
-            .stat { font-size: 1em; }
-            .damage-text { font-size: 1.5em; }
+        .modal button {
+            margin-top: 20px;
+            padding: 15px 40px;
+        }
+
+        .fa-sword, .fa-shield-halved, .fa-heart {
+            color: #c69f6b;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Главное меню -->
-        <div class="menu" id="mainMenu">
-            <div class="player-stats">
-                <div class="stat">
-                    <i class="fas fa-user"></i>
-                    <span id="playerLevel">Уровень: 1</span>
-                </div>
-                <div class="stat">
-                    <i class="fas fa-heart"></i>
-                    <span id="playerHealth">Здоровье: 10</span>
-                </div>
-                <div class="stat">
-                    <i class="fas fa-fist-raised"></i>
-                    <span id="playerAttack">Атака: 2</span>
-                </div>
-                <div class="stat">
-                    <i class="fas fa-shield-alt"></i>
-                    <span id="playerArmor">Броня: 1</span>
-                </div>
-                <div class="stat">
-                    <i class="fas fa-star"></i>
-                    <span id="playerExp">Опыт: 0/10</span>
-                </div>
-                <div class="stat">
-                    <i class="fas fa-coins"></i>
-                    <span id="upgradePoints">Очки прокачки: 0</span>
+    <div class="container active" id="mainMenu">
+        <div class="player-stats">
+            <div><i class="fas fa-user stat-icon"></i> Level <span id="level">1</span></div>
+            <div><i class="fas fa-star stat-icon"></i> EXP <span id="exp">0</span>/10</div>
+            <div><i class="fas fa-heart stat-icon"></i> Health <span id="health">10</span></div>
+            <div><i class="fas fa-sword stat-icon"></i> Attack <span id="attack">1</span></div>
+            <div><i class="fas fa-shield-halved stat-icon"></i> Armor <span id="armor">0</span></div>
+        </div>
+        <button onclick="startBattle()">Начать бой</button>
+        <button onclick="showUpgrade()">Прокачка</button>
+    </div>
+
+    <div class="container" id="battleScreen">
+        <div class="battle-container">
+            <div class="character player">
+                <i class="fas fa-user fa-5x"></i>
+                <div class="health-bar"><div class="health" id="playerHealthBar"></div></div>
+                <div class="stats">
+                    <div>Lvl <span id="playerLevel">1</span></div>
+                    <div>HP <span id="playerHP">10</span></div>
                 </div>
             </div>
-            <button onclick="startBattle()">Начать бой</button>
-            <button onclick="showUpgrade()">Прокачка</button>
-        </div>
-
-        <!-- Экран боя -->
-        <div class="battle-screen" id="battleScreen">
-            <div class="characters">
-                <div class="character player" id="playerContainer">
-                    <div class="health-bar">
-                        <div class="health-fill" id="playerHealthBar"></div>
-                    </div>
-                    <i class="fas fa-user fa-5x"></i>
-                </div>
-                <div class="character enemy" id="enemyContainer">
-                    <div class="health-bar">
-                        <div class="health-fill" id="enemyHealthBar"></div>
-                    </div>
-                    <i class="fas fa-skull fa-5x"></i>
+            <div class="character enemy">
+                <i class="fas fa-skull fa-5x"></i>
+                <div class="health-bar"><div class="health" id="enemyHealthBar"></div></div>
+                <div class="stats">
+                    <div>Lvl <span id="enemyLevel">1</span></div>
+                    <div>HP <span id="enemyHP">10</span></div>
                 </div>
             </div>
-            <div class="battle-log" id="battleLog"></div>
         </div>
+        <button onclick="continueBattle()" id="continueBtn" style="display:none">Продолжить бой</button>
+    </div>
 
-        <!-- Всплывающее окно -->
-        <div class="popup" id="popup">
-            <div id="popupMessage"></div>
-            <button onclick="resetGame()">Вернуться в меню</button>
-        </div>
+    <div class="container" id="upgradeScreen">
+        <h2>Прокачка (Очков: <span id="upgradePoints">0</span>)</h2>
+        <button onclick="upgrade('attack')"><i class="fas fa-sword"></i> Атака (+1)</button>
+        <button onclick="upgrade('health')"><i class="fas fa-heart"></i> Жизнь (+5)</button>
+        <button onclick="upgrade('armor')"><i class="fas fa-shield-halved"></i> Броня (+1)</button>
+        <button onclick="showMenu()">Назад</button>
+    </div>
 
-        <!-- Окно прокачки -->
-        <div class="popup" id="upgradePopup">
-            <div>Выберите улучшение:</div>
-            <button onclick="upgradeStat('attack')">Атака</button>
-            <button onclick="upgradeStat('health')">Здоровье</button>
-            <button onclick="upgradeStat('armor')">Броня</button>
-        </div>
+    <div class="modal" id="resultModal">
+        <h1 id="modalText"></h1>
+        <button onclick="showMenu()">В меню</button>
     </div>
 
     <script>
         let player = {
             level: 1,
+            exp: 0,
             health: 10,
             maxHealth: 10,
-            attack: 2,
-            armor: 1,
-            exp: 0,
+            attack: 1,
+            armor: 0,
             upgradePoints: 0
         };
 
@@ -231,176 +188,193 @@
             level: 1,
             health: 10,
             maxHealth: 10,
-            attack: 2,
-            armor: 1
+            attack: 1,
+            armor: 0
         };
 
         let battleInterval;
-        let battleTime = 10;
+        const maxBattleTime = 10;
+        let battleTime = 0;
 
         function startBattle() {
-            document.getElementById('mainMenu').style.display = 'none';
-            document.getElementById('battleScreen').style.display = 'flex';
-
+            document.getElementById('mainMenu').classList.remove('active');
+            document.getElementById('battleScreen').classList.add('active');
             resetBattle();
             generateEnemy();
             updateBattleUI();
             startBattleTimer();
+            battleInterval = setInterval(performAttack, 1500);
         }
 
         function resetBattle() {
-            clearInterval(battleInterval);
+            battleTime = 0;
             player.health = player.maxHealth;
-            enemy.health = enemy.maxHealth;
-            battleTime = 10;
-            document.getElementById('battleLog').innerHTML = '';
+            document.getElementById('playerHealthBar').style.width = '100%';
+            document.getElementById('enemyHealthBar').style.width = '100%';
         }
 
         function generateEnemy() {
             enemy.level = player.level + Math.floor(Math.random() * 2) - 1;
             enemy.level = Math.max(1, enemy.level);
-            enemy.attack = 2 + enemy.level;
-            enemy.armor = 1 + Math.floor(enemy.level / 2);
-            enemy.maxHealth = 10 + enemy.level * 2;
+            enemy.attack = enemy.level + Math.floor(Math.random() * 2);
+            enemy.armor = Math.floor(enemy.level / 2);
+            enemy.maxHealth = 10 + (enemy.level - 1) * 5;
             enemy.health = enemy.maxHealth;
+            updateBattleUI();
         }
 
         function updateBattleUI() {
-            document.getElementById('playerHealthBar').style.width = 
-                (player.health / player.maxHealth) * 100 + '%';
-            document.getElementById('enemyHealthBar').style.width = 
-                (enemy.health / enemy.maxHealth) * 100 + '%';
+            document.getElementById('playerLevel').textContent = player.level;
+            document.getElementById('playerHP').textContent = player.health;
+            document.getElementById('enemyLevel').textContent = enemy.level;
+            document.getElementById('enemyHP').textContent = enemy.health;
+            document.getElementById('playerHealthBar').style.width = (player.health / player.maxHealth) * 100 + '%';
+            document.getElementById('enemyHealthBar').style.width = (enemy.health / enemy.maxHealth) * 100 + '%';
+        }
+
+        function performAttack() {
+            if (battleTime >= maxBattleTime || player.health <= 0 || enemy.health <= 0) {
+                endBattle();
+                return;
+            }
+
+            // Player attack
+            let damage = Math.max(1, player.attack - enemy.armor);
+            enemy.health = Math.max(0, enemy.health - damage);
+            showDamageText(damage, document.querySelector('.enemy'));
+
+            // Enemy attack
+            damage = Math.max(1, enemy.attack - player.armor);
+            player.health = Math.max(0, player.health - damage);
+            showDamageText(damage, document.querySelector('.player'));
+
+            updateBattleUI();
+            checkBattleEnd();
+        }
+
+        function showDamageText(damage, target) {
+            const text = document.createElement('div');
+            text.className = 'damage-text';
+            text.textContent = damage;
+            target.appendChild(text);
+            setTimeout(() => text.remove(), 1000);
+        }
+
+        function checkBattleEnd() {
+            if (player.health <= 0 || enemy.health <= 0 || battleTime >= maxBattleTime) {
+                endBattle();
+            }
+        }
+
+        function endBattle() {
+            clearInterval(battleInterval);
+            const modal = document.getElementById('resultModal');
+            const modalText = document.getElementById('modalText');
+
+            if (player.health > enemy.health && player.health > 0) {
+                const expGained = enemy.level * 5;
+                player.exp += expGained;
+                modalText.textContent = `Победа! +${expGained} EXP`;
+                document.getElementById('continueBtn').style.display = 'block';
+                
+                if (player.exp >= 10) {
+                    player.level++;
+                    player.upgradePoints++;
+                    player.exp = 0;
+                    player.maxHealth += 5;
+                    player.health = player.maxHealth;
+                }
+            } else {
+                modalText.textContent = 'Игрок проиграл!';
+                document.getElementById('continueBtn').style.display = 'none';
+            }
+
+            updatePlayerStats();
+            showModal(modal);
+        }
+
+        function continueBattle() {
+            document.getElementById('continueBtn').style.display = 'none';
+            generateEnemy();
+            resetBattle();
+            startBattleTimer();
+            battleInterval = setInterval(performAttack, 1500);
         }
 
         function startBattleTimer() {
-            battleInterval = setInterval(() => {
-                if (battleTime <= 0) {
-                    endBattle('time');
-                } else {
-                    battleTime--;
-                    performAttack();
+            battleTime = 0;
+            const timer = setInterval(() => {
+                battleTime++;
+                if (battleTime >= maxBattleTime) {
+                    clearInterval(timer);
+                    endBattle();
                 }
             }, 1000);
         }
 
-        function performAttack() {
-            // Атака игрока
-            let playerDamage = Math.max(1, player.attack - enemy.armor);
-            enemy.health -= playerDamage;
-            showDamage('enemy', playerDamage);
-
-            // Атака врага
-            let enemyDamage = Math.max(1, enemy.attack - player.armor);
-            player.health -= enemyDamage;
-            showDamage('player', enemyDamage);
-
-            checkBattleEnd();
-            updateBattleUI();
+        function showModal(modal) {
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                modal.style.opacity = '1';
+            }, 100);
         }
 
-        function showDamage(target, amount) {
-            const container = document.getElementById(target === 'player' ? 'playerContainer' : 'enemyContainer');
-            const damageText = document.createElement('div');
-            damageText.className = 'damage-text';
-            damageText.textContent = `-${amount}`;
-            container.appendChild(damageText);
-            setTimeout(() => damageText.remove(), 1000);
-        }
-
-        function checkBattleEnd() {
-            if (player.health <= 0 || enemy.health <= 0 || battleTime <= 0) {
-                clearInterval(battleInterval);
-                let result;
-
-                if (player.health > enemy.health) {
-                    result = 'win';
-                } else if (enemy.health > player.health) {
-                    result = 'lose';
-                } else {
-                    result = 'draw';
-                }
-
-                endBattle(result);
-            }
-        }
-
-        function endBattle(result) {
-            const popup = document.getElementById('popup');
-            const message = document.getElementById('popupMessage');
-
-            if (result === 'win') {
-                const expGained = 5 + enemy.level * 2;
-                player.exp += expGained;
-                message.innerHTML = `Победа! +${expGained} опыта`;
-
-                if (player.exp >= 10 * player.level) {
-                    player.level++;
-                    player.upgradePoints++;
-                    player.exp = 0;
-                    message.innerHTML += `<br>Новый уровень! Очки прокачки: ${player.upgradePoints}`;
-                }
-
-                setTimeout(() => {
-                    if (confirm('Продолжить бой?')) {
-                        startBattle();
-                    } else {
-                        resetGame();
-                    }
-                }, 2000);
-            } else {
-                message.textContent = 'Игрок проиграл!';
-                setTimeout(resetGame, 2000);
-            }
-
-            popup.style.display = 'flex';
-        }
-
-        function resetGame() {
-            document.getElementById('popup').style.display = 'none';
-            document.getElementById('battleScreen').style.display = 'none';
-            document.getElementById('mainMenu').style.display = 'flex';
-            updatePlayerStats();
+        function hideModal(modal) {
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 500);
         }
 
         function updatePlayerStats() {
-            document.getElementById('playerLevel').textContent = `Уровень: ${player.level}`;
-            document.getElementById('playerHealth').textContent = `Здоровье: ${player.health}/${player.maxHealth}`;
-            document.getElementById('playerAttack').textContent = `Атака: ${player.attack}`;
-            document.getElementById('playerArmor').textContent = `Броня: ${player.armor}`;
-            document.getElementById('playerExp').textContent = `Опыт: ${player.exp}/${10 * player.level}`;
-            document.getElementById('upgradePoints').textContent = `Очки прокачки: ${player.upgradePoints}`;
+            document.getElementById('level').textContent = player.level;
+            document.getElementById('exp').textContent = player.exp;
+            document.getElementById('health').textContent = player.health;
+            document.getElementById('attack').textContent = player.attack;
+            document.getElementById('armor').textContent = player.armor;
+            document.getElementById('upgradePoints').textContent = player.upgradePoints;
         }
 
         function showUpgrade() {
-            if (player.upgradePoints > 0) {
-                document.getElementById('upgradePopup').style.display = 'flex';
-            } else {
-                alert('Нет очков прокачки!');
-            }
+            document.getElementById('mainMenu').classList.remove('active');
+            document.getElementById('upgradeScreen').classList.add('active');
         }
 
-        function upgradeStat(stat) {
+        function showMenu() {
+            document.querySelectorAll('.container').forEach(el => el.classList.remove('active'));
+            document.getElementById('mainMenu').classList.add('active');
+            hideModal(document.getElementById('resultModal'));
+        }
+
+        function upgrade(stat) {
             if (player.upgradePoints > 0) {
                 player.upgradePoints--;
                 switch(stat) {
                     case 'attack':
-                        player.attack += 1;
+                        player.attack++;
                         break;
                     case 'health':
-                        player.maxHealth += 2;
+                        player.maxHealth += 5;
                         player.health = player.maxHealth;
                         break;
                     case 'armor':
-                        player.armor += 1;
+                        player.armor++;
                         break;
                 }
                 updatePlayerStats();
-                document.getElementById('upgradePopup').style.display = 'none';
             }
         }
 
-        // Инициализация
-        updatePlayerStats();
+        // Load saved game
+        const saved = localStorage.getItem('arenaFightersSave');
+        if (saved) {
+            Object.assign(player, JSON.parse(saved));
+        }
+
+        // Save game on exit
+        window.addEventListener('beforeunload', () => {
+            localStorage.setItem('arenaFightersSave', JSON.stringify(player));
+        });
     </script>
 </body>
 </html>
