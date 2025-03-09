@@ -50,11 +50,18 @@
             margin: 20px 0;
             display: flex;
             align-items: center;
+            position: relative;
         }
 
         .knight-icon {
-            font-size: 4em;
+            font-size: 5em;
             margin-right: 20px;
+            animation: breathe 2s infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         .health-bar {
@@ -92,8 +99,11 @@
 
         .damage-text {
             position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             color: red;
-            font-size: 2em;
+            font-size: 3em;
             animation: floatUp 1s ease-out forwards;
         }
 
@@ -109,8 +119,8 @@
         }
 
         @keyframes floatUp {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-50px); opacity: 0; }
+            0% { transform: translate(-50%, -50%); opacity: 1; }
+            100% { transform: translate(-50%, -100px); opacity: 0; }
         }
 
         .boss-img {
@@ -121,18 +131,17 @@
             margin-top: 20px;
         }
 
-        .stat-panel .stat {
-            margin: 5px 0;
-        }
-
         .battle-stats {
             display: flex;
             justify-content: space-around;
             margin: 20px 0;
         }
 
-        .battle-stats div {
-            text-align: center;
+        .battle-stats-block {
+            background-color: rgba(74, 58, 47, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
         }
 
         .upgrade-menu {
@@ -163,6 +172,16 @@
             margin-right: 5px;
         }
 
+        .glowing-button {
+            animation: glow 1.5s infinite;
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px #ffd700; }
+            50% { box-shadow: 0 0 20px #ffd700; }
+            100% { box-shadow: 0 0 5px #ffd700; }
+        }
+
         /* Мобильная адаптация */
         @media (max-width: 600px) {
             .stat-block {
@@ -172,6 +191,7 @@
 
             .knight-icon {
                 margin: 10px 0;
+                font-size: 4em;
             }
 
             .battle-screen {
@@ -192,7 +212,7 @@
             <div class="title">⚔️ Arena Fighters ⚔️</div>
             
             <div class="stat-block">
-                <span class="knight-icon">🛡️</span>
+                <span class="knight-icon">🧙</span>
                 <div>
                     <div class="stat">
                         <span class="icon">🌟</span>Уровень: <span id="level">1</span>
@@ -209,24 +229,27 @@
                     <div class="stat">
                         <span class="icon">🛡️</span>Броня: <span id="armor">0</span>
                     </div>
-                    <div class="stat">
-                        <span class="icon">⚔️</span>Победы: <span id="victoryCount">0</span>
-                    </div>
-                    <div class="stat">
-                        <span class="icon">☠️</span>Поражения: <span id="defeatCount">0</span>
-                    </div>
+                </div>
+            </div>
+
+            <div class="battle-stats-block">
+                <div class="stat">
+                    <span class="icon">🏆</span>Победы: <span id="victoryCount">0</span>
+                </div>
+                <div class="stat">
+                    <span class="icon">☠️</span>Поражения: <span id="defeatCount">0</span>
                 </div>
             </div>
 
             <button class="menu-button" onclick="startBattle()">Начать бой</button>
-            <button class="menu-button" onclick="showUpgrades()">Прокачка</button>
+            <button class="menu-button" id="upgradeButton" onclick="showUpgrades()">Прокачка</button>
         </div>
 
         <!-- Экран боя -->
         <div id="battleScreen" class="hidden">
             <div class="battle-screen">
                 <div class="character" id="playerInfo">
-                    <div class="character-img" id="playerImage">🛡️</div>
+                    <div class="character-img" id="playerImage">🧙</div>
                     <div class="stat-panel">
                         <div class="health-bar">
                             <div class="health-inner" id="playerHealthBar"></div>
@@ -246,7 +269,7 @@
                 </div>
 
                 <div class="character" id="enemyInfo">
-                    <div class="character-img" id="enemyImage">🐉</div>
+                    <div class="character-img" id="enemyImage">👹</div>
                     <div class="stat-panel">
                         <div class="health-bar">
                             <div class="health-inner" id="enemyHealthBar"></div>
@@ -281,6 +304,8 @@
     </div>
 
     <script>
+        const MAX_LEVEL = 60;
+
         let player = {
             level: 1,
             experience: 0,
@@ -305,6 +330,7 @@
 
         let isPlayerTurn = true;
         let battleInterval;
+        const upgradeButton = document.getElementById('upgradeButton');
 
         function updateUI() {
             document.getElementById('level').textContent = player.level;
@@ -315,6 +341,13 @@
             document.getElementById('upgradePoints').textContent = player.upgradePoints;
             document.getElementById('victoryCount').textContent = player.victoryCount;
             document.getElementById('defeatCount').textContent = player.defeatCount;
+            
+            // Анимация кнопки прокачки
+            if(player.upgradePoints > 0) {
+                upgradeButton.classList.add('glowing-button');
+            } else {
+                upgradeButton.classList.remove('glowing-button');
+            }
         }
 
         function startBattle() {
@@ -336,11 +369,11 @@
         function generateEnemy() {
             if (player.victoryCount % 5 === 0 && player.victoryCount > 0) {
                 enemy.isBoss = true;
-                enemy.level = player.level + 2;
+                enemy.level = Math.min(MAX_LEVEL, player.level + 2);
                 enemy.attack = 3 + Math.floor(player.level * 0.8);
                 enemy.armor = 2 + Math.floor(player.level * 0.5);
                 enemy.maxHealth = 20 + player.level * 5;
-                document.getElementById('enemyImage').textContent = '🐉';
+                document.getElementById('enemyImage').textContent = '魔王';
                 document.getElementById('enemyImage').classList.add('boss-img');
             } else {
                 enemy.isBoss = false;
@@ -467,11 +500,16 @@
                     player.experience += 5 + player.level;
                 }
 
-                if (player.experience >= 10) {
-                    player.level++;
-                    player.upgradePoints += 1;
-                    player.experience = 0;
-                    player.maxHealth += 2;
+                // Ограничение уровня
+                if (player.level < MAX_LEVEL) {
+                    if (player.experience >= 10) {
+                        player.level++;
+                        player.upgradePoints += 1;
+                        player.experience = 0;
+                        player.maxHealth += 2;
+                    }
+                } else {
+                    player.experience = 10;
                 }
             } else {
                 player.defeatCount++;
