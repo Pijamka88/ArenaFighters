@@ -193,6 +193,32 @@
             100% { box-shadow: 0 0 5px #ffd700; }
         }
 
+        .result-message {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3em;
+            text-shadow: 2px 2px 5px black;
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+        }
+
+        .result-message.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .win { background-color: goldenrod !important; }
+        .loss { background-color: darkred !important; }
+
         /* Мобильная адаптация */
         @media (max-width: 600px) {
             .stat-block {
@@ -298,7 +324,7 @@
                     </div>
                 </div>
             </div>
-            <button class="menu-button" style="margin-top: 40px;" onclick="endBattle(false)">Сбежать</button>
+            <button class="menu-button" style="margin-top: 40px;" onclick="fleeBattle()">Сбежать</button>
         </div>
 
         <!-- Меню прокачки -->
@@ -311,6 +337,9 @@
                 <button class="menu-button" onclick="showMainMenu()">Назад</button>
             </div>
         </div>
+
+        <!-- Сообщения о результате боя -->
+        <div id="battleResult" class="result-message hidden"></div>
     </div>
 
     <script>
@@ -366,6 +395,12 @@
             resetBattle();
             updateBattleStats();
             battleInterval = setInterval(battleTurn, 1000);
+        }
+
+        function fleeBattle() {
+            clearInterval(battleInterval);
+            document.getElementById('battleScreen').classList.add('hidden');
+            showMainMenu();
         }
 
         function resetBattle() {
@@ -497,31 +532,51 @@
 
         function endBattle(victory) {
             clearInterval(battleInterval);
-            document.getElementById('battleScreen').classList.add('hidden');
+            const battleScreen = document.getElementById('battleScreen');
+            battleScreen.classList.add('hidden');
 
-            if (victory) {
-                player.victoryCount++;
-                player.consecutiveLosses = 0;
+            if (victory !== undefined) {
+                const message = document.getElementById('battleResult');
+                message.textContent = victory ? 'ЭТО ВИН!' : 'ПОТРАЧЕНО!';
+                message.className = `result-message visible ${victory ? 'win' : 'loss'}`;
                 
-                if (enemy.isBoss) {
-                    player.experience += 30;
-                } else {
-                    player.experience += 5 + player.level;
-                }
-
-                while (player.experience >= 10 && player.level < 60) {
-                    player.level++;
-                    player.upgradePoints += 1;
-                    player.experience -= 10;
-                    player.maxHealth += 2;
-                }
+                setTimeout(() => {
+                    message.className = 'result-message hidden';
+                    
+                    if (victory) {
+                        handleVictory();
+                    } else {
+                        handleDefeat();
+                    }
+                    
+                    showMainMenu();
+                }, 2000);
             } else {
-                player.defeatCount++;
-                player.consecutiveLosses++;
+                showMainMenu();
+            }
+        }
+
+        function handleVictory() {
+            player.victoryCount++;
+            player.consecutiveLosses = 0;
+            
+            if (enemy.isBoss) {
+                player.experience += 30;
+            } else {
+                player.experience += 5 + player.level;
             }
 
-            updateUI();
-            showMainMenu();
+            while (player.experience >= 10 && player.level < 60) {
+                player.level++;
+                player.upgradePoints += 1;
+                player.experience -= 10;
+                player.maxHealth += 2;
+            }
+        }
+
+        function handleDefeat() {
+            player.defeatCount++;
+            player.consecutiveLosses++;
         }
 
         function showUpgrades() {
