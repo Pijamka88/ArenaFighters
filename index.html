@@ -31,6 +31,7 @@
             font-size: 1.2em;
             cursor: pointer;
             transition: 0.3s;
+            border-radius: 5px;
         }
 
         .menu-button:hover {
@@ -50,18 +51,13 @@
             margin: 20px 0;
             display: flex;
             align-items: center;
-            position: relative;
+            border: 2px solid #6b5846;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
 
         .knight-icon {
-            font-size: 5em;
+            font-size: 4em;
             margin-right: 20px;
-            animation: breathe 2s infinite;
-        }
-
-        @keyframes breathe {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
         }
 
         .health-bar {
@@ -83,6 +79,11 @@
             justify-content: space-around;
             align-items: center;
             margin-top: 20px;
+            border: 2px solid #6b5846;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: rgba(74, 58, 47, 0.5);
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
         }
 
         .character {
@@ -142,12 +143,21 @@
             padding: 15px;
             border-radius: 10px;
             margin: 10px 0;
+            display: flex;
+            justify-content: space-around;
+            border: 2px solid #6b5846;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
 
         .upgrade-menu {
             display: flex;
             flex-direction: column;
             align-items: center;
+            border: 2px solid #6b5846;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: rgba(74, 58, 47, 0.7);
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
         }
 
         .upgrade-button {
@@ -159,6 +169,7 @@
             font-size: 1em;
             cursor: pointer;
             transition: 0.3s;
+            border-radius: 5px;
         }
 
         .upgrade-button:disabled {
@@ -191,7 +202,6 @@
 
             .knight-icon {
                 margin: 10px 0;
-                font-size: 4em;
             }
 
             .battle-screen {
@@ -269,7 +279,7 @@
                 </div>
 
                 <div class="character" id="enemyInfo">
-                    <div class="character-img" id="enemyImage">👹</div>
+                    <div class="character-img" id="enemyImage">🧟</div>
                     <div class="stat-panel">
                         <div class="health-bar">
                             <div class="health-inner" id="enemyHealthBar"></div>
@@ -304,8 +314,6 @@
     </div>
 
     <script>
-        const MAX_LEVEL = 60;
-
         let player = {
             level: 1,
             experience: 0,
@@ -330,6 +338,7 @@
 
         let isPlayerTurn = true;
         let battleInterval;
+
         const upgradeButton = document.getElementById('upgradeButton');
 
         function updateUI() {
@@ -367,13 +376,13 @@
         }
 
         function generateEnemy() {
-            if (player.victoryCount % 5 === 0 && player.victoryCount > 0) {
+            if (player.victoryCount % 5 === 0 && player.victoryCount > 0 && player.level < 60) {
                 enemy.isBoss = true;
-                enemy.level = Math.min(MAX_LEVEL, player.level + 2);
-                enemy.attack = 3 + Math.floor(player.level * 0.8);
-                enemy.armor = 2 + Math.floor(player.level * 0.5);
-                enemy.maxHealth = 20 + player.level * 5;
-                document.getElementById('enemyImage').textContent = '魔王';
+                enemy.level = Math.min(player.level + 2, 60);
+                enemy.attack = 3 + Math.floor(Math.min(player.level, 58) * 0.8);
+                enemy.armor = 2 + Math.floor(Math.min(player.level, 58) * 0.5);
+                enemy.maxHealth = 20 + Math.min(player.level, 58) * 5;
+                document.getElementById('enemyImage').textContent = '🐉';
                 document.getElementById('enemyImage').classList.add('boss-img');
             } else {
                 enemy.isBoss = false;
@@ -381,7 +390,7 @@
                 enemy.attack = 1 + Math.floor(player.level * 0.5);
                 enemy.armor = Math.floor(player.level * 0.3);
                 enemy.maxHealth = 10 + player.level * 2;
-                document.getElementById('enemyImage').textContent = '👹';
+                document.getElementById('enemyImage').textContent = '🧟';
                 document.getElementById('enemyImage').classList.remove('boss-img');
             }
             enemy.health = enemy.maxHealth;
@@ -500,16 +509,11 @@
                     player.experience += 5 + player.level;
                 }
 
-                // Ограничение уровня
-                if (player.level < MAX_LEVEL) {
-                    if (player.experience >= 10) {
-                        player.level++;
-                        player.upgradePoints += 1;
-                        player.experience = 0;
-                        player.maxHealth += 2;
-                    }
-                } else {
-                    player.experience = 10;
+                while (player.experience >= 10 && player.level < 60) {
+                    player.level++;
+                    player.upgradePoints += 1;
+                    player.experience -= 10;
+                    player.maxHealth += 2;
                 }
             } else {
                 player.defeatCount++;
