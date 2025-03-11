@@ -1,179 +1,212 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medieval Arena</title>
-    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+    <title>Medieval Chaos Fighters</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            background: #1a1a1a url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==');
-            color: #fff;
-            font-family: 'MedievalSharp', cursive;
+            font-family: 'Old English Text MT', fantasy;
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==');
+            color: #d4af37;
             text-align: center;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
+            touch-action: manipulation;
         }
 
-        #mainMenu, #gameArena {
+        #mainMenu, #battleScreen, #statsScreen, #upgradeScreen {
             display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            flex: 1;
+            padding: 20px;
+        }
+
+        .active-screen {
+            display: block !important;
         }
 
         button {
-            background: #6d4c41;
-            border: 2px solid #4a312b;
-            color: #fff;
-            padding: 15px 30px;
-            font-size: 20px;
-            margin: 10px;
+            background: #6b0f1a;
+            border: 2px solid #d4af37;
+            color: white;
+            padding: 10px 20px;
+            margin: 5px;
             cursor: pointer;
-            border-radius: 8px;
-            font-family: 'MedievalSharp', cursive;
-            transition: transform 0.2s;
-        }
-
-        button:hover {
-            transform: scale(1.1);
-            background: #8b6353;
+            font-family: inherit;
         }
 
         .health-bar {
             width: 100px;
             height: 10px;
-            background: #442222;
-            border-radius: 5px;
-            margin: 5px;
-            overflow: hidden;
+            background: #444;
+            margin: 5px auto;
+            border: 1px solid #000;
         }
 
         .health-fill {
             height: 100%;
-            background: #77dd77;
+            background: #6b0f1a;
             transition: width 0.3s;
         }
 
         .character {
-            font-size: 64px;
+            font-size: 48px;
             margin: 20px;
-            transition: transform 0.2s;
-        }
-
-        .attack {
-            animation: attack 0.3s ease;
-        }
-
-        @keyframes attack {
-            0% { transform: translateX(0); }
-            50% { transform: translateX(20px); }
-            100% { transform: translateX(0); }
+            position: relative;
         }
 
         #arena {
             display: flex;
             justify-content: space-around;
-            align-items: center;
-            height: 60vh;
-            width: 100%;
+            margin: 30px 0;
+        }
+
+        .stats {
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            border: 1px solid #d4af37;
+            margin: 10px auto;
+            width: 80%;
         }
     </style>
 </head>
 <body>
-    <div id="mainMenu">
-        <h1>🏰 Medieval Arena 🏰</h1>
-        <button onclick="startGame()">⚔️ Начать бой ⚔️</button>
+    <!-- Main Menu -->
+    <div id="mainMenu" class="active-screen">
+        <h1>🛡️ Medieval Chaos 🗡️</h1>
+        <button onclick="startGame()">Start Battle</button>
+        <button onclick="showScreen('statsScreen')">Player Stats</button>
     </div>
 
-    <div id="gameArena">
+    <!-- Battle Screen -->
+    <div id="battleScreen">
         <div id="arena">
-            <div class="player">
-                <div class="health-bar"><div class="health-fill" id="playerHealth"></div></div>
-                <div class="character" id="player">🛡️</div>
+            <div class="character">
+                <div id="playerIcon">🦸♂️</div>
+                <div class="health-bar">
+                    <div id="playerHealth" class="health-fill" style="width: 100%"></div>
+                </div>
             </div>
-            <div class="enemy">
-                <div class="health-bar"><div class="health-fill" id="enemyHealth"></div></div>
-                <div class="character" id="enemy">🗡️</div>
+            <div class="character">
+                <div id="enemyIcon">💀</div>
+                <div class="health-bar">
+                    <div id="enemyHealth" class="health-fill" style="width: 100%"></div>
+                </div>
             </div>
         </div>
-        <button onclick="endGame()">🏃 Бежать 🏃</button>
+        <div id="battleLog"></div>
+        <button onclick="showScreen('mainMenu')">Main Menu</button>
     </div>
 
-    <script>
-        let playerHP = 100;
-        let enemyHP = 100;
-        let gameInterval;
+    <!-- Stats Screen -->
+    <div id="statsScreen">
+        <h2>⚔️ Player Stats ⚔️</h2>
+        <div class="stats">
+            <p>Level: <span id="statLevel">1</span></p>
+            <p>Attack: <span id="statAttack">10</span></p>
+            <p>Health: <span id="statHealth">100</span></p>
+            <p>Defense: <span id="statDefense">5</span></p>
+        </div>
+        <button onclick="showScreen('mainMenu')">Back</button>
+    </div>
 
-        function updateHealth() {
-            document.getElementById('playerHealth').style.width = `${playerHP}%`;
-            document.getElementById('enemyHealth').style.width = `${enemyHP}%`;
+    <!-- Upgrade Screen -->
+    <div id="upgradeScreen">
+        <h2>✨ Choose Upgrade ✨</h2>
+        <button onclick="upgradeStat('attack')">+ Attack</button>
+        <button onclick="upgradeStat('health')">+ Health</button>
+        <button onclick="upgradeStat('defense')">+ Defense</button>
+    </div>
+
+<script>
+let player = {
+    level: 1,
+    attack: 10,
+    maxHealth: 100,
+    health: 100,
+    defense: 5,
+    wins: 0,
+    xp: 0
+};
+
+let currentEnemy = null;
+let battleInterval = null;
+
+const enemies = [
+    { name: "Bandit", icon: "🗡️", attack: 8, health: 80, defense: 3 },
+    { name: "Orc", icon: "👹", attack: 12, health: 120, defense: 5 },
+    { name: "Warlock", icon: "🧙♂️", attack: 15, health: 90, defense: 4 },
+    { name: "Dragon Boss", icon: "🐉", attack: 25, health: 200, defense: 10 }
+];
+
+function showScreen(screenId) {
+    document.querySelectorAll('div[id$="Screen"]').forEach(el => 
+        el.classList.remove('active-screen'));
+    document.getElementById(screenId).classList.add('active-screen');
+    updateStatsDisplay();
+}
+
+function startGame() {
+    player.wins = 0;
+    spawnEnemy();
+    showScreen('battleScreen');
+    startBattle();
+}
+
+function spawnEnemy() {
+    const isBoss = player.wins >= 5;
+    currentEnemy = isBoss ? {...enemies[3]} : 
+        {...enemies[Math.floor(Math.random() * 3)]};
+    currentEnemy.health = isBoss ? 200 : currentEnemy.health;
+    document.getElementById('enemyIcon').textContent = currentEnemy.icon;
+    updateHealthBars();
+}
+
+function startBattle() {
+    clearInterval(battleInterval);
+    battleInterval = setInterval(battleStep, 2000);
+}
+
+function battleStep() {
+    // Player attack
+    const playerDamage = Math.max(player.attack - currentEnemy.defense, 1);
+    currentEnemy.health -= playerDamage;
+    logAction(`You hit for ${playerDamage} damage!`);
+    
+    if(currentEnemy.health <= 0) {
+        endBattle(true);
+        return;
+    }
+
+    // Enemy attack
+    const enemyDamage = Math.max(currentEnemy.attack - player.defense, 1);
+    player.health -= enemyDamage;
+    logAction(`Enemy hits for ${enemyDamage} damage!`);
+    
+    if(player.health <= 0) {
+        endBattle(false);
+        return;
+    }
+
+    updateHealthBars();
+}
+
+function endBattle(victory) {
+    clearInterval(battleInterval);
+    if(victory) {
+        player.wins++;
+        player.xp += 50;
+        logAction("Victory! Gained 50 XP");
+        if(player.wins % 5 === 0) {
+            showScreen('upgradeScreen');
+        } else {
+            setTimeout(spawnEnemy, 1500);
         }
+    } else {
+        logAction("You were defeated...");
+        showScreen('mainMenu');
+    }
+}
 
-        function attack(attacker, defender) {
-            const damage = Math.floor(Math.random() * 15) + 5;
-            if (defender === 'enemy') {
-                enemyHP = Math.max(0, enemyHP - damage);
-                document.getElementById('enemy').classList.add('attack');
-            } else {
-                playerHP = Math.max(0, playerHP - damage);
-                document.getElementById('player').classList.add('attack');
-            }
-            
-            setTimeout(() => {
-                document.getElementById(attacker).classList.remove('attack');
-                document.getElementById(defender).classList.remove('attack');
-            }, 300);
-            
-            updateHealth();
-            checkWinner();
-        }
-
-        function checkWinner() {
-            if (playerHP <= 0) {
-                alert('☠️ Вы проиграли! ☠️');
-                endGame();
-            } else if (enemyHP <= 0) {
-                alert('🎉 Вы победили! 🎉');
-                endGame();
-            }
-        }
-
-        function startGame() {
-            document.getElementById('mainMenu').style.display = 'none';
-            document.getElementById('gameArena').style.display = 'flex';
-            
-            playerHP = 100;
-            enemyHP = 100;
-            updateHealth();
-            
-            gameInterval = setInterval(() => {
-                attack('player', 'enemy');
-                setTimeout(() => attack('enemy', 'player'), 500);
-            }, 2000);
-        }
-
-        function endGame() {
-            clearInterval(gameInterval);
-            document.getElementById('mainMenu').style.display = 'flex';
-            document.getElementById('gameArena').style.display = 'none';
-        }
-
-        // Инициализация Telegram Web App
-        Telegram.WebApp.ready();
-        Telegram.WebApp.expand();
-        Telegram.WebApp.onEvent('viewportChanged', () => {
-            Telegram.WebApp.expand();
-        });
-
-        // Показать главное меню при загрузке
-        window.onload = () => {
-            document.getElementById('mainMenu').style.display = 'flex';
-        }
-    </script>
-</body>
-</html>
+function upgradeStat(stat) {
+    player[stat] += 5;
+    player.level++;
+    showScreen('battleScreen');
+    spawnEn
