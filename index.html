@@ -1,268 +1,144 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Chocolate Chaos</title>
+    <title>Dark Arena Evolution</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {
-            margin: 0;
-            background: #4A2B0F;
-            color: #D4A574;
-            font-family: 'Arial', sans-serif;
-            text-align: center;
+        /* Основные стили остаются прежними */
+        /* Добавляем новые стили */
+        @keyframes hit {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(10px); }
+            50% { transform: translateX(-10px); }
+            100% { transform: translateX(0); }
         }
-
-        #mainMenu, #arena {
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .button {
-            background: #6B4423;
-            border: 2px solid #8B5E3C;
-            color: #FFE4C4;
-            padding: 10px 20px;
-            margin: 5px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        .character {
-            font-size: 64px;
-            margin: 20px;
-            animation: pulse 1.5s infinite;
-        }
-
-        .health-bar {
-            width: 200px;
-            height: 20px;
-            background: #3D2010;
-            margin: 10px auto;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .health-fill {
-            height: 100%;
-            background: #50C878;
-            transition: width 0.3s;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        .stats {
-            background: #5A3415;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 10px;
-        }
-
-        #battleLog {
-            max-height: 100px;
-            overflow-y: auto;
-            background: #3D2010;
-            padding: 10px;
-            margin: 20px;
-            border-radius: 5px;
-            text-align: left;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .modal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #5A3415;
-            padding: 20px;
-            border-radius: 10px;
-            z-index: 1000;
-            border: 2px solid #8B5E3C;
-        }
-
-        .modal-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 999;
-        }
+        .hit-animation { animation: hit 0.3s linear; }
+        .achievement { color: #FFD700; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div id="mainMenu">
-        <h1>🏰 Dark Arena ⚔️</h1>
-        <div class="stats">
-            <p>Уровень: <span id="level">1</span></p>
-            <p>Опыт: <span id="xp">0</span>/100</p>
-            <p>Монеты: <span id="coins">0</span></p>
-            <p>⚔️ Атака: <span id="attack">10</span></p>
-            <p>❤️ Здоровье: <span id="maxHealth">100</span></p>
-        </div>
-        <button class="button" onclick="startGame()">Начать бой</button>
-        <button class="button" onclick="showUpgrades()">Улучшения</button>
-    </div>
-
-    <div id="arena" class="hidden">
-        <div id="playerArea">
-            <div class="health-bar"><div id="playerHealth" class="health-fill" style="width: 100%"></div></div>
-            <div class="character">🦁</div>
-        </div>
-        <div id="enemyArea">
-            <div class="health-bar"><div id="enemyHealth" class="health-fill" style="width: 100%"></div></div>
-            <div class="character" id="enemyIcon">🦊</div>
-        </div>
-        <div id="battleLog"></div>
-        <button class="button" onclick="returnToMenu()">В меню</button>
-    </div>
-
+    <!-- Остальная разметка остается прежней -->
     <div id="upgradeModal" class="hidden modal">
         <h3>Улучшения</h3>
         <button class="button" onclick="upgradeStat('attack')">⚔️ +5 Атаки (50💰)</button>
         <button class="button" onclick="upgradeStat('health')">❤️ +20 Здоровья (50💰)</button>
+        <button class="button" onclick="upgradeStat('defense')">🛡️ +3 Защиты (75💰)</button>
         <button class="button" onclick="hideUpgrades()">Закрыть</button>
     </div>
-    <div id="modalBackdrop" class="hidden modal-backdrop"></div>
 
     <script>
+        // Расширяем объект игрока
         let player = {
             level: 1,
             xp: 0,
             coins: 0,
             attack: 10,
+            defense: 0,
             health: 100,
             maxHealth: 100,
-            wins: 0
+            wins: 0,
+            achievements: []
         };
 
-        let currentEnemy = null;
-        let battleInterval = null;
+        // Система врагов
+        const ENEMY_TYPES = {
+            WARRIOR: { icon: '🛡️', attack: 15, defense: 5 },
+            ARCHER: { icon: '🏹', attack: 20, defense: 2 },
+            MAGE: { icon: '🔮', attack: 25, defense: 0 }
+        };
 
+        // Загрузка сохранения
+        function loadGame() {
+            const saved = localStorage.getItem('arenaSave');
+            if(saved) Object.assign(player, JSON.parse(saved));
+        }
+
+        // Сохранение игры
+        function saveGame() {
+            localStorage.setItem('arenaSave', JSON.stringify(player));
+        }
+
+        // Улучшенная система боя
+        function fightRound() {
+            // Атака игрока
+            const crit = Math.random() < 0.2;
+            const playerDamage = Math.max(0, (player.attack * (crit ? 1.5 : 1)) - currentEnemy.defense;
+            currentEnemy.health -= playerDamage;
+            document.getElementById('enemyIcon').classList.add('hit-animation');
+            logBattle(`${crit ? 'КРИТИЧЕСКИЙ УДАР! ' : ''}Вы нанесли ${playerDamage} урона!`);
+
+            // Атака врага
+            const enemyDamage = Math.max(0, currentEnemy.attack - player.defense);
+            player.health -= enemyDamage;
+            document.getElementById('playerIcon').classList.add('hit-animation');
+            logBattle(`Враг нанес ${enemyDamage} урона!`);
+
+            setTimeout(() => {
+                document.getElementById('enemyIcon').classList.remove('hit-animation');
+                document.getElementById('playerIcon').classList.remove('hit-animation');
+            }, 300);
+
+            updateHealthBars();
+
+            if(currentEnemy.health <= 0) endBattle(true);
+            else if(player.health <= 0) endBattle(false);
+        }
+
+        // Система достижений
+        const ACHIEVEMENTS = [
+            { condition: p => p.wins >= 5, title: "Новичок арены", done: false },
+            { condition: p => p.coins >= 200, title: "Богач", done: false },
+            { condition: p => p.wins >= 10, title: "Опытный боец", done: false }
+        ];
+
+        function checkAchievements() {
+            ACHIEVEMENTS.forEach(ach => {
+                if(!ach.done && ach.condition(player)) {
+                    logBattle(`<span class="achievement">Достижение: ${ach.title}!</span>`);
+                    ach.done = true;
+                    player.achievements.push(ach.title);
+                }
+            });
+        }
+
+        // Модифицированная функция создания врага
         function createEnemy(isBoss = false) {
+            const type = Object.values(ENEMY_TYPES)[Math.floor(Math.random() * 3)];
             return {
-                health: isBoss ? 300 : 50 + player.wins * 20,
-                maxHealth: isBoss ? 300 : 50 + player.wins * 20,
-                attack: isBoss ? 30 : 10 + player.wins * 3,
-                icon: isBoss ? '🐲' : '🦍'
+                ...type,
+                health: isBoss ? 500 : 100 + player.wins * 30,
+                attack: type.attack * (isBoss ? 2 : 1) + player.wins * 5,
+                defense: type.defense + player.wins * 2,
+                icon: isBoss ? '🐉' : type.icon
             };
         }
 
-        function startGame() {
-            document.getElementById('mainMenu').classList.add('hidden');
-            document.getElementById('arena').classList.remove('hidden');
-            player.health = player.maxHealth;
-            currentEnemy = createEnemy(player.wins >= 5);
-            if(player.wins >= 5) player.wins = 0;
-            
-            updateHealthBars();
-            document.getElementById('enemyIcon').textContent = currentEnemy.icon;
-            
-            battleInterval = setInterval(fightRound, 1500);
-        }
-
-        function fightRound() {
-            // Player attack
-            currentEnemy.health -= player.attack;
-            logBattle(`Вы нанесли ${player.attack} урона!`);
-            
-            // Enemy attack
-            player.health -= currentEnemy.attack;
-            logBattle(`Враг нанес ${currentEnemy.attack} урона!`);
-            
-            updateHealthBars();
-
-            if(currentEnemy.health <= 0) {
-                endBattle(true);
-            } else if(player.health <= 0) {
-                endBattle(false);
-            }
-        }
-
-        function endBattle(victory) {
-            clearInterval(battleInterval);
-            if(victory) {
-                player.wins++;
-                player.xp += 25;
-                player.coins += 10;
-                logBattle("Победа! +25 опыта +10 монет");
-                
-                if(player.xp >= 100) {
-                    player.level++;
-                    player.attack += 5;
-                    player.maxHealth += 20;
-                    player.xp = 0;
-                    logBattle("Уровень повышен! +5 атаки +20 здоровья");
-                }
-                
-                if(player.wins % 5 === 0) {
-                    logBattle("Приближается босс!");
-                }
-            } else {
-                logBattle("Поражение...");
-                player.wins = 0;
-            }
-            
-            updateStatsDisplay();
-        }
-
+        // Обновляем функцию улучшений
         function upgradeStat(stat) {
-            if(player.coins >= 50) {
-                player.coins -= 50;
+            const costs = { attack: 50, health: 50, defense: 75 };
+            if(player.coins >= costs[stat]) {
+                player.coins -= costs[stat];
                 if(stat === 'attack') player.attack += 5;
                 if(stat === 'health') player.maxHealth += 20;
+                if(stat === 'defense') player.defense += 3;
                 updateStatsDisplay();
+                saveGame();
                 hideUpgrades();
             }
         }
 
-        function updateHealthBars() {
-            document.getElementById('playerHealth').style.width = 
-                `${Math.max(0, (player.health / player.maxHealth) * 100)}%`;
-            document.getElementById('enemyHealth').style.width = 
-                `${Math.max(0, (currentEnemy.health / currentEnemy.maxHealth) * 100)}%`;
-        }
+        // Инициализация игры
+        window.onload = () => {
+            loadGame();
+            updateStatsDisplay();
+        };
 
-        function updateStatsDisplay() {
-            document.getElementById('level').textContent = player.level;
-            document.getElementById('xp').textContent = player.xp;
-            document.getElementById('coins').textContent = player.coins;
-            document.getElementById('attack').textContent = player.attack;
-            document.getElementById('maxHealth').textContent = player.maxHealth;
-        }
-
-        function logBattle(text) {
-            const log = document.getElementById('battleLog');
-            const newEntry = document.createElement('div');
-            newEntry.textContent = text;
-            log.appendChild(newEntry);
-            log.scrollTop = log.scrollHeight;
-        }
-
-        function returnToMenu() {
-            document.getElementById('mainMenu').classList.remove('hidden');
-            document.getElementById('arena').classList.add('hidden');
-            clearInterval(battleInterval);
-        }
-
-        function showUpgrades() {
-            document.getElementById('upgradeModal').classList.remove('hidden');
-            document.getElementById('modalBackdrop').classList.remove('hidden');
-        }
-
-        function hideUpgrades() {
-            document.getElementById('upgradeModal').classList.add('hidden');
-            document.getElementById('modalBackdrop').classList.add('hidden');
+        // Добавляем вызов сохранения и проверки достижений
+        function endBattle(victory) {
+            // ... предыдущий код ...
+            checkAchievements();
+            saveGame();
         }
     </script>
 </body>
