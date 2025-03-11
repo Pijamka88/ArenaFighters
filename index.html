@@ -1,34 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Dark Fantasy Arena</title>
+    <title>Mystic Arena</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
     <style>
         :root {
-            --dark-1: #1A1A1A;
-            --dark-2: #2D2D2D;
-            --accent-red: #8B0000;
-            --accent-gold: #D4AF37;
-            --text-primary: #E0E0E0;
+            --primary-dark: #2B1B17;
+            --primary-light: #E8D8C9;
+            --accent-gold: #C5A47E;
+            --accent-red: #8C2E2E;
+            --accent-blue: #3E5C76;
         }
 
         body {
             margin: 0;
-            background: var(--dark-1);
-            color: var(--text-primary);
-            font-family: 'MedievalSharp', cursive;
+            background: var(--primary-dark);
+            color: var(--primary-light);
+            font-family: 'Georgia', serif;
             text-align: center;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             background-image: 
-                linear-gradient(
-                    rgba(0, 0, 0, 0.7), 
-                    rgba(0, 0, 0, 0.7)
-                ),
-                url('data:image/png;base64,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');
+                linear-gradient(rgba(43,27,23,0.9), rgba(43,27,23,0.9)),
+                url('data:image/png;base64,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');
         }
 
         #mainMenu, #arena {
@@ -39,99 +35,84 @@
         }
 
         .button {
-            background: var(--dark-2);
-            border: 2px solid var(--accent-gold);
-            color: var(--text-primary);
-            padding: 15px 30px;
+            background: var(--accent-gold);
+            border: 2px solid var(--primary-dark);
+            color: var(--primary-dark);
+            padding: 12px 24px;
             margin: 10px;
             cursor: pointer;
-            border-radius: 0;
-            font-size: 1.2em;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            border-radius: 4px;
+            font-size: 1.1em;
             transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
-        .button:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(255,255,255,0.2),
-                transparent
-            );
-            transition: 0.5s;
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.2);
         }
 
-        .button:hover:before {
-            left: 100%;
-        }
-
-        .character {
-            width: 120px;
-            height: 120px;
+        .character-card {
+            background: var(--primary-light);
+            border-radius: 8px;
+            padding: 20px;
             margin: 20px auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
             position: relative;
-            filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
-        }
-
-        .character svg {
-            width: 100%;
-            height: 100%;
         }
 
         .health-bar {
-            width: 200px;
-            height: 30px;
-            background: var(--dark-2);
-            margin: 20px auto;
-            border: 2px solid var(--accent-gold);
+            height: 24px;
+            background: #4A2B0F;
+            border-radius: 12px;
+            overflow: hidden;
             position: relative;
+            margin: 15px 0;
         }
 
         .health-fill {
             height: 100%;
-            background: var(--accent-red);
+            background: linear-gradient(45deg, #50C878, #3E8C47);
             transition: width 0.3s;
             position: relative;
         }
 
-        .health-fill:after {
+        .health-fill::after {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(
-                to bottom,
-                transparent 50%,
-                rgba(0,0,0,0.2) 50%
-            );
+            background: linear-gradient(transparent 50%, rgba(0,0,0,0.1) 50%);
+        }
+
+        .stats-panel {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 2px solid var(--accent-gold);
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            padding: 8px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 4px;
         }
 
         #battleLog {
             max-height: 150px;
             overflow-y: auto;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.3);
             padding: 15px;
-            margin: 20px;
-            border: 1px solid var(--accent-gold);
+            margin: 20px 0;
+            border-radius: 8px;
             text-align: left;
-            font-size: 0.9em;
-            transform: perspective(100px) rotateX(3deg);
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-        }
-
-        .hidden {
-            display: none;
+            border: 1px solid var(--accent-gold);
         }
 
         .modal {
@@ -139,46 +120,22 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: var(--dark-2);
+            background: var(--primary-dark);
             padding: 30px;
-            border: 3px solid var(--accent-gold);
+            border-radius: 12px;
+            border: 2px solid var(--accent-gold);
             z-index: 1000;
             max-width: 400px;
         }
 
         .modal h3 {
-            border-bottom: 2px solid var(--accent-gold);
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-
-        .modal-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.8);
-            z-index: 999;
-        }
-
-        .stats {
-            background: rgba(0,0,0,0.5);
-            padding: 20px;
-            margin: 20px 0;
-            border: 2px solid var(--accent-gold);
-        }
-
-        .stats p {
-            margin: 10px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .stats span {
             color: var(--accent-gold);
-            font-size: 1.1em;
+            border-bottom: 2px solid;
+            padding-bottom: 10px;
+        }
+
+        .combat-animation {
+            animation: pulse 0.3s;
         }
 
         @keyframes pulse {
@@ -187,59 +144,71 @@
             100% { transform: scale(1); }
         }
 
-        .combat-animation {
-            animation: pulse 0.3s ease-out;
+        .hidden {
+            display: none;
         }
 
-        .icon-sword {
-            width: 40px;
-            height: 40px;
-            margin: 0 10px;
+        .icon {
+            width: 32px;
+            height: 32px;
+            margin-right: 10px;
+            vertical-align: middle;
         }
     </style>
 </head>
 <body>
     <div id="mainMenu">
-        <h1>DARK ARENA</h1>
-        <div class="stats">
-            <p>Level: <span id="level">1</span></p>
-            <p>Experience: <span id="xp">0</span>/100</p>
-            <p>Gold: <span id="coins">0</span></p>
-            <p>Attack: <span id="attack">10</span></p>
-            <p>Defense: <span id="defense">0</span></p>
-            <p>Health: <span id="maxHealth">100</span></p>
+        <h1>⚔️ Mystic Arena ⚔️</h1>
+        
+        <div class="stats-panel">
+            <div class="stats-row">
+                <span>Level:</span>
+                <span id="level">1</span>
+            </div>
+            <div class="stats-row">
+                <span>Experience:</span>
+                <span id="xp">0/100</span>
+            </div>
+            <div class="stats-row">
+                <span>Gold:</span>
+                <span id="coins">0</span>
+            </div>
+            <div class="stats-row">
+                <span>Attack:</span>
+                <span id="attack">10</span>
+            </div>
+            <div class="stats-row">
+                <span>Defense:</span>
+                <span id="defense">0</span>
+            </div>
+            <div class="stats-row">
+                <span>Health:</span>
+                <span id="maxHealth">100</span>
+            </div>
         </div>
-        <button class="button" onclick="startGame()">Enter the Arena</button>
-        <button class="button" onclick="showUpgrades()">Blacksmith</button>
+
+        <button class="button" onclick="startGame()">Start Battle</button>
+        <button class="button" onclick="showUpgrades()">Upgrades</button>
     </div>
 
     <div id="arena" class="hidden">
-        <div id="playerArea">
+        <div class="character-card">
             <div class="health-bar">
                 <div id="playerHealth" class="health-fill" style="width: 100%"></div>
             </div>
-            <div class="character">
-                <svg viewBox="0 0 24 24">
-                    <path fill="#666" d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.2l8 4v7.6l-8 4-8-4V6.2l8-4z"/>
-                    <path fill="#444" d="M12 8.5l-5.2 2.6 5.2 2.6 5.2-2.6L12 8.5zM6.8 11.9v3.3L12 17.5l5.2-2.3v-3.3L12 14.2 6.8 11.9z"/>
-                </svg>
-            </div>
+            <h3>Champion</h3>
         </div>
-        
-        <div id="enemyArea">
+
+        <div class="character-card">
             <div class="health-bar">
                 <div id="enemyHealth" class="health-fill" style="width: 100%"></div>
             </div>
-            <div class="character">
-                <svg viewBox="0 0 24 24">
-                    <path fill="#8B0000" d="M12 2c3.9 0 7 3.1 7 7 0 2.4-1.2 4.5-3 5.7V22h-8v-7.3C6.2 13.5 5 11.4 5 9c0-3.9 3.1-7 7-7zm0 2c-2.8 0-5 2.2-5 5 0 1.9 1.1 3.6 2.7 4.4l.3.2V20h4v-6.4l.3-.2c1.6-.8 2.7-2.5 2.7-4.4 0-2.8-2.2-5-5-5z"/>
-                    <path fill="#660000" d="M12 6c1.1 0 2 .9 2 2h-4c0-1.1.9-2 2-2z"/>
-                </svg>
-            </div>
+            <h3 id="enemyName">Enemy</h3>
         </div>
 
         <div id="battleLog"></div>
-        <div class="button-group">
+
+        <div style="margin-top: 20px;">
             <button class="button hidden" id="continueButton" onclick="startGame()">Continue</button>
             <button class="button" onclick="returnToMenu()">Retreat</button>
         </div>
@@ -248,32 +217,33 @@
     <div id="upgradeModal" class="hidden modal">
         <h3>Blacksmith's Forge</h3>
         <button class="button" onclick="upgradeStat('attack')">
-            <svg class="icon-sword" viewBox="0 0 24 24">
-                <path fill="#D4AF37" d="M14.8 2l-3 3 2.8 2.8-5.1 5.1-1.4-1.4-2.8 2.8 1.4 1.4L3 19.8l2.2 2.2 4.4-4.4 1.4 1.4 2.8-2.8-1.4-1.4 5.1-5.1 2.8 2.8 3-3-6.8-6.8zm-3.2 16.2l-1.4-1.4 2.8-2.8 1.4 1.4-2.8 2.8z"/>
-            </svg>
-            Sharpen Blade (+5 Attack)
+            ⚔️ Sharpen Sword (+5 Attack)
             <div class="cost">50 Gold</div>
         </button>
         <button class="button" onclick="upgradeStat('health')">
-            <svg class="icon-sword" viewBox="0 0 24 24">
-                <path fill="#D4AF37" d="M12 2c3.9 0 7 3.1 7 7 0 2.4-1.2 4.5-3 5.7V22h-8v-7.3C6.2 13.5 5 11.4 5 9c0-3.9 3.1-7 7-7zm0 2c-2.8 0-5 2.2-5 5 0 1.9 1.1 3.6 2.7 4.4l.3.2V20h4v-6.4l.3-.2c1.6-.8 2.7-2.5 2.7-4.4 0-2.8-2.2-5-5-5z"/>
-            </svg>
-            Reinforce Armor (+20 Health)
+            ❤️ Reinforce Armor (+20 HP)
             <div class="cost">50 Gold</div>
         </button>
-        <button class="button" onclick="hideUpgrades()">Leave Forge</button>
+        <button class="button" onclick="upgradeStat('defense')">
+            🛡️ Strengthen Shield (+3 Def)
+            <div class="cost">75 Gold</div>
+        </button>
+        <button class="button" onclick="hideUpgrades()">Close</button>
     </div>
-    <div id="modalBackdrop" class="hidden modal-backdrop"></div>
 
     <script>
-        // Игровая логика остается аналогичной предыдущей версии
-        // с небольшими изменениями для поддержки нового дизайна
-        
-        const ENEMY_TYPES = [
-            { name: 'Warlock', attack: 15, defense: 5, health: 100 },
-            { name: 'Revenant', attack: 20, defense: 2, health: 80 },
-            { name: 'Behemoth', attack: 25, defense: 8, health: 150 }
+        const ENEMIES = [
+            { name: "Mercenary", attack: 12, defense: 3, health: 80 },
+            { name: "Warlock", attack: 18, defense: 1, health: 60 },
+            { name: "Knight", attack: 15, defense: 5, health: 100 }
         ];
+
+        const BOSS = { 
+            name: "Dragon Lord", 
+            attack: 30, 
+            defense: 10, 
+            health: 300 
+        };
 
         let player = {
             level: 1,
@@ -289,23 +259,92 @@
         let currentEnemy = null;
         let battleInterval = null;
 
-        // ... (остальная игровая логика аналогична предыдущей версии) ...
-
-        function updateHealthBars() {
-            const playerHealthPercent = Math.min(100, Math.max(0, (player.health / player.maxHealth) * 100));
-            const enemyHealthPercent = Math.min(100, Math.max(0, (currentEnemy.health / currentEnemy.maxHealth) * 100));
-            
-            document.getElementById('playerHealth').style.width = `${playerHealthPercent}%`;
-            document.getElementById('enemyHealth').style.width = `${enemyHealthPercent}%`;
+        function createEnemy(isBoss) {
+            if(isBoss) return {...BOSS};
+            const base = ENEMIES[Math.floor(Math.random() * ENEMIES.length)];
+            return {
+                ...base,
+                attack: base.attack + player.wins * 2,
+                defense: base.defense + player.wins,
+                health: base.health + player.wins * 10
+            };
         }
 
-        // Инициализация игры
-        window.onload = () => {
-            if(localStorage.getItem('arenaSave')) {
-                player = JSON.parse(localStorage.getItem('arenaSave'));
-                updateStatsDisplay();
+        function startGame() {
+            document.getElementById('mainMenu').classList.add('hidden');
+            document.getElementById('arena').classList.remove('hidden');
+            document.getElementById('continueButton').classList.add('hidden');
+            
+            player.health = player.maxHealth;
+            currentEnemy = createEnemy(player.wins >= 5);
+            
+            if(player.wins >= 5) {
+                logBattle("⚠️ The arena trembles! A boss approaches!");
+                player.wins = 0;
             }
-        };
-    </script>
-</body>
-</html>
+
+            updateDisplay();
+            battleInterval = setInterval(fightRound, 1500);
+        }
+
+        function fightRound() {
+            // Player attack
+            let damage = Math.max(0, player.attack - currentEnemy.defense);
+            currentEnemy.health -= damage;
+            logBattle(`⚔️ You strike for ${damage} damage!`);
+
+            // Enemy attack
+            damage = Math.max(0, currentEnemy.attack - player.defense);
+            player.health -= damage;
+            logBattle(`🛡️ Enemy hits for ${damage} damage!`);
+
+            updateDisplay();
+
+            if(currentEnemy.health <= 0) endBattle(true);
+            else if(player.health <= 0) endBattle(false);
+        }
+
+        function endBattle(victory) {
+            clearInterval(battleInterval);
+            if(victory) {
+                player.wins++;
+                player.xp += 25;
+                player.coins += 10;
+                logBattle("🎉 Victory! +25 XP +10 Gold");
+                
+                if(player.xp >= 100) {
+                    player.level++;
+                    player.attack += 2;
+                    player.maxHealth += 20;
+                    player.xp = 0;
+                    logBattle("✨ Level Up! +2 Attack +20 Max HP");
+                }
+                
+                document.getElementById('continueButton').classList.remove('hidden');
+            } else {
+                logBattle("💀 Defeat...");
+                player.wins = 0;
+            }
+            
+            saveGame();
+            updateDisplay();
+        }
+
+        function upgradeStat(stat) {
+            const costs = { attack:50, health:50, defense:75 };
+            if(player.coins >= costs[stat]) {
+                player.coins -= costs[stat];
+                if(stat === 'attack') player.attack += 5;
+                if(stat === 'health') player.maxHealth += 20;
+                if(stat === 'defense') player.defense += 3;
+                updateDisplay();
+                hideUpgrades();
+            }
+        }
+
+        function updateDisplay() {
+            // Player stats
+            document.getElementById('level').textContent = player.level;
+            document.getElementById('xp').textContent = `${player.xp}/100`;
+            document.getElementById('coins').textContent = player.coins;
+            document.getElementById
