@@ -107,7 +107,7 @@
         .hit-animation { animation: hit 0.3s linear; }
         .achievement { color: #FFD700; font-weight: bold; }
         .boss-warning { color: #FF0000; animation: pulse 0.5s infinite; }
-        #continueButton { background: #2E8B57; }
+        .button-group { margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -136,8 +136,10 @@
             <div class="character" id="enemyIcon">🦊</div>
         </div>
         <div id="battleLog"></div>
-        <button class="button" onclick="returnToMenu()" id="menuButton">В меню</button>
-        <button class="button hidden" onclick="continueBattle()" id="continueButton">Продолжить бой</button>
+        <div class="button-group">
+            <button class="button hidden" id="continueButton" onclick="startGame()">Продолжить бой</button>
+            <button class="button" onclick="returnToMenu()">В меню</button>
+        </div>
     </div>
 
     <div id="upgradeModal" class="hidden modal">
@@ -201,6 +203,7 @@
         function startGame() {
             document.getElementById('mainMenu').classList.add('hidden');
             document.getElementById('arena').classList.remove('hidden');
+            document.getElementById('continueButton').classList.add('hidden');
             player.health = player.maxHealth;
             currentEnemy = createEnemy(player.wins >= 5);
             
@@ -211,23 +214,21 @@
 
             updateHealthBars();
             document.getElementById('enemyIcon').textContent = currentEnemy.icon;
-            document.getElementById('continueButton').classList.add('hidden');
-            document.getElementById('menuButton').classList.remove('hidden');
             
             battleInterval = setInterval(fightRound, 1500);
         }
 
         function fightRound() {
             const crit = Math.random() < 0.2;
-            const playerDamage = Math.max(0, (player.attack * (crit ? 1.5 : 1)) - currentEnemy.defense);
+            const playerDamage = Math.max(0, (player.attack * (crit ? 1.5 : 1)) - currentEnemy.defense;
             currentEnemy.health -= playerDamage;
             document.getElementById('enemyIcon').classList.add('hit-animation');
-            logBattle(`${crit ? '💥 КРИТИЧЕСКИЙ УДАР! ' : ''}Вы нанесли ${playerDamage} урона!`);
+            logBattle(`${crit ? '💥 КРИТИЧЕСКИЙ УДАР! ' : ''}Вы нанесли ${Math.max(0, playerDamage)} урона!`);
 
             const enemyDamage = Math.max(0, currentEnemy.attack - player.defense);
             player.health -= enemyDamage;
             document.getElementById('playerIcon').classList.add('hit-animation');
-            logBattle(`Враг нанес ${enemyDamage} урона!`);
+            logBattle(`Враг нанес ${Math.max(0, enemyDamage)} урона!`);
 
             setTimeout(() => {
                 document.getElementById('enemyIcon').classList.remove('hit-animation');
@@ -258,26 +259,14 @@
                 
                 checkAchievements();
                 document.getElementById('continueButton').classList.remove('hidden');
-                document.getElementById('menuButton').classList.add('hidden');
             } else {
                 logBattle("💀 Поражение...");
                 player.wins = 0;
                 document.getElementById('continueButton').classList.add('hidden');
-                document.getElementById('menuButton').classList.remove('hidden');
             }
             
             updateStatsDisplay();
             saveGame();
-        }
-
-        function continueBattle() {
-            player.health = player.maxHealth;
-            currentEnemy = createEnemy(player.wins >= 5);
-            document.getElementById('enemyIcon').textContent = currentEnemy.icon;
-            updateHealthBars();
-            document.getElementById('continueButton').classList.add('hidden');
-            document.getElementById('menuButton').classList.remove('hidden');
-            battleInterval = setInterval(fightRound, 1500);
         }
 
         function upgradeStat(stat) {
@@ -305,11 +294,8 @@
         }
 
         function updateHealthBars() {
-            // Исправление бага с отображением здоровья
-            const playerHealthPercent = Math.max(0, Math.min(100, 
-                (player.health / player.maxHealth) * 100));
-            const enemyHealthPercent = Math.max(0, Math.min(100, 
-                (currentEnemy.health / currentEnemy.maxHealth) * 100));
+            const playerHealthPercent = Math.min(100, Math.max(0, (player.health / player.maxHealth) * 100));
+            const enemyHealthPercent = Math.min(100, Math.max(0, (currentEnemy.health / currentEnemy.maxHealth) * 100));
             
             document.getElementById('playerHealth').style.width = `${playerHealthPercent}%`;
             document.getElementById('enemyHealth').style.width = `${enemyHealthPercent}%`;
@@ -347,6 +333,7 @@
         function returnToMenu() {
             document.getElementById('mainMenu').classList.remove('hidden');
             document.getElementById('arena').classList.add('hidden');
+            document.getElementById('continueButton').classList.add('hidden');
             clearInterval(battleInterval);
         }
 
