@@ -347,4 +347,56 @@
             document.getElementById('level').textContent = player.level;
             document.getElementById('xp').textContent = `${player.xp}/100`;
             document.getElementById('coins').textContent = player.coins;
-            document.getElementById
+            document.getElementById('attack').textContent = player.attack;
+            document.getElementById('defense').textContent = player.defense;
+            document.getElementById('maxHealth').textContent = player.maxHealth;
+
+            // Health bars
+            document.getElementById('playerHealth').style.width = 
+                `${Math.max(0, (player.health / player.maxHealth) * 100}%`;
+            document.getElementById('enemyHealth').style.width = 
+                `${Math.max(0, (currentEnemy?.health / (currentEnemy?.health + currentEnemy?.maxHealth || 100)) * 100}%`;
+
+            // Enemy info
+            if(currentEnemy) {
+                document.getElementById('enemyName').textContent = currentEnemy.name;
+            }
+        }
+
+        function logBattle(message) {
+            const log = document.getElementById('battleLog');
+            const entry = document.createElement('div');
+            entry.textContent = message;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function showUpgrades() {
+            document.getElementById('upgradeModal').classList.remove('hidden');
+        }
+
+        function hideUpgrades() {
+            document.getElementById('upgradeModal').classList.add('hidden');
+        }
+
+        function returnToMenu() {
+            document.getElementById('mainMenu').classList.remove('hidden');
+            document.getElementById('arena').classList.add('hidden');
+            updateDisplay();
+        }
+
+        function saveGame() {
+            localStorage.setItem('arenaSave', JSON.stringify(player));
+        }
+
+        function loadGame() {
+            const saved = localStorage.getItem('arenaSave');
+            if(saved) player = JSON.parse(saved);
+            updateDisplay();
+        }
+
+        // Initialize
+        window.onload = loadGame;
+    </script>
+</body>
+</html>
