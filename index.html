@@ -1,118 +1,102 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Mystic Arena</title>
+    <title>Darkstone Arena</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root {
-            --primary-dark: #2B1B17;
-            --primary-light: #E8D8C9;
-            --accent-gold: #C5A47E;
-            --accent-red: #8C2E2E;
-            --accent-blue: #3E5C76;
+            --bg-dark: #1a1a1a;
+            --bg-light: #2d2d2d;
+            --accent-red: #c62828;
+            --accent-gold: #d4af37;
+            --text-primary: #e0e0e0;
+            --text-secondary: #9e9e9e;
         }
 
         body {
             margin: 0;
-            background: var(--primary-dark);
-            color: var(--primary-light);
-            font-family: 'Georgia', serif;
-            text-align: center;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            font-family: 'Arial', sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            background-image: 
-                linear-gradient(rgba(43,27,23,0.9), rgba(43,27,23,0.9)),
-                url('data:image/png;base64,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');
         }
 
-        #mainMenu, #arena {
-            padding: 20px;
-            max-width: 600px;
+        .container {
+            max-width: 800px;
             margin: 0 auto;
-            flex-grow: 1;
+            padding: 20px;
         }
 
-        .button {
-            background: var(--accent-gold);
-            border: 2px solid var(--primary-dark);
-            color: var(--primary-dark);
-            padding: 12px 24px;
-            margin: 10px;
-            cursor: pointer;
-            border-radius: 4px;
-            font-size: 1.1em;
-            transition: all 0.3s;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        .header {
+            text-align: center;
+            padding: 2rem;
+            background: var(--bg-light);
+            border-bottom: 3px solid var(--accent-gold);
         }
 
-        .button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0,0,0,0.2);
+        .combat-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
         }
 
         .character-card {
-            background: var(--primary-light);
+            background: var(--bg-light);
             border-radius: 8px;
-            padding: 20px;
-            margin: 20px auto;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            padding: 1.5rem;
             position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
         .health-bar {
             height: 24px;
-            background: #4A2B0F;
+            background: #4a2b0f;
             border-radius: 12px;
             overflow: hidden;
-            position: relative;
-            margin: 15px 0;
+            margin: 1rem 0;
         }
 
         .health-fill {
             height: 100%;
             background: linear-gradient(45deg, #50C878, #3E8C47);
-            transition: width 0.3s;
-            position: relative;
-        }
-
-        .health-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(transparent 50%, rgba(0,0,0,0.1) 50%);
+            transition: width 0.3s ease;
         }
 
         .stats-panel {
-            background: rgba(255,255,255,0.1);
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
-            border: 2px solid var(--accent-gold);
-        }
-
-        .stats-row {
-            display: flex;
-            justify-content: space-between;
-            margin: 8px 0;
-            padding: 8px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 4px;
-        }
-
-        #battleLog {
-            max-height: 150px;
-            overflow-y: auto;
             background: rgba(0,0,0,0.3);
-            padding: 15px;
-            margin: 20px 0;
+            padding: 1rem;
             border-radius: 8px;
-            text-align: left;
-            border: 1px solid var(--accent-gold);
+            margin: 1rem 0;
+        }
+
+        .button {
+            background: var(--accent-gold);
+            color: var(--bg-dark);
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+            margin: 0.5rem;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .battle-log {
+            height: 200px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
         }
 
         .modal {
@@ -120,22 +104,31 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: var(--primary-dark);
-            padding: 30px;
-            border-radius: 12px;
-            border: 2px solid var(--accent-gold);
+            background: var(--bg-light);
+            padding: 2rem;
+            border-radius: 8px;
             z-index: 1000;
             max-width: 400px;
         }
 
-        .modal h3 {
-            color: var(--accent-gold);
-            border-bottom: 2px solid;
-            padding-bottom: 10px;
+        .skill-tree {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
         }
 
-        .combat-animation {
-            animation: pulse 0.3s;
+        .skill-node {
+            background: var(--bg-dark);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .skill-node.unlocked {
+            background: var(--accent-gold);
+            color: var(--bg-dark);
         }
 
         @keyframes pulse {
@@ -143,227 +136,267 @@
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
-
-        .hidden {
-            display: none;
-        }
-
-        .icon {
-            width: 32px;
-            height: 32px;
-            margin-right: 10px;
-            vertical-align: middle;
-        }
     </style>
 </head>
 <body>
-    <div id="mainMenu">
-        <h1>⚔️ Mystic Arena ⚔️</h1>
+    <div class="header">
+        <h1>Darkstone Arena</h1>
+        <div class="button-group">
+            <button class="button" onclick="startNewGame()">New Game</button>
+            <button class="button" onclick="showSkillTree()">Skill Tree</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="combat-container">
+            <div class="character-card">
+                <h2>Player</h2>
+                <div class="health-bar">
+                    <div id="playerHealth" class="health-fill" style="width: 100%"></div>
+                </div>
+                <div class="stats-panel">
+                    <div>Level: <span id="level">1</span></div>
+                    <div>XP: <span id="xp">0/100</span></div>
+                    <div>Gold: <span id="gold">0</span></div>
+                </div>
+            </div>
+
+            <div class="character-card">
+                <h2 id="enemyName">Enemy</h2>
+                <div class="health-bar">
+                    <div id="enemyHealth" class="health-fill" style="width: 100%"></div>
+                </div>
+                <div class="stats-panel">
+                    <div>Streak: <span id="streak">0</span></div>
+                    <div>Next Boss: <span id="bossCounter">5</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="battle-log" id="battleLog"></div>
         
-        <div class="stats-panel">
-            <div class="stats-row">
-                <span>Level:</span>
-                <span id="level">1</span>
-            </div>
-            <div class="stats-row">
-                <span>Experience:</span>
-                <span id="xp">0/100</span>
-            </div>
-            <div class="stats-row">
-                <span>Gold:</span>
-                <span id="coins">0</span>
-            </div>
-            <div class="stats-row">
-                <span>Attack:</span>
-                <span id="attack">10</span>
-            </div>
-            <div class="stats-row">
-                <span>Defense:</span>
-                <span id="defense">0</span>
-            </div>
-            <div class="stats-row">
-                <span>Health:</span>
-                <span id="maxHealth">100</span>
-            </div>
-        </div>
-
-        <button class="button" onclick="startGame()">Start Battle</button>
-        <button class="button" onclick="showUpgrades()">Upgrades</button>
-    </div>
-
-    <div id="arena" class="hidden">
-        <div class="character-card">
-            <div class="health-bar">
-                <div id="playerHealth" class="health-fill" style="width: 100%"></div>
-            </div>
-            <h3>Champion</h3>
-        </div>
-
-        <div class="character-card">
-            <div class="health-bar">
-                <div id="enemyHealth" class="health-fill" style="width: 100%"></div>
-            </div>
-            <h3 id="enemyName">Enemy</h3>
-        </div>
-
-        <div id="battleLog"></div>
-
-        <div style="margin-top: 20px;">
-            <button class="button hidden" id="continueButton" onclick="startGame()">Continue</button>
-            <button class="button" onclick="returnToMenu()">Retreat</button>
+        <div class="button-group">
+            <button class="button" id="attackButton" onclick="startCombat()">Start Combat</button>
+            <button class="button" onclick="showShop()">Visit Shop</button>
         </div>
     </div>
 
-    <div id="upgradeModal" class="hidden modal">
-        <h3>Blacksmith's Forge</h3>
-        <button class="button" onclick="upgradeStat('attack')">
-            ⚔️ Sharpen Sword (+5 Attack)
-            <div class="cost">50 Gold</div>
-        </button>
-        <button class="button" onclick="upgradeStat('health')">
-            ❤️ Reinforce Armor (+20 HP)
-            <div class="cost">50 Gold</div>
-        </button>
-        <button class="button" onclick="upgradeStat('defense')">
-            🛡️ Strengthen Shield (+3 Def)
-            <div class="cost">75 Gold</div>
-        </button>
-        <button class="button" onclick="hideUpgrades()">Close</button>
+    <!-- Skill Tree Modal -->
+    <div id="skillModal" class="modal hidden">
+        <h3>Skill Tree</h3>
+        <div class="skill-tree" id="skillTree"></div>
+        <button class="button" onclick="hideModals()">Close</button>
+    </div>
+
+    <!-- Shop Modal -->
+    <div id="shopModal" class="modal hidden">
+        <h3>Blacksmith</h3>
+        <div class="shop-items" id="shopItems"></div>
+        <button class="button" onclick="hideModals()">Close</button>
     </div>
 
     <script>
-        const ENEMIES = [
-            { name: "Mercenary", attack: 12, defense: 3, health: 80 },
-            { name: "Warlock", attack: 18, defense: 1, health: 60 },
-            { name: "Knight", attack: 15, defense: 5, health: 100 }
+        const SKILLS = [
+            { id: 'crit', name: 'Critical Strike', cost: 3, effect: { critChance: 0.1 } },
+            { id: 'block', name: 'Shield Block', cost: 2, effect: { blockChance: 0.15 } },
+            { id: 'rage', name: 'Battle Rage', cost: 5, effect: { damageBoost: 0.2 } }
         ];
 
-        const BOSS = { 
-            name: "Dragon Lord", 
-            attack: 30, 
-            defense: 10, 
-            health: 300 
-        };
+        const SHOP_ITEMS = [
+            { name: 'Health Potion', cost: 50, effect: { health: 50 } },
+            { name: 'Attack Boost', cost: 100, effect: { attack: 5 } },
+            { name: 'Defense Boost', cost: 75, effect: { defense: 3 } }
+        ];
 
         let player = {
             level: 1,
             xp: 0,
-            coins: 0,
-            attack: 10,
-            defense: 0,
+            gold: 0,
             health: 100,
             maxHealth: 100,
-            wins: 0
+            attack: 10,
+            defense: 5,
+            skills: [],
+            inventory: [],
+            streak: 0
         };
 
         let currentEnemy = null;
-        let battleInterval = null;
+        let combatInterval = null;
 
-        function createEnemy(isBoss) {
-            if(isBoss) return {...BOSS};
-            const base = ENEMIES[Math.floor(Math.random() * ENEMIES.length)];
+        function createEnemy() {
+            const baseHealth = 50 + player.streak * 10;
+            const baseAttack = 8 + player.streak * 2;
+            
             return {
-                ...base,
-                attack: base.attack + player.wins * 2,
-                defense: base.defense + player.wins,
-                health: base.health + player.wins * 10
+                name: getEnemyName(),
+                health: baseHealth,
+                maxHealth: baseHealth,
+                attack: baseAttack,
+                defense: 2 + player.streak
             };
         }
 
-        function startGame() {
-            document.getElementById('mainMenu').classList.add('hidden');
-            document.getElementById('arena').classList.remove('hidden');
-            document.getElementById('continueButton').classList.add('hidden');
-            
-            player.health = player.maxHealth;
-            currentEnemy = createEnemy(player.wins >= 5);
-            
-            if(player.wins >= 5) {
-                logBattle("⚠️ The arena trembles! A boss approaches!");
-                player.wins = 0;
-            }
-
-            updateDisplay();
-            battleInterval = setInterval(fightRound, 1500);
+        function getEnemyName() {
+            const names = ['Raider', 'Mercenary', 'Warlock', 'Berserker'];
+            return names[Math.floor(Math.random() * names.length)];
         }
 
-        function fightRound() {
+        function startCombat() {
+            if (player.health <= 0) return;
+            
+            currentEnemy = createEnemy();
+            combatInterval = setInterval(performCombatRound, 1000);
+            logMessage('Combat started!');
+        }
+
+        function performCombatRound() {
             // Player attack
-            let damage = Math.max(0, player.attack - currentEnemy.defense);
+            let damage = calculateDamage(player, currentEnemy);
             currentEnemy.health -= damage;
-            logBattle(`⚔️ You strike for ${damage} damage!`);
+            logMessage(`You hit for ${damage} damage!`);
 
             // Enemy attack
-            damage = Math.max(0, currentEnemy.attack - player.defense);
+            damage = calculateDamage(currentEnemy, player);
             player.health -= damage;
-            logBattle(`🛡️ Enemy hits for ${damage} damage!`);
+            logMessage(`Enemy strikes for ${damage} damage!`);
 
-            updateDisplay();
+            updateUI();
 
-            if(currentEnemy.health <= 0) endBattle(true);
-            else if(player.health <= 0) endBattle(false);
+            if (currentEnemy.health <= 0) {
+                endCombat(true);
+            } else if (player.health <= 0) {
+                endCombat(false);
+            }
         }
 
-        function endBattle(victory) {
-            clearInterval(battleInterval);
-            if(victory) {
-                player.wins++;
-                player.xp += 25;
-                player.coins += 10;
-                logBattle("🎉 Victory! +25 XP +10 Gold");
+        function calculateDamage(attacker, defender) {
+            const baseDamage = attacker.attack - defender.defense;
+            const critChance = attacker.skills.includes('crit') ? 0.1 : 0;
+            const isCrit = Math.random() < critChance;
+            
+            return Math.max(1, isCrit ? baseDamage * 2 : baseDamage);
+        }
+
+        function endCombat(victory) {
+            clearInterval(combatInterval);
+            
+            if (victory) {
+                player.streak++;
+                player.gold += 25;
+                player.xp += 10;
+                logMessage('Victory! +25 Gold +10 XP');
                 
-                if(player.xp >= 100) {
-                    player.level++;
-                    player.attack += 2;
-                    player.maxHealth += 20;
-                    player.xp = 0;
-                    logBattle("✨ Level Up! +2 Attack +20 Max HP");
+                if (player.xp >= 100) {
+                    levelUp();
                 }
                 
-                document.getElementById('continueButton').classList.remove('hidden');
+                if (player.streak % 5 === 0) {
+                    spawnBoss();
+                }
             } else {
-                logBattle("💀 Defeat...");
-                player.wins = 0;
+                player.streak = 0;
+                logMessage('Defeat...');
             }
             
             saveGame();
-            updateDisplay();
+            updateUI();
         }
 
-        function upgradeStat(stat) {
-            const costs = { attack:50, health:50, defense:75 };
-            if(player.coins >= costs[stat]) {
-                player.coins -= costs[stat];
-                if(stat === 'attack') player.attack += 5;
-                if(stat === 'health') player.maxHealth += 20;
-                if(stat === 'defense') player.defense += 3;
-                updateDisplay();
-                hideUpgrades();
+        function levelUp() {
+            player.level++;
+            player.xp = 0;
+            player.maxHealth += 20;
+            player.health = player.maxHealth;
+            logMessage(`Level Up! Reached level ${player.level}`);
+        }
+
+        function spawnBoss() {
+            currentEnemy = {
+                name: 'Dragon Lord',
+                health: 300,
+                maxHealth: 300,
+                attack: 25,
+                defense: 15
+            };
+            logMessage('A mighty boss has appeared!');
+        }
+
+        function showSkillTree() {
+            const treeContainer = document.getElementById('skillTree');
+            treeContainer.innerHTML = SKILLS.map(skill => `
+                <div class="skill-node ${player.skills.includes(skill.id) ? 'unlocked' : ''}" 
+                     onclick="unlockSkill('${skill.id}')">
+                    ${skill.name}<br>
+                    Cost: ${skill.cost} points
+                </div>
+            `).join('');
+            document.getElementById('skillModal').classList.remove('hidden');
+        }
+
+        function unlockSkill(skillId) {
+            const skill = SKILLS.find(s => s.id === skillId);
+            if (player.level >= skill.cost && !player.skills.includes(skillId)) {
+                player.skills.push(skillId);
+                player.level -= skill.cost;
+                updateUI();
+                showSkillTree();
             }
         }
 
-        function updateDisplay() {
+        function showShop() {
+            const shopContainer = document.getElementById('shopItems');
+            shopContainer.innerHTML = SHOP_ITEMS.map(item => `
+                <div class="shop-item">
+                    <button class="button" onclick="buyItem(${SHOP_ITEMS.indexOf(item)})">
+                        ${item.name} - ${item.cost} Gold
+                    </button>
+                </div>
+            `).join('');
+            document.getElementById('shopModal').classList.remove('hidden');
+        }
+
+        function buyItem(index) {
+            const item = SHOP_ITEMS[index];
+            if (player.gold >= item.cost) {
+                player.gold -= item.cost;
+                applyItemEffect(item.effect);
+                updateUI();
+            }
+        }
+
+        function applyItemEffect(effect) {
+            Object.keys(effect).forEach(key => {
+                if (key === 'health') {
+                    player.health = Math.min(player.maxHealth, player.health + effect[key]);
+                } else {
+                    player[key] += effect[key];
+                }
+            });
+        }
+
+        function updateUI() {
             // Player stats
             document.getElementById('level').textContent = player.level;
             document.getElementById('xp').textContent = `${player.xp}/100`;
-            document.getElementById('coins').textContent = player.coins;
-            document.getElementById('attack').textContent = player.attack;
-            document.getElementById('defense').textContent = player.defense;
-            document.getElementById('maxHealth').textContent = player.maxHealth;
-
+            document.getElementById('gold').textContent = player.gold;
+            
             // Health bars
             document.getElementById('playerHealth').style.width = 
-                `${Math.max(0, (player.health / player.maxHealth) * 100}%`;
-            document.getElementById('enemyHealth').style.width = 
-                `${Math.max(0, (currentEnemy?.health / (currentEnemy?.health + currentEnemy?.maxHealth || 100)) * 100}%`;
-
-            // Enemy info
-            if(currentEnemy) {
+                `${(player.health / player.maxHealth) * 100}%`;
+            
+            if (currentEnemy) {
+                document.getElementById('enemyHealth').style.width = 
+                    `${(currentEnemy.health / currentEnemy.maxHealth) * 100}%`;
                 document.getElementById('enemyName').textContent = currentEnemy.name;
             }
+            
+            // Streak info
+            document.getElementById('streak').textContent = player.streak;
+            document.getElementById('bossCounter').textContent = 5 - (player.streak % 5);
         }
 
-        function logBattle(message) {
+        function logMessage(message) {
             const log = document.getElementById('battleLog');
             const entry = document.createElement('div');
             entry.textContent = message;
@@ -371,18 +404,8 @@
             log.scrollTop = log.scrollHeight;
         }
 
-        function showUpgrades() {
-            document.getElementById('upgradeModal').classList.remove('hidden');
-        }
-
-        function hideUpgrades() {
-            document.getElementById('upgradeModal').classList.add('hidden');
-        }
-
-        function returnToMenu() {
-            document.getElementById('mainMenu').classList.remove('hidden');
-            document.getElementById('arena').classList.add('hidden');
-            updateDisplay();
+        function hideModals() {
+            document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
         }
 
         function saveGame() {
@@ -391,11 +414,27 @@
 
         function loadGame() {
             const saved = localStorage.getItem('arenaSave');
-            if(saved) player = JSON.parse(saved);
-            updateDisplay();
+            if (saved) player = JSON.parse(saved);
+            updateUI();
         }
 
-        // Initialize
+        function startNewGame() {
+            player = {
+                level: 1,
+                xp: 0,
+                gold: 0,
+                health: 100,
+                maxHealth: 100,
+                attack: 10,
+                defense: 5,
+                skills: [],
+                inventory: [],
+                streak: 0
+            };
+            updateUI();
+        }
+
+        // Initialize game
         window.onload = loadGame;
     </script>
 </body>
