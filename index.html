@@ -2,211 +2,286 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medieval Chaos Fighters</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Chocolate Arena</title>
     <style>
         body {
-            font-family: 'Old English Text MT', fantasy;
-            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAIklEQVQIW2NkQAKrVq36zwjjgzhhYWGMYAEYB8RmROaABADeOQ8CXl/xfgAAAABJRU5ErkJggg==');
-            color: #d4af37;
+            margin: 0;
+            background: #3D2B1F;
+            color: #D2691E;
+            font-family: 'Arial', sans-serif;
             text-align: center;
-            touch-action: manipulation;
+            overflow: hidden;
         }
 
-        #mainMenu, #battleScreen, #statsScreen, #upgradeScreen {
-            display: none;
+        #mainMenu {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
             padding: 20px;
+            margin-top: 50px;
         }
 
-        .active-screen {
-            display: block !important;
-        }
-
-        button {
-            background: #6b0f1a;
-            border: 2px solid #d4af37;
-            color: white;
-            padding: 10px 20px;
-            margin: 5px;
+        .menuBtn {
+            background: #6B4423;
+            border: 2px solid #8B4513;
+            color: #DEB887;
+            padding: 15px;
+            font-size: 1.2em;
             cursor: pointer;
-            font-family: inherit;
+            border-radius: 10px;
+            transition: transform 0.2s;
         }
 
-        .health-bar {
-            width: 100px;
-            height: 10px;
-            background: #444;
-            margin: 5px auto;
-            border: 1px solid #000;
+        .menuBtn:hover {
+            transform: scale(1.05);
         }
 
-        .health-fill {
-            height: 100%;
-            background: #6b0f1a;
-            transition: width 0.3s;
+        #gameArea {
+            display: none;
+            position: relative;
+            height: 70vh;
+            margin: 20px;
         }
 
         .character {
-            font-size: 48px;
-            margin: 20px;
-            position: relative;
+            position: absolute;
+            font-size: 4em;
+            bottom: 20px;
+            filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
         }
 
-        #arena {
-            display: flex;
-            justify-content: space-around;
-            margin: 30px 0;
+        .healthBar {
+            position: absolute;
+            width: 100px;
+            height: 10px;
+            background: #FF0000;
+            border: 2px solid #8B0000;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
-        .stats {
-            background: rgba(0,0,0,0.7);
+        .health {
+            height: 100%;
+            background: #00FF00;
+            transition: width 0.3s;
+        }
+
+        #player {
+            left: 20%;
+        }
+
+        #enemy {
+            right: 20%;
+        }
+
+        #stats {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.5);
             padding: 10px;
-            border: 1px solid #d4af37;
-            margin: 10px auto;
-            width: 80%;
+            border-radius: 5px;
+        }
+
+        #shop {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #6B4423;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #8B4513;
+        }
+
+        .attack-animation {
+            animation: attack 0.3s;
+        }
+
+        @keyframes attack {
+            50% { transform: translateY(-20px); }
+        }
+
+        @media (max-width: 600px) {
+            .character {
+                font-size: 3em;
+            }
+            .menuBtn {
+                padding: 10px;
+                font-size: 1em;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Main Menu -->
-    <div id="mainMenu" class="active-screen">
-        <h1>🛡️ Medieval Chaos 🗡️</h1>
-        <button onclick="startGame()">Start Battle</button>
-        <button onclick="showScreen('statsScreen')">Player Stats</button>
-    </div>
-
-    <!-- Battle Screen -->
-    <div id="battleScreen">
-        <div id="arena">
-            <div class="character">
-                <div id="playerIcon">🦸♂️</div>
-                <div class="health-bar">
-                    <div id="playerHealth" class="health-fill" style="width: 100%"></div>
-                </div>
-            </div>
-            <div class="character">
-                <div id="enemyIcon">💀</div>
-                <div class="health-bar">
-                    <div id="enemyHealth" class="health-fill" style="width: 100%"></div>
-                </div>
-            </div>
+    <div id="mainMenu">
+        <button class="menuBtn" onclick="startGame()">Start Battle</button>
+        <button class="menuBtn" onclick="showShop()">Upgrade Hero</button>
+        <div id="stats">
+            Level: <span id="level">1</span><br>
+            Gold: <span id="gold">0</span><br>
+            Wins: <span id="wins">0</span>
         </div>
-        <div id="battleLog"></div>
-        <button onclick="showScreen('mainMenu')">Main Menu</button>
     </div>
 
-    <!-- Stats Screen -->
-    <div id="statsScreen">
-        <h2>⚔️ Player Stats ⚔️</h2>
-        <div class="stats">
-            <p>Level: <span id="statLevel">1</span></p>
-            <p>Attack: <span id="statAttack">10</span></p>
-            <p>Health: <span id="statHealth">100</span></p>
-            <p>Defense: <span id="statDefense">5</span></p>
-        </div>
-        <button onclick="showScreen('mainMenu')">Back</button>
+    <div id="gameArea">
+        <div id="player" class="character">🗡️</div>
+        <div id="enemy" class="character">👹</div>
     </div>
 
-    <!-- Upgrade Screen -->
-    <div id="upgradeScreen">
-        <h2>✨ Choose Upgrade ✨</h2>
-        <button onclick="upgradeStat('attack')">+ Attack</button>
-        <button onclick="upgradeStat('health')">+ Health</button>
-        <button onclick="upgradeStat('defense')">+ Defense</button>
+    <div id="shop">
+        <h3>Upgrade Hero</h3>
+        <button onclick="upgrade('attack')">Attack (+5) - 50g</button>
+        <button onclick="upgrade('health')">Health (+50) - 50g</button>
+        <button onclick="upgrade('crit')">Crit Chance (+2%) - 50g</button>
+        <button onclick="hideShop()">Close</button>
     </div>
 
 <script>
-let player = {
-    level: 1,
-    attack: 10,
-    maxHealth: 100,
-    health: 100,
-    defense: 5,
-    wins: 0,
-    xp: 0
-};
+    let player = {
+        attack: 10,
+        maxHealth: 100,
+        health: 100,
+        crit: 5,
+        level: 1,
+        gold: 0,
+        wins: 0
+    };
 
-let currentEnemy = null;
-let battleInterval = null;
+    let currentEnemy = null;
+    let isBoss = false;
+    let gameLoop = null;
 
-const enemies = [
-    { name: "Bandit", icon: "🗡️", attack: 8, health: 80, defense: 3 },
-    { name: "Orc", icon: "👹", attack: 12, health: 120, defense: 5 },
-    { name: "Warlock", icon: "🧙♂️", attack: 15, health: 90, defense: 4 },
-    { name: "Dragon Boss", icon: "🐉", attack: 25, health: 200, defense: 10 }
-];
-
-function showScreen(screenId) {
-    document.querySelectorAll('div[id$="Screen"]').forEach(el => 
-        el.classList.remove('active-screen'));
-    document.getElementById(screenId).classList.add('active-screen');
-    updateStatsDisplay();
-}
-
-function startGame() {
-    player.wins = 0;
-    spawnEnemy();
-    showScreen('battleScreen');
-    startBattle();
-}
-
-function spawnEnemy() {
-    const isBoss = player.wins >= 5;
-    currentEnemy = isBoss ? {...enemies[3]} : 
-        {...enemies[Math.floor(Math.random() * 3)]};
-    currentEnemy.health = isBoss ? 200 : currentEnemy.health;
-    document.getElementById('enemyIcon').textContent = currentEnemy.icon;
-    updateHealthBars();
-}
-
-function startBattle() {
-    clearInterval(battleInterval);
-    battleInterval = setInterval(battleStep, 2000);
-}
-
-function battleStep() {
-    // Player attack
-    const playerDamage = Math.max(player.attack - currentEnemy.defense, 1);
-    currentEnemy.health -= playerDamage;
-    logAction(`You hit for ${playerDamage} damage!`);
-    
-    if(currentEnemy.health <= 0) {
-        endBattle(true);
-        return;
+    function saveGame() {
+        localStorage.setItem('save', JSON.stringify(player));
     }
 
-    // Enemy attack
-    const enemyDamage = Math.max(currentEnemy.attack - player.defense, 1);
-    player.health -= enemyDamage;
-    logAction(`Enemy hits for ${enemyDamage} damage!`);
-    
-    if(player.health <= 0) {
-        endBattle(false);
-        return;
+    function loadGame() {
+        let save = localStorage.getItem('save');
+        if(save) player = JSON.parse(save);
+        updateStats();
     }
 
-    updateHealthBars();
-}
+    function updateStats() {
+        document.getElementById('level').textContent = player.level;
+        document.getElementById('gold').textContent = player.gold;
+        document.getElementById('wins').textContent = player.wins;
+    }
 
-function endBattle(victory) {
-    clearInterval(battleInterval);
-    if(victory) {
-        player.wins++;
-        player.xp += 50;
-        logAction("Victory! Gained 50 XP");
-        if(player.wins % 5 === 0) {
-            showScreen('upgradeScreen');
+    function startGame() {
+        document.getElementById('mainMenu').style.display = 'none';
+        document.getElementById('gameArea').style.display = 'block';
+        spawnEnemy();
+        startBattle();
+    }
+
+    function spawnEnemy() {
+        isBoss = player.wins > 0 && player.wins % 5 === 0;
+        currentEnemy = {
+            attack: isBoss ? player.attack * 2 : player.attack + Math.floor(player.wins/2),
+            maxHealth: isBoss ? player.maxHealth * 3 : player.maxHealth + player.wins * 20,
+            health: isBoss ? player.maxHealth * 3 : player.maxHealth + player.wins * 20,
+            name: isBoss ? '👿' : '👹'
+        };
+        document.getElementById('enemy').textContent = currentEnemy.name;
+        updateHealth('enemy');
+    }
+
+    function startBattle() {
+        gameLoop = setInterval(() => {
+            // Player attack
+            let damage = calculateDamage(player, currentEnemy);
+            currentEnemy.health -= damage;
+            updateHealth('enemy');
+            document.getElementById('player').classList.add('attack-animation');
+            
+            if(currentEnemy.health <= 0) {
+                endBattle(true);
+                return;
+            }
+
+            // Enemy attack
+            setTimeout(() => {
+                damage = calculateDamage(currentEnemy, player);
+                player.health -= damage;
+                updateHealth('player');
+                document.getElementById('enemy').classList.add('attack-animation');
+                
+                if(player.health <= 0) {
+                    endBattle(false);
+                }
+            }, 300);
+
+            setTimeout(() => {
+                document.getElementById('player').classList.remove('attack-animation');
+                document.getElementById('enemy').classList.remove('attack-animation');
+            }, 500);
+        }, 1000);
+    }
+
+    function calculateDamage(attacker, defender) {
+        let crit = Math.random() < attacker.crit / 100;
+        return Math.max(1, attacker.attack * (crit ? 2 : 1) - Math.floor(defender.attack/3));
+    }
+
+    function updateHealth(target) {
+        let health = target === 'player' ? player : currentEnemy;
+        let bar = document.querySelector(`#${target} .health`);
+        let percent = (health.health / health.maxHealth * 100).toFixed(0);
+        bar.style.width = percent + '%';
+    }
+
+    function endBattle(victory) {
+        clearInterval(gameLoop);
+        if(victory) {
+            player.gold += isBoss ? 200 : 50;
+            player.wins++;
+            saveGame();
+            updateStats();
+            spawnEnemy();
+            startBattle();
         } else {
-            setTimeout(spawnEnemy, 1500);
+            alert('Defeat!');
+            document.getElementById('mainMenu').style.display = 'flex';
+            document.getElementById('gameArea').style.display = 'none';
+            player.health = player.maxHealth;
         }
-    } else {
-        logAction("You were defeated...");
-        showScreen('mainMenu');
     }
-}
 
-function upgradeStat(stat) {
-    player[stat] += 5;
-    player.level++;
-    showScreen('battleScreen');
-    spawnEn
+    function showShop() {
+        document.getElementById('shop').style.display = 'block';
+    }
+
+    function hideShop() {
+        document.getElementById('shop').style.display = 'none';
+    }
+
+    function upgrade(stat) {
+        if(player.gold < 50) return;
+        player.gold -= 50;
+        player[stat] += stat === 'attack' ? 5 : stat === 'health' ? 50 : 2;
+        if(stat === 'health') player.health = player.maxHealth;
+        player.level++;
+        saveGame();
+        updateStats();
+    }
+
+    // Init
+    loadGame();
+    player.health = player.maxHealth;
+    document.getElementById('player').innerHTML = '<div class="healthBar"><div class="health"></div></div>🗡️';
+    document.getElementById('enemy').innerHTML = '<div class="healthBar"><div class="health"></div></div>👹';
+
+    // Telegram Web Apps integration
+    Telegram.WebApp.ready();
+    Telegram.WebApp.MainButton.setText('OPEN MENU').show().onClick(() => {
+        document.getElementById('mainMenu').style.display = 'flex';
+        document.getElementById('gameArea').style.display = 'none';
+        clearInterval(gameLoop);
+    });
+</script>
+</body>
+</html>
