@@ -52,7 +52,7 @@
         .health-fill {
             height: 100%;
             background: #50C878;
-            transition: width 0.3s ease-in-out;
+            transition: width 0.3s;
         }
 
         #battleLog {
@@ -107,14 +107,7 @@
         .hit-animation { animation: hit 0.3s linear; }
         .achievement { color: #FFD700; font-weight: bold; }
         .boss-warning { color: #FF0000; animation: pulse 0.5s infinite; }
-        
-        #continueButton {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1001;
-        }
+        #continueButton { background: #2E8B57; }
     </style>
 </head>
 <body>
@@ -135,16 +128,16 @@
 
     <div id="arena" class="hidden">
         <div id="playerArea">
-            <div class="health-bar"><div id="playerHealth" class="health-fill"></div></div>
+            <div class="health-bar"><div id="playerHealth" class="health-fill" style="width: 100%"></div></div>
             <div class="character" id="playerIcon">🦁</div>
         </div>
         <div id="enemyArea">
-            <div class="health-bar"><div id="enemyHealth" class="health-fill"></div></div>
+            <div class="health-bar"><div id="enemyHealth" class="health-fill" style="width: 100%"></div></div>
             <div class="character" id="enemyIcon">🦊</div>
         </div>
         <div id="battleLog"></div>
-        <button class="button" onclick="returnToMenu()">В меню</button>
-        <button id="continueButton" class="button hidden" onclick="continueBattle()">Продолжить бой</button>
+        <button class="button" onclick="returnToMenu()" id="menuButton">В меню</button>
+        <button class="button hidden" onclick="continueBattle()" id="continueButton">Продолжить бой</button>
     </div>
 
     <div id="upgradeModal" class="hidden modal">
@@ -219,6 +212,7 @@
             updateHealthBars();
             document.getElementById('enemyIcon').textContent = currentEnemy.icon;
             document.getElementById('continueButton').classList.add('hidden');
+            document.getElementById('menuButton').classList.remove('hidden');
             
             battleInterval = setInterval(fightRound, 1500);
         }
@@ -249,7 +243,6 @@
         function endBattle(victory) {
             clearInterval(battleInterval);
             if(victory) {
-                document.getElementById('continueButton').classList.remove('hidden');
                 player.wins++;
                 player.xp += 25;
                 player.coins += 10;
@@ -264,10 +257,13 @@
                 }
                 
                 checkAchievements();
+                document.getElementById('continueButton').classList.remove('hidden');
+                document.getElementById('menuButton').classList.add('hidden');
             } else {
-                document.getElementById('continueButton').classList.add('hidden');
                 logBattle("💀 Поражение...");
                 player.wins = 0;
+                document.getElementById('continueButton').classList.add('hidden');
+                document.getElementById('menuButton').classList.remove('hidden');
             }
             
             updateStatsDisplay();
@@ -275,18 +271,12 @@
         }
 
         function continueBattle() {
-            document.getElementById('continueButton').classList.add('hidden');
             player.health = player.maxHealth;
             currentEnemy = createEnemy(player.wins >= 5);
-            
-            if(player.wins >= 5) {
-                logBattle('<div class="boss-warning">!!! ПОЯВЛЕНИЕ БОССА !!!</div>');
-                player.wins = 0;
-            }
-
-            updateHealthBars();
             document.getElementById('enemyIcon').textContent = currentEnemy.icon;
-            
+            updateHealthBars();
+            document.getElementById('continueButton').classList.add('hidden');
+            document.getElementById('menuButton').classList.remove('hidden');
             battleInterval = setInterval(fightRound, 1500);
         }
 
@@ -315,8 +305,11 @@
         }
 
         function updateHealthBars() {
-            const playerHealthPercent = Math.max(0, (player.health / player.maxHealth) * 100;
-            const enemyHealthPercent = Math.max(0, (currentEnemy.health / currentEnemy.maxHealth) * 100);
+            // Исправление бага с отображением здоровья
+            const playerHealthPercent = Math.max(0, Math.min(100, 
+                (player.health / player.maxHealth) * 100));
+            const enemyHealthPercent = Math.max(0, Math.min(100, 
+                (currentEnemy.health / currentEnemy.maxHealth) * 100));
             
             document.getElementById('playerHealth').style.width = `${playerHealthPercent}%`;
             document.getElementById('enemyHealth').style.width = `${enemyHealthPercent}%`;
@@ -354,10 +347,10 @@
         function returnToMenu() {
             document.getElementById('mainMenu').classList.remove('hidden');
             document.getElementById('arena').classList.add('hidden');
-            document.getElementById('continueButton').classList.add('hidden');
             clearInterval(battleInterval);
         }
 
+        // Инициализация игры
         window.onload = loadGame;
     </script>
 </body>
