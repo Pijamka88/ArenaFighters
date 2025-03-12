@@ -1,102 +1,96 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Darkstone Arena</title>
+    <title>Mystic Arena</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root {
-            --bg-dark: #1a1a1a;
-            --bg-light: #2d2d2d;
+            --primary-dark: #1a1a1a;
+            --primary-light: #f0f0f0;
+            --accent-gold: #ffd700;
             --accent-red: #c62828;
-            --accent-gold: #d4af37;
-            --text-primary: #e0e0e0;
-            --text-secondary: #9e9e9e;
+            --accent-blue: #1565c0;
         }
 
         body {
             margin: 0;
-            background: var(--bg-dark);
-            color: var(--text-primary);
+            background: var(--primary-dark);
+            color: var(--primary-light);
             font-family: 'Arial', sans-serif;
+            text-align: center;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
+        #mainMenu, #arena {
             padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            flex-grow: 1;
         }
 
-        .header {
-            text-align: center;
-            padding: 2rem;
-            background: var(--bg-light);
-            border-bottom: 3px solid var(--accent-gold);
+        .button {
+            background: var(--accent-blue);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            margin: 10px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        .combat-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin: 2rem 0;
+        .button:hover {
+            background: #1976d2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
 
-        .character-card {
-            background: var(--bg-light);
-            border-radius: 8px;
-            padding: 1.5rem;
-            position: relative;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        .button:disabled {
+            background: #607d8b;
+            cursor: not-allowed;
+            opacity: 0.7;
         }
 
         .health-bar {
-            height: 24px;
-            background: #4a2b0f;
-            border-radius: 12px;
+            width: 100%;
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
             overflow: hidden;
-            margin: 1rem 0;
+            margin: 15px 0;
         }
 
         .health-fill {
             height: 100%;
-            background: linear-gradient(45deg, #50C878, #3E8C47);
+            background: linear-gradient(to right, #4CAF50, #45a049);
             transition: width 0.3s ease;
         }
 
-        .stats-panel {
-            background: rgba(0,0,0,0.3);
-            padding: 1rem;
+        .combatant {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
             border-radius: 8px;
-            margin: 1rem 0;
+            margin: 20px 0;
         }
 
-        .button {
-            background: var(--accent-gold);
-            color: var(--bg-dark);
-            border: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s;
-            margin: 0.5rem;
-        }
-
-        .button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-
-        .battle-log {
-            height: 200px;
+        #battleLog {
+            max-height: 200px;
             overflow-y: auto;
-            background: rgba(0,0,0,0.2);
-            padding: 1rem;
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
             border-radius: 8px;
-            margin: 1rem 0;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
 
         .modal {
@@ -104,31 +98,39 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: var(--bg-light);
-            padding: 2rem;
+            background: var(--primary-dark);
+            padding: 30px;
             border-radius: 8px;
+            border: 2px solid var(--accent-blue);
             z-index: 1000;
             max-width: 400px;
         }
 
-        .skill-tree {
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .stats-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 20px 0;
         }
 
-        .skill-node {
-            background: var(--bg-dark);
-            padding: 1rem;
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
+        .stat-item {
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 4px;
         }
 
-        .skill-node.unlocked {
-            background: var(--accent-gold);
-            color: var(--bg-dark);
+        .hidden {
+            display: none;
         }
 
         @keyframes pulse {
@@ -139,273 +141,255 @@
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Darkstone Arena</h1>
-        <div class="button-group">
-            <button class="button" onclick="startNewGame()">New Game</button>
-            <button class="button" onclick="showSkillTree()">Skill Tree</button>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="combat-container">
-            <div class="character-card">
-                <h2>Player</h2>
-                <div class="health-bar">
-                    <div id="playerHealth" class="health-fill" style="width: 100%"></div>
-                </div>
-                <div class="stats-panel">
-                    <div>Level: <span id="level">1</span></div>
-                    <div>XP: <span id="xp">0/100</span></div>
-                    <div>Gold: <span id="gold">0</span></div>
-                </div>
-            </div>
-
-            <div class="character-card">
-                <h2 id="enemyName">Enemy</h2>
-                <div class="health-bar">
-                    <div id="enemyHealth" class="health-fill" style="width: 100%"></div>
-                </div>
-                <div class="stats-panel">
-                    <div>Streak: <span id="streak">0</span></div>
-                    <div>Next Boss: <span id="bossCounter">5</span></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="battle-log" id="battleLog"></div>
+    <div id="mainMenu">
+        <h1>🏰 Mystic Arena ⚔️</h1>
         
-        <div class="button-group">
-            <button class="button" id="attackButton" onclick="startCombat()">Start Combat</button>
-            <button class="button" onclick="showShop()">Visit Shop</button>
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div>Level</div>
+                <div id="level">1</div>
+            </div>
+            <div class="stat-item">
+                <div>Experience</div>
+                <div id="xp">0/100</div>
+            </div>
+            <div class="stat-item">
+                <div>Gold</div>
+                <div id="coins">0</div>
+            </div>
+            <div class="stat-item">
+                <div>Attack</div>
+                <div id="attack">10</div>
+            </div>
+            <div class="stat-item">
+                <div>Defense</div>
+                <div id="defense">0</div>
+            </div>
+            <div class="stat-item">
+                <div>Health</div>
+                <div id="maxHealth">100</div>
+            </div>
+        </div>
+
+        <button class="button" onclick="startGame()">Start Battle</button>
+        <button class="button" onclick="showUpgrades()">Upgrades</button>
+    </div>
+
+    <div id="arena" class="hidden">
+        <div class="combatant">
+            <h3>Player</h3>
+            <div class="health-bar">
+                <div id="playerHealth" class="health-fill" style="width: 100%"></div>
+            </div>
+        </div>
+
+        <div class="combatant">
+            <h3 id="enemyName">Enemy</h3>
+            <div class="health-bar">
+                <div id="enemyHealth" class="health-fill" style="width: 100%"></div>
+            </div>
+        </div>
+
+        <div id="battleLog"></div>
+
+        <div>
+            <button class="button hidden" id="continueButton" onclick="startGame()">Continue</button>
+            <button class="button" onclick="returnToMenu()">Retreat</button>
         </div>
     </div>
 
-    <!-- Skill Tree Modal -->
-    <div id="skillModal" class="modal hidden">
-        <h3>Skill Tree</h3>
-        <div class="skill-tree" id="skillTree"></div>
-        <button class="button" onclick="hideModals()">Close</button>
+    <div id="upgradeModal" class="hidden modal">
+        <h3>Blacksmith's Forge</h3>
+        <button class="button" onclick="upgradeStat('attack')">
+            ⚔️ Attack +5 (50 gold)
+        </button>
+        <button class="button" onclick="upgradeStat('health')">
+            ❤️ Health +20 (50 gold)
+        </button>
+        <button class="button" onclick="upgradeStat('defense')">
+            🛡️ Defense +3 (75 gold)
+        </button>
+        <button class="button" onclick="hideUpgrades()">Close</button>
     </div>
-
-    <!-- Shop Modal -->
-    <div id="shopModal" class="modal hidden">
-        <h3>Blacksmith</h3>
-        <div class="shop-items" id="shopItems"></div>
-        <button class="button" onclick="hideModals()">Close</button>
-    </div>
+    <div id="modalBackdrop" class="hidden modal-backdrop"></div>
 
     <script>
-        const SKILLS = [
-            { id: 'crit', name: 'Critical Strike', cost: 3, effect: { critChance: 0.1 } },
-            { id: 'block', name: 'Shield Block', cost: 2, effect: { blockChance: 0.15 } },
-            { id: 'rage', name: 'Battle Rage', cost: 5, effect: { damageBoost: 0.2 } }
+        const ENEMIES = [
+            { name: "Goblin", attack: 8, defense: 2, health: 50 },
+            { name: "Orc", attack: 12, defense: 4, health: 80 },
+            { name: "Skeleton", attack: 10, defense: 3, health: 60 }
         ];
 
-        const SHOP_ITEMS = [
-            { name: 'Health Potion', cost: 50, effect: { health: 50 } },
-            { name: 'Attack Boost', cost: 100, effect: { attack: 5 } },
-            { name: 'Defense Boost', cost: 75, effect: { defense: 3 } }
-        ];
+        const BOSS = {
+            name: "Dragon",
+            attack: 20,
+            defense: 8,
+            health: 200
+        };
 
         let player = {
             level: 1,
             xp: 0,
-            gold: 0,
+            coins: 0,
+            attack: 10,
+            defense: 0,
             health: 100,
             maxHealth: 100,
-            attack: 10,
-            defense: 5,
-            skills: [],
-            inventory: [],
-            streak: 0
+            wins: 0
         };
 
         let currentEnemy = null;
-        let combatInterval = null;
+        let battleInterval = null;
 
-        function createEnemy() {
-            const baseHealth = 50 + player.streak * 10;
-            const baseAttack = 8 + player.streak * 2;
+        // Game Initialization
+        function initGame() {
+            loadGame();
+            updateDisplay();
+        }
+
+        function startGame() {
+            // Reset UI
+            document.getElementById('mainMenu').classList.add('hidden');
+            document.getElementById('arena').classList.remove('hidden');
+            document.getElementById('continueButton').classList.add('hidden');
             
+            // Initialize combatants
+            player.health = player.maxHealth;
+            currentEnemy = createEnemy(player.wins >= 3);
+            
+            // Boss warning
+            if(player.wins >= 3) {
+                logBattle("🌀 A powerful boss appears!");
+                player.wins = 0;
+            }
+
+            updateDisplay();
+            startBattle();
+        }
+
+        function createEnemy(isBoss) {
+            if(isBoss) return {...BOSS};
+            const base = ENEMIES[Math.floor(Math.random() * ENEMIES.length)];
             return {
-                name: getEnemyName(),
-                health: baseHealth,
-                maxHealth: baseHealth,
-                attack: baseAttack,
-                defense: 2 + player.streak
+                ...base,
+                attack: base.attack + Math.floor(player.wins * 1.5),
+                defense: base.defense + Math.floor(player.wins * 0.5),
+                health: base.health + player.wins * 10
             };
         }
 
-        function getEnemyName() {
-            const names = ['Raider', 'Mercenary', 'Warlock', 'Berserker'];
-            return names[Math.floor(Math.random() * names.length)];
+        function startBattle() {
+            clearInterval(battleInterval);
+            battleInterval = setInterval(fightRound, 1500);
         }
 
-        function startCombat() {
-            if (player.health <= 0) return;
-            
-            currentEnemy = createEnemy();
-            combatInterval = setInterval(performCombatRound, 1000);
-            logMessage('Combat started!');
-        }
-
-        function performCombatRound() {
+        function fightRound() {
             // Player attack
-            let damage = calculateDamage(player, currentEnemy);
+            let damage = Math.max(0, player.attack - currentEnemy.defense);
             currentEnemy.health -= damage;
-            logMessage(`You hit for ${damage} damage!`);
+            logBattle(`⚔️ You hit ${currentEnemy.name} for ${damage} damage!`);
 
             // Enemy attack
-            damage = calculateDamage(currentEnemy, player);
+            damage = Math.max(0, currentEnemy.attack - player.defense);
             player.health -= damage;
-            logMessage(`Enemy strikes for ${damage} damage!`);
+            logBattle(`🛡️ ${currentEnemy.name} hits you for ${damage} damage!`);
 
-            updateUI();
+            updateDisplay();
 
-            if (currentEnemy.health <= 0) {
-                endCombat(true);
-            } else if (player.health <= 0) {
-                endCombat(false);
-            }
+            if(currentEnemy.health <= 0) endBattle(true);
+            else if(player.health <= 0) endBattle(false);
         }
 
-        function calculateDamage(attacker, defender) {
-            const baseDamage = attacker.attack - defender.defense;
-            const critChance = attacker.skills.includes('crit') ? 0.1 : 0;
-            const isCrit = Math.random() < critChance;
+        function endBattle(victory) {
+            clearInterval(battleInterval);
             
-            return Math.max(1, isCrit ? baseDamage * 2 : baseDamage);
-        }
-
-        function endCombat(victory) {
-            clearInterval(combatInterval);
-            
-            if (victory) {
-                player.streak++;
-                player.gold += 25;
-                player.xp += 10;
-                logMessage('Victory! +25 Gold +10 XP');
+            if(victory) {
+                player.wins++;
+                player.xp += 25;
+                player.coins += 15;
+                logBattle("🎉 Victory! +25 XP +15 Gold");
                 
-                if (player.xp >= 100) {
-                    levelUp();
-                }
+                if(player.xp >= 100) levelUp();
                 
-                if (player.streak % 5 === 0) {
-                    spawnBoss();
-                }
+                document.getElementById('continueButton').classList.remove('hidden');
             } else {
-                player.streak = 0;
-                logMessage('Defeat...');
+                logBattle("💀 You were defeated...");
+                player.wins = 0;
             }
             
             saveGame();
-            updateUI();
+            updateDisplay();
         }
 
         function levelUp() {
             player.level++;
-            player.xp = 0;
+            player.attack += 2;
             player.maxHealth += 20;
-            player.health = player.maxHealth;
-            logMessage(`Level Up! Reached level ${player.level}`);
+            player.xp = 0;
+            logBattle("✨ Level Up! +2 Attack +20 Max Health");
         }
 
-        function spawnBoss() {
-            currentEnemy = {
-                name: 'Dragon Lord',
-                health: 300,
-                maxHealth: 300,
-                attack: 25,
-                defense: 15
-            };
-            logMessage('A mighty boss has appeared!');
-        }
-
-        function showSkillTree() {
-            const treeContainer = document.getElementById('skillTree');
-            treeContainer.innerHTML = SKILLS.map(skill => `
-                <div class="skill-node ${player.skills.includes(skill.id) ? 'unlocked' : ''}" 
-                     onclick="unlockSkill('${skill.id}')">
-                    ${skill.name}<br>
-                    Cost: ${skill.cost} points
-                </div>
-            `).join('');
-            document.getElementById('skillModal').classList.remove('hidden');
-        }
-
-        function unlockSkill(skillId) {
-            const skill = SKILLS.find(s => s.id === skillId);
-            if (player.level >= skill.cost && !player.skills.includes(skillId)) {
-                player.skills.push(skillId);
-                player.level -= skill.cost;
-                updateUI();
-                showSkillTree();
-            }
-        }
-
-        function showShop() {
-            const shopContainer = document.getElementById('shopItems');
-            shopContainer.innerHTML = SHOP_ITEMS.map(item => `
-                <div class="shop-item">
-                    <button class="button" onclick="buyItem(${SHOP_ITEMS.indexOf(item)})">
-                        ${item.name} - ${item.cost} Gold
-                    </button>
-                </div>
-            `).join('');
-            document.getElementById('shopModal').classList.remove('hidden');
-        }
-
-        function buyItem(index) {
-            const item = SHOP_ITEMS[index];
-            if (player.gold >= item.cost) {
-                player.gold -= item.cost;
-                applyItemEffect(item.effect);
-                updateUI();
-            }
-        }
-
-        function applyItemEffect(effect) {
-            Object.keys(effect).forEach(key => {
-                if (key === 'health') {
-                    player.health = Math.min(player.maxHealth, player.health + effect[key]);
-                } else {
-                    player[key] += effect[key];
+        function upgradeStat(stat) {
+            const costs = { attack:50, health:50, defense:75 };
+            
+            if(player.coins >= costs[stat]) {
+                player.coins -= costs[stat];
+                switch(stat) {
+                    case 'attack': player.attack += 5; break;
+                    case 'health': player.maxHealth += 20; break;
+                    case 'defense': player.defense += 3; break;
                 }
-            });
+                updateDisplay();
+                saveGame();
+            }
         }
 
-        function updateUI() {
-            // Player stats
+        function updateDisplay() {
+            // Update stats
             document.getElementById('level').textContent = player.level;
             document.getElementById('xp').textContent = `${player.xp}/100`;
-            document.getElementById('gold').textContent = player.gold;
-            
-            // Health bars
-            document.getElementById('playerHealth').style.width = 
-                `${(player.health / player.maxHealth) * 100}%`;
-            
-            if (currentEnemy) {
+            document.getElementById('coins').textContent = player.coins;
+            document.getElementById('attack').textContent = player.attack;
+            document.getElementById('defense').textContent = player.defense;
+            document.getElementById('maxHealth').textContent = player.maxHealth;
+
+            // Update health bars
+            if(currentEnemy) {
+                const playerHealthPercent = (player.health / player.maxHealth) * 100;
+                const enemyHealthPercent = (currentEnemy.health / currentEnemy.health) * 100;
+                
+                document.getElementById('playerHealth').style.width = 
+                    `${Math.max(0, playerHealthPercent)}%`;
                 document.getElementById('enemyHealth').style.width = 
-                    `${(currentEnemy.health / currentEnemy.maxHealth) * 100}%`;
+                    `${Math.max(0, enemyHealthPercent)}%`;
+                
                 document.getElementById('enemyName').textContent = currentEnemy.name;
             }
-            
-            // Streak info
-            document.getElementById('streak').textContent = player.streak;
-            document.getElementById('bossCounter').textContent = 5 - (player.streak % 5);
         }
 
-        function logMessage(message) {
+        function logBattle(message) {
             const log = document.getElementById('battleLog');
             const entry = document.createElement('div');
+            entry.className = 'log-entry';
             entry.textContent = message;
             log.appendChild(entry);
             log.scrollTop = log.scrollHeight;
         }
 
-        function hideModals() {
-            document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
+        function showUpgrades() {
+            document.getElementById('upgradeModal').classList.remove('hidden');
+            document.getElementById('modalBackdrop').classList.remove('hidden');
+        }
+
+        function hideUpgrades() {
+            document.getElementById('upgradeModal').classList.add('hidden');
+            document.getElementById('modalBackdrop').classList.add('hidden');
+        }
+
+        function returnToMenu() {
+            document.getElementById('mainMenu').classList.remove('hidden');
+            document.getElementById('arena').classList.add('hidden');
+            updateDisplay();
         }
 
         function saveGame() {
@@ -414,28 +398,17 @@
 
         function loadGame() {
             const saved = localStorage.getItem('arenaSave');
-            if (saved) player = JSON.parse(saved);
-            updateUI();
+            if(saved) {
+                try {
+                    player = JSON.parse(saved);
+                } catch(e) {
+                    console.error('Error loading save:', e);
+                }
+            }
         }
 
-        function startNewGame() {
-            player = {
-                level: 1,
-                xp: 0,
-                gold: 0,
-                health: 100,
-                maxHealth: 100,
-                attack: 10,
-                defense: 5,
-                skills: [],
-                inventory: [],
-                streak: 0
-            };
-            updateUI();
-        }
-
-        // Initialize game
-        window.onload = loadGame;
+        // Initialize game when loaded
+        window.onload = initGame;
     </script>
 </body>
 </html>
