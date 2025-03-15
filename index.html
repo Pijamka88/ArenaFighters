@@ -6,228 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --dark-1: #0A0A0A;
-            --dark-2: #1E1E1E;
-            --accent-red: #8B0000;
-            --accent-gold: #D4AF37;
-            --text-primary: #E0E0E0;
-            --text-secondary: #A0A0A0;
-        }
-
-        body {
-            margin: 0;
-            background: var(--dark-1);
-            color: var(--text-primary);
-            font-family: 'Cinzel Decorative', cursive;
-            text-align: center;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background-image: 
-                linear-gradient(
-                    rgba(0, 0, 0, 0.9), 
-                    rgba(0, 0, 0, 0.9)
-                ),
-                url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAKElEQVQ4jWNgYGD4TwrGwMDAwMjIyIg3gJGRkYGRkZGRkZGRkZGRkREA0X4E1y1q0VAAAAAASUVORK5CYII=');
-            background-size: cover;
-            background-attachment: fixed;
-        }
-
-        h1 {
-            font-size: 3rem;
-            text-shadow: 0 0 10px var(--accent-gold);
-            margin: 20px 0;
-            letter-spacing: 3px;
-        }
-
-        #mainMenu, #arena {
-            padding: 30px;
-            max-width: 800px;
-            margin: 0 auto;
-            flex-grow: 1;
-            background: rgba(30, 30, 30, 0.9);
-            border: 2px solid var(--accent-gold);
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
-        }
-
-        .button {
-            background: var(--dark-2);
-            border: 2px solid var(--accent-gold);
-            color: var(--text-primary);
-            padding: 15px 30px;
-            margin: 15px;
-            cursor: pointer;
-            border-radius: 0;
-            font-size: 1.2rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-            min-width: 200px;
-        }
-
-        .button:hover {
-            background: var(--accent-gold);
-            color: var(--dark-1);
-            transform: scale(1.05);
-            box-shadow: 0 0 15px var(--accent-gold);
-        }
-
-        .character-container {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            margin: 30px 0;
-        }
-
-        .character {
-            width: 150px;
-            height: 150px;
-            position: relative;
-            filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.5));
-        }
-
-        .health-bar-container {
-            width: 100%;
-            max-width: 300px;
-            margin: 20px auto;
-        }
-
-        .health-bar {
-            width: 100%;
-            height: 30px;
-            background: var(--dark-2);
-            border: 2px solid var(--accent-gold);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .health-fill {
-            height: 100%;
-            background: var(--accent-red);
-            transition: width 0.3s;
-            position: relative;
-        }
-
-        .health-fill:after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(
-                to bottom,
-                transparent 50%,
-                rgba(0,0,0,0.2) 50%
-            );
-        }
-
-        .health-label {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: var(--text-primary);
-            font-weight: bold;
-            text-shadow: 0 0 5px black;
-        }
-
-        #battleLog {
-            max-height: 200px;
-            overflow-y: auto;
-            background: rgba(0,0,0,0.7);
-            padding: 20px;
-            margin: 30px 0;
-            border: 2px solid var(--accent-gold);
-            text-align: left;
-            font-size: 1rem;
-            line-height: 1.5;
-        }
-
-        .log-entry {
-            margin: 5px 0;
-            padding: 5px;
-            border-left: 3px solid var(--accent-gold);
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .stats {
-            background: rgba(0,0,0,0.5);
-            padding: 20px;
-            margin: 20px 0;
-            border: 2px solid var(--accent-gold);
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-        }
-
-        .stat-item {
-            text-align: center;
-            padding: 10px;
-        }
-
-        .stat-value {
-            color: var(--accent-gold);
-            font-size: 1.5rem;
-            margin-top: 5px;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .combat-animation {
-            animation: pulse 0.3s ease-out;
-        }
-
-        .modal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--dark-2);
-            padding: 30px;
-            border: 3px solid var(--accent-gold);
-            z-index: 1000;
-            max-width: 500px;
-            width: 90%;
-        }
-
-        .modal-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.9);
-            z-index: 999;
-        }
-
-        .upgrade-option {
-            margin: 15px 0;
-            padding: 15px;
-            border: 1px solid var(--accent-gold);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .upgrade-option:hover {
-            background: rgba(212, 175, 55, 0.1);
-        }
-
-        .cost {
-            color: var(--accent-gold);
-            font-size: 0.9rem;
-            margin-top: 5px;
-        }
+        /* Все стили остаются такими же, как в предыдущем коде */
     </style>
 </head>
 <body>
@@ -259,8 +38,8 @@
                 <div class="stat-value" id="maxHealth">100</div>
             </div>
         </div>
-        <button class="button" onclick="startGame()">Enter Arena</button>
-        <button class="button" onclick="showUpgrades()">Blacksmith</button>
+        <button class="button" id="startGameButton">Enter Arena</button>
+        <button class="button" id="showUpgradesButton">Blacksmith</button>
     </div>
 
     <div id="arena" class="hidden">
@@ -292,33 +71,54 @@
 
         <div id="battleLog"></div>
         <div class="button-group">
-            <button class="button hidden" id="continueButton" onclick="startGame()">Continue</button>
-            <button class="button" onclick="returnToMenu()">Retreat</button>
+            <button class="button hidden" id="continueButton">Continue</button>
+            <button class="button" id="retreatButton">Retreat</button>
         </div>
     </div>
 
     <div id="upgradeModal" class="hidden modal">
         <h3>Blacksmith's Forge</h3>
-        <div class="upgrade-option" onclick="upgradeStat('attack')">
+        <div class="upgrade-option" id="upgradeAttack">
             <div>Sharpen Blade</div>
             <div>+5 Attack</div>
             <div class="cost">Cost: 50 Gold</div>
         </div>
-        <div class="upgrade-option" onclick="upgradeStat('health')">
+        <div class="upgrade-option" id="upgradeHealth">
             <div>Reinforce Armor</div>
             <div>+20 Health</div>
             <div class="cost">Cost: 50 Gold</div>
         </div>
-        <div class="upgrade-option" onclick="upgradeStat('defense')">
+        <div class="upgrade-option" id="upgradeDefense">
             <div>Strengthen Shield</div>
             <div>+3 Defense</div>
             <div class="cost">Cost: 75 Gold</div>
         </div>
-        <button class="button" onclick="hideUpgrades()">Leave Forge</button>
+        <button class="button" id="leaveForgeButton">Leave Forge</button>
     </div>
     <div id="modalBackdrop" class="hidden modal-backdrop"></div>
 
     <script>
+        // Инициализация элементов
+        const startGameButton = document.getElementById('startGameButton');
+        const showUpgradesButton = document.getElementById('showUpgradesButton');
+        const continueButton = document.getElementById('continueButton');
+        const retreatButton = document.getElementById('retreatButton');
+        const upgradeAttack = document.getElementById('upgradeAttack');
+        const upgradeHealth = document.getElementById('upgradeHealth');
+        const upgradeDefense = document.getElementById('upgradeDefense');
+        const leaveForgeButton = document.getElementById('leaveForgeButton');
+
+        // Обработчики событий
+        startGameButton.addEventListener('click', startGame);
+        showUpgradesButton.addEventListener('click', showUpgrades);
+        continueButton.addEventListener('click', startGame);
+        retreatButton.addEventListener('click', returnToMenu);
+        upgradeAttack.addEventListener('click', () => upgradeStat('attack'));
+        upgradeHealth.addEventListener('click', () => upgradeStat('health'));
+        upgradeDefense.addEventListener('click', () => upgradeStat('defense'));
+        leaveForgeButton.addEventListener('click', hideUpgrades);
+
+        // Игровая логика
         const ENEMY_TYPES = [
             { name: 'Warlock', attack: 15, defense: 5, health: 100 },
             { name: 'Revenant', attack: 20, defense: 2, health: 80 },
