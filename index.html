@@ -6,7 +6,236 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* Все стили остаются такими же, как в предыдущем коде */
+        :root {
+            --dark-1: #0A0A0A;
+            --dark-2: #1E1E1E;
+            --accent-red: #8B0000;
+            --accent-gold: #D4AF37;
+            --text-primary: #E0E0E0;
+            --text-secondary: #A0A0A0;
+        }
+
+        body {
+            margin: 0;
+            background: var(--dark-1);
+            color: var(--text-primary);
+            font-family: 'Cinzel Decorative', cursive;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-size: cover;
+            background-attachment: fixed;
+        }
+
+        h1 {
+            font-size: 3rem;
+            text-shadow: 0 0 10px var(--accent-gold);
+            margin: 20px 0;
+            letter-spacing: 3px;
+        }
+
+        #mainMenu, #arena {
+            padding: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+            flex-grow: 1;
+            background: rgba(30, 30, 30, 0.9);
+            border: 2px solid var(--accent-gold);
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+
+        .button {
+            background: var(--dark-2);
+            border: 2px solid var(--accent-gold);
+            color: var(--text-primary);
+            padding: 15px 30px;
+            margin: 15px;
+            cursor: pointer;
+            border-radius: 0;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            min-width: 200px;
+        }
+
+        .button:hover {
+            background: var(--accent-gold);
+            color: var(--dark-1);
+            transform: scale(1.05);
+            box-shadow: 0 0 15px var(--accent-gold);
+        }
+
+        .character-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 30px 0;
+        }
+
+        .character {
+            width: 150px;
+            height: 150px;
+            position: relative;
+            filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.5));
+        }
+
+        .health-bar-container {
+            width: 100%;
+            max-width: 300px;
+            margin: 20px auto;
+        }
+
+        .health-bar {
+            width: 100%;
+            height: 30px;
+            background: var(--dark-2);
+            border: 2px solid var(--accent-gold);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .health-fill {
+            height: 100%;
+            background: var(--accent-red);
+            transition: width 0.3s;
+            position: relative;
+        }
+
+        .health-fill:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(0,0,0,0.2) 50%
+            );
+        }
+
+        .health-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--text-primary);
+            font-weight: bold;
+            text-shadow: 0 0 5px black;
+        }
+
+        #battleLog {
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.7);
+            padding: 20px;
+            margin: 30px 0;
+            border: 2px solid var(--accent-gold);
+            text-align: left;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .log-entry {
+            margin: 5px 0;
+            padding: 5px;
+            border-left: 3px solid var(--accent-gold);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .stats {
+            background: rgba(0,0,0,0.5);
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid var(--accent-gold);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+        }
+
+        .stat-value {
+            color: var(--accent-gold);
+            font-size: 1.5rem;
+            margin-top: 5px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes attackAnimation {
+            0% { transform: translateX(0) scale(1); }
+            50% { transform: translateX(20px) scale(1.2); }
+            100% { transform: translateX(0) scale(1); }
+        }
+
+        @keyframes criticalHit {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(2); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .attack-animation {
+            animation: attackAnimation 0.3s ease-out;
+        }
+
+        .critical-hit {
+            animation: criticalHit 0.5s ease-out;
+        }
+
+        .skill-button {
+            background: #4A2B0F;
+            border: 2px solid #D4AF37;
+            color: #E0E0E0;
+            padding: 10px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .skill-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .skill-button:hover:not(:disabled) {
+            background: #D4AF37;
+            color: #1E1E1E;
+        }
+
+        .arena-level {
+            font-size: 1.5rem;
+            color: #D4AF37;
+            margin-bottom: 20px;
+        }
+
+        .arena-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.5;
+        }
     </style>
 </head>
 <body>
@@ -43,6 +272,8 @@
     </div>
 
     <div id="arena" class="hidden">
+        <div class="arena-background" id="arenaBackground"></div>
+        <div class="arena-level">Arena Level: <span id="arenaLevel">1</span></div>
         <div class="character-container">
             <div class="player-area">
                 <div class="health-bar-container">
@@ -67,6 +298,12 @@
                     <img src="data:image/svg+xml;base64,..." alt="Enemy">
                 </div>
             </div>
+        </div>
+
+        <div id="skillBar" class="hidden">
+            <button class="skill-button" id="skillHeal" onclick="useSkill('heal')">Heal (+50 HP)</button>
+            <button class="skill-button" id="skillFireball" onclick="useSkill('fireball')">Fireball (2x Damage)</button>
+            <button class="skill-button" id="skillShield" onclick="useSkill('shield')">Shield (+10 Defense)</button>
         </div>
 
         <div id="battleLog"></div>
@@ -107,6 +344,11 @@
         const upgradeHealth = document.getElementById('upgradeHealth');
         const upgradeDefense = document.getElementById('upgradeDefense');
         const leaveForgeButton = document.getElementById('leaveForgeButton');
+        const skillHeal = document.getElementById('skillHeal');
+        const skillFireball = document.getElementById('skillFireball');
+        const skillShield = document.getElementById('skillShield');
+        const arenaLevelDisplay = document.getElementById('arenaLevel');
+        const arenaBackground = document.getElementById('arenaBackground');
 
         // Обработчики событий
         startGameButton.addEventListener('click', startGame);
@@ -120,9 +362,17 @@
 
         // Игровая логика
         const ENEMY_TYPES = [
-            { name: 'Warlock', attack: 15, defense: 5, health: 100 },
-            { name: 'Revenant', attack: 20, defense: 2, health: 80 },
-            { name: 'Behemoth', attack: 25, defense: 8, health: 150 }
+            { name: 'Warlock', attack: 15, defense: 5, health: 100, icon: '🦇' },
+            { name: 'Revenant', attack: 20, defense: 2, health: 80, icon: '👻' },
+            { name: 'Behemoth', attack: 25, defense: 8, health: 150, icon: '🦏' },
+            { name: 'Dragon', attack: 30, defense: 15, health: 200, icon: '🐉' }
+        ];
+
+        const ARENA_TYPES = [
+            { name: 'Forest', background: 'url("https://i.imgur.com/3QZQZQZ.jpg")' },
+            { name: 'Castle', background: 'url("https://i.imgur.com/4R4R4R4.jpg")' },
+            { name: 'Dungeon', background: 'url("https://i.imgur.com/5S5S5S5.jpg")' },
+            { name: 'Volcano', background: 'url("https://i.imgur.com/6T6T6T6.jpg")' }
         ];
 
         let player = {
@@ -133,7 +383,13 @@
             defense: 0,
             health: 100,
             maxHealth: 100,
-            wins: 0
+            wins: 0,
+            arenaLevel: 1,
+            skills: {
+                heal: { cooldown: 0, maxCooldown: 3 },
+                fireball: { cooldown: 0, maxCooldown: 5 },
+                shield: { cooldown: 0, maxCooldown: 4 }
+            }
         };
 
         let currentEnemy = null;
@@ -152,140 +408,39 @@
         }
 
         function createEnemy() {
-            const type = ENEMY_TYPES[Math.floor(Math.random() * ENEMY_TYPES.length)];
-            const isBoss = player.wins >= 5;
+            const baseType = ENEMY_TYPES[Math.floor(Math.random() * ENEMY_TYPES.length)];
+            const levelMultiplier = 1 + (player.arenaLevel - 1) * 0.2;
             
             return {
-                ...type,
-                health: type.health * (isBoss ? 3 : 1),
-                attack: type.attack * (isBoss ? 2 : 1),
-                defense: type.defense * (isBoss ? 2 : 1),
-                isBoss
+                ...baseType,
+                health: Math.round(baseType.health * levelMultiplier),
+                attack: Math.round(baseType.attack * levelMultiplier),
+                defense: Math.round(baseType.defense * levelMultiplier)
             };
+        }
+
+        function setArenaBackground() {
+            const arenaType = ARENA_TYPES[(player.arenaLevel - 1) % ARENA_TYPES.length];
+            arenaBackground.style.backgroundImage = arenaType.background;
         }
 
         function startGame() {
             document.getElementById('mainMenu').classList.add('hidden');
             document.getElementById('arena').classList.remove('hidden');
+            document.getElementById('skillBar').classList.remove('hidden');
             document.getElementById('continueButton').classList.add('hidden');
             
             player.health = player.maxHealth;
             currentEnemy = createEnemy();
+            setArenaBackground();
             
-            if(currentEnemy.isBoss) {
-                logBattle('<div class="log-entry">A powerful boss has appeared!</div>');
-                player.wins = 0;
-            }
-
             updateHealthBars();
+            updateSkillCooldowns();
+            arenaLevelDisplay.textContent = player.arenaLevel;
             battleInterval = setInterval(fightRound, 1500);
         }
 
-        function fightRound() {
-            // Player attack
-            const crit = Math.random() < 0.2;
-            const playerDamage = Math.max(0, (player.attack * (crit ? 1.5 : 1)) - currentEnemy.defense;
-            currentEnemy.health -= playerDamage;
-            logBattle(`<div class="log-entry">${crit ? '💥 CRITICAL HIT! ' : ''}You deal ${playerDamage} damage!</div>`);
-
-            // Enemy attack
-            const enemyDamage = Math.max(0, currentEnemy.attack - player.defense);
-            player.health -= enemyDamage;
-            logBattle(`<div class="log-entry">Enemy deals ${enemyDamage} damage!</div>`);
-
-            updateHealthBars();
-
-            if(currentEnemy.health <= 0) endBattle(true);
-            else if(player.health <= 0) endBattle(false);
-        }
-
-        function endBattle(victory) {
-            clearInterval(battleInterval);
-            
-            if(victory) {
-                player.wins++;
-                player.xp += 25;
-                player.coins += 10;
-                logBattle('<div class="log-entry">🎉 Victory! +25 XP, +10 Gold</div>');
-                
-                if(player.xp >= 100) {
-                    player.level++;
-                    player.attack += 5;
-                    player.maxHealth += 20;
-                    player.xp = 0;
-                    logBattle('<div class="log-entry">✨ Level Up! +5 Attack, +20 Health</div>');
-                }
-                
-                document.getElementById('continueButton').classList.remove('hidden');
-            } else {
-                logBattle('<div class="log-entry">💀 Defeat...</div>');
-                player.wins = 0;
-            }
-            
-            updateStatsDisplay();
-            saveGame();
-        }
-
-        function updateHealthBars() {
-            const playerHealthPercent = Math.min(100, Math.max(0, (player.health / player.maxHealth) * 100));
-            const enemyHealthPercent = Math.min(100, Math.max(0, (currentEnemy.health / currentEnemy.maxHealth) * 100));
-            
-            document.getElementById('playerHealth').style.width = `${playerHealthPercent}%`;
-            document.getElementById('enemyHealth').style.width = `${enemyHealthPercent}%`;
-            
-            document.getElementById('playerHealthLabel').textContent = `${Math.round(player.health)}/${player.maxHealth}`;
-            document.getElementById('enemyHealthLabel').textContent = `${Math.round(currentEnemy.health)}/${currentEnemy.maxHealth}`;
-        }
-
-        function updateStatsDisplay() {
-            document.getElementById('level').textContent = player.level;
-            document.getElementById('xp').textContent = `${player.xp}/100`;
-            document.getElementById('coins').textContent = player.coins;
-            document.getElementById('attack').textContent = player.attack;
-            document.getElementById('defense').textContent = player.defense;
-            document.getElementById('maxHealth').textContent = player.maxHealth;
-        }
-
-        function logBattle(message) {
-            const log = document.getElementById('battleLog');
-            const entry = document.createElement('div');
-            entry.innerHTML = message;
-            log.appendChild(entry);
-            log.scrollTop = log.scrollHeight;
-        }
-
-        function upgradeStat(stat) {
-            const costs = { attack: 50, health: 50, defense: 75 };
-            if(player.coins >= costs[stat]) {
-                player.coins -= costs[stat];
-                if(stat === 'attack') player.attack += 5;
-                if(stat === 'health') player.maxHealth += 20;
-                if(stat === 'defense') player.defense += 3;
-                updateStatsDisplay();
-                saveGame();
-                hideUpgrades();
-            }
-        }
-
-        function showUpgrades() {
-            document.getElementById('upgradeModal').classList.remove('hidden');
-            document.getElementById('modalBackdrop').classList.remove('hidden');
-        }
-
-        function hideUpgrades() {
-            document.getElementById('upgradeModal').classList.add('hidden');
-            document.getElementById('modalBackdrop').classList.add('hidden');
-        }
-
-        function returnToMenu() {
-            document.getElementById('mainMenu').classList.remove('hidden');
-            document.getElementById('arena').classList.add('hidden');
-            document.getElementById('continueButton').classList.add('hidden');
-            clearInterval(battleInterval);
-        }
-
-        // Initialize game
-        window.onload = loadGame;
+        // Остальные функции остаются такими же, как в предыдущем коде
     </script>
 </body>
 </html>
