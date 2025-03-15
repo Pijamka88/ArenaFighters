@@ -440,7 +440,156 @@
             battleInterval = setInterval(fightRound, 1500);
         }
 
-        // Остальные функции остаются такими же, как в предыдущем коде
+        function fightRound() {
+            // Player attack
+            const crit = Math.random() < 0.2;
+            const playerDamage = Math.max(0, (player.attack * (crit ? 1.5 : 1)) - currentEnemy.defense;
+            currentEnemy.health -= playerDamage;
+            document.getElementById('enemyIcon').classList.add('attack-animation');
+            if(crit) document.getElementById('enemyIcon').classList.add('critical-hit');
+            logBattle(`<div class="log-entry">${crit ? '💥 CRITICAL HIT! ' : ''}You deal ${playerDamage} damage!</div>`);
+
+            // Enemy attack
+            const enemyDamage = Math.max(0, currentEnemy.attack - player.defense);
+            player.health -= enemyDamage;
+            document.getElementById('playerIcon').classList.add('attack-animation');
+            logBattle(`<div class="log-entry">Enemy deals ${enemyDamage} damage!</div>`);
+
+            updateHealthBars();
+            updateSkillCooldowns();
+
+            if(currentEnemy.health <= 0) endBattle(true);
+            else if(player.health <= 0) endBattle(false);
+
+            setTimeout(() => {
+                document.getElementById('enemyIcon').classList.remove('attack-animation', 'critical-hit');
+                document.getElementById('playerIcon').classList.remove('attack-animation');
+            }, 300);
+        }
+
+        function useSkill(skill) {
+            switch(skill) {
+                case 'heal':
+                    player.health = Math.min(player.maxHealth, player.health + 50);
+                    logBattle('<div class="log-entry">✨ You healed 50 HP!</div>');
+                    break;
+                case 'fireball':
+                    const fireDamage = Math.max(0, (player.attack * 2) - currentEnemy.defense);
+                    currentEnemy.health -= fireDamage;
+                    logBattle(`<div class="log-entry">🔥 Fireball deals ${fireDamage} damage!</div>`);
+                    break;
+                case 'shield':
+                    player.defense += 10;
+                    logBattle('<div class="log-entry">🛡️ Defense increased by 10!</div>');
+                    setTimeout(() => {
+                        player.defense -= 10;
+                        logBattle('<div class="log-entry">🛡️ Defense boost expired!</div>');
+                    }, 3000);
+                    break;
+            }
+            player.skills[skill].cooldown = player.skills[skill].maxCooldown;
+            updateSkillCooldowns();
+        }
+
+        function updateSkillCooldowns() {
+            for(const skill in player.skills) {
+                if(player.skills[skill].cooldown > 0) {
+                    player.skills[skill].cooldown--;
+                    document.getElementById(`skill${skill.charAt(0).toUpperCase() + skill.slice(1)}`).disabled = true;
+                } else {
+                    document.getElementById(`skill${skill.charAt(0).toUpperCase() + skill.slice(1)}`).disabled = false;
+                }
+            }
+        }
+
+        function endBattle(victory) {
+            clearInterval(battleInterval);
+            
+            if(victory) {
+                player.wins++;
+                player.xp += 25;
+                player.coins += 10;
+                if(player.wins % 5 === 0) player.arenaLevel++;
+                logBattle('<div class="log-entry">🎉 Victory! +25 XP, +10 Gold</div>');
+                
+                if(player.xp >= 100) {
+                    player.level++;
+                    player.attack += 5;
+                    player.maxHealth += 20;
+                    player.xp = 0;
+                    logBattle('<div class="log-entry">✨ Level Up! +5 Attack, +20 Health</div>');
+                }
+                
+                document.getElementById('continueButton').classList.remove('hidden');
+            } else {
+                logBattle('<div class="log-entry">💀 Defeat...</div>');
+                player.wins = 0;
+            }
+            
+            updateStatsDisplay();
+            saveGame();
+        }
+
+        function updateHealthBars() {
+            const playerHealthPercent = Math.min(100, Math.max(0, (player.health / player.maxHealth) * 100));
+            const enemyHealthPercent = Math.min(100, Math.max(0, (currentEnemy.health / currentEnemy.maxHealth) * 100));
+            
+            document.getElementById('playerHealth').style.width = `${playerHealthPercent}%`;
+            document.getElementById('enemyHealth').style.width = `${enemyHealthPercent}%`;
+            
+            document.getElementById('playerHealthLabel').textContent = `${Math.round(player.health)}/${player.maxHealth}`;
+            document.getElementById('enemyHealthLabel').textContent = `${Math.round(currentEnemy.health)}/${currentEnemy.maxHealth}`;
+        }
+
+        function updateStatsDisplay() {
+            document.getElementById('level').textContent = player.level;
+            document.getElementById('xp').textContent = `${player.xp}/100`;
+            document.getElementById('coins').textContent = player.coins;
+            document.getElementById('attack').textContent = player.attack;
+            document.getElementById('defense').textContent = player.defense;
+            document.getElementById('maxHealth').textContent = player.maxHealth;
+        }
+
+        function logBattle(message) {
+            const log = document.getElementById('battleLog');
+            const entry = document.createElement('div');
+            entry.innerHTML = message;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function upgradeStat(stat) {
+            const costs = { attack: 50, health: 50, defense: 75 };
+            if(player.coins >= costs[stat]) {
+                player.coins -= costs[stat];
+                if(stat === 'attack') player.attack += 5;
+                if(stat === 'health') player.maxHealth += 20;
+                if(stat === 'defense') player.defense += 3;
+                updateStatsDisplay();
+                saveGame();
+                hideUpgrades();
+            }
+        }
+
+        function showUpgrades() {
+            document.getElementById('upgradeModal').classList.remove('hidden');
+            document.getElementById('modalBackdrop').classList.remove('hidden');
+        }
+
+        function hideUpgrades() {
+            document.getElementById('upgradeModal').classList.add('hidden');
+            document.getElementById('modalBackdrop').classList.add('hidden');
+        }
+
+        function returnToMenu() {
+            document.getElementById('mainMenu').classList.remove('hidden');
+            document.getElementById('arena').classList.add('hidden');
+            document.getElementById('continueButton').classList.add('hidden');
+            clearInterval(battleInterval);
+        }
+
+        // Initialize game
+        window.onload = loadGame;
     </script>
 </body>
 </html>
