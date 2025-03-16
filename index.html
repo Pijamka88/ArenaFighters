@@ -4,7 +4,7 @@
     <title>Dark Fantasy Arena</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --dark-1: #0A0A0A;
@@ -13,6 +13,8 @@
             --accent-gold: #D4AF37;
             --text-primary: #E0E0E0;
             --text-secondary: #A0A0A0;
+            --gothic-border: 2px solid #4A2B0F;
+            --gothic-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
         }
 
         body {
@@ -33,6 +35,7 @@
             text-shadow: 0 0 10px var(--accent-gold);
             margin: 20px 0;
             letter-spacing: 3px;
+            font-family: 'MedievalSharp', cursive;
         }
 
         #mainMenu, #arena {
@@ -41,13 +44,13 @@
             margin: 0 auto;
             flex-grow: 1;
             background: rgba(30, 30, 30, 0.9);
-            border: 2px solid var(--accent-gold);
-            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            border: var(--gothic-border);
+            box-shadow: var(--gothic-shadow);
         }
 
         .button {
             background: var(--dark-2);
-            border: 2px solid var(--accent-gold);
+            border: var(--gothic-border);
             color: var(--text-primary);
             padding: 15px 30px;
             margin: 15px;
@@ -60,6 +63,7 @@
             position: relative;
             overflow: hidden;
             min-width: 200px;
+            font-family: 'MedievalSharp', cursive;
         }
 
         .button:hover {
@@ -93,7 +97,7 @@
             width: 100%;
             height: 30px;
             background: var(--dark-2);
-            border: 2px solid var(--accent-gold);
+            border: var(--gothic-border);
             position: relative;
             overflow: hidden;
         }
@@ -135,7 +139,7 @@
             background: rgba(0,0,0,0.7);
             padding: 20px;
             margin: 30px 0;
-            border: 2px solid var(--accent-gold);
+            border: var(--gothic-border);
             text-align: left;
             font-size: 1rem;
             line-height: 1.5;
@@ -155,7 +159,7 @@
             background: rgba(0,0,0,0.5);
             padding: 20px;
             margin: 20px 0;
-            border: 2px solid var(--accent-gold);
+            border: var(--gothic-border);
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 15px;
@@ -200,13 +204,14 @@
 
         .skill-button {
             background: #4A2B0F;
-            border: 2px solid #D4AF37;
+            border: var(--gothic-border);
             color: #E0E0E0;
             padding: 10px;
             margin: 5px;
             cursor: pointer;
             border-radius: 5px;
             transition: all 0.3s;
+            font-family: 'MedievalSharp', cursive;
         }
 
         .skill-button:disabled {
@@ -534,8 +539,8 @@
         }
 
         function updateHealthBars() {
-            const playerHealthPercent = Math.min(100, Math.max(0, (player.health / player.maxHealth) * 100);
-            const enemyHealthPercent = Math.min(100, Math.max(0, (currentEnemy.health / currentEnemy.maxHealth) * 100);
+            const playerHealthPercent = Math.min(100, Math.max(0, (player.health / player.maxHealth) * 100));
+            const enemyHealthPercent = Math.min(100, Math.max(0, (currentEnemy.health / currentEnemy.maxHealth) * 100));
             
             document.getElementById('playerHealth').style.width = `${playerHealthPercent}%`;
             document.getElementById('enemyHealth').style.width = `${enemyHealthPercent}%`;
