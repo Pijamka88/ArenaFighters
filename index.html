@@ -1,58 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Gothic Arena</title>
+    <title>Silver Gothic Arena</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=MedievalSharp&display=swap" rel="stylesheet">
     <style>
         :root {
-            --gothic-dark: #1A1A1A;
-            --gothic-gray: #2D2D2D;
-            --gothic-light: #4A4A4A;
-            --gothic-accent: #8B8B8B;
-            --gothic-text: #E0E0E0;
-            --gothic-red: #8B0000;
+            --gothic-black: #0A0A0A;
+            --gothic-silver: #C0C0C0;
+            --gothic-dark-silver: #808080;
+            --gothic-white: #F0F0F0;
+            --gothic-bg: url('data:image/png;base64,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');
         }
 
         body {
             margin: 0;
-            background: var(--gothic-dark);
-            color: var(--gothic-text);
+            background: var(--gothic-black);
+            color: var(--gothic-white);
             font-family: 'MedievalSharp', cursive;
             text-align: center;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            background-image: 
-                linear-gradient(
-                    rgba(26, 26, 26, 0.9), 
-                    rgba(26, 26, 26, 0.9)
-                ),
-                url('data:image/png;base64,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');
+            background-image: var(--gothic-bg);
             background-size: cover;
             background-attachment: fixed;
         }
 
         h1, h2, h3 {
             font-family: 'UnifrakturMaguntia', cursive;
-            color: var(--gothic-accent);
-            text-shadow: 2px 2px 2px var(--gothic-dark);
+            color: var(--gothic-silver);
+            text-shadow: 2px 2px 2px var(--gothic-black);
         }
 
         #mainMenu, #arena {
-            padding: 30px;
+            padding: 20px;
             max-width: 800px;
-            margin: 20px auto;
-            background: rgba(45, 45, 45, 0.9);
-            border: 3px solid var(--gothic-accent);
+            margin: 0 auto;
+            background: rgba(10, 10, 10, 0.9);
+            border: 3px solid var(--gothic-silver);
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
 
         .button {
-            background: var(--gothic-gray);
-            border: 2px solid var(--gothic-accent);
-            color: var(--gothic-text);
+            background: linear-gradient(to bottom, var(--gothic-black), var(--gothic-dark-silver));
+            border: 2px solid var(--gothic-silver);
+            color: var(--gothic-white);
             padding: 15px 30px;
             margin: 10px;
             cursor: pointer;
@@ -66,8 +60,8 @@
         }
 
         .button:hover {
-            background: var(--gothic-light);
-            box-shadow: 0 0 10px var(--gothic-accent);
+            background: linear-gradient(to bottom, var(--gothic-dark-silver), var(--gothic-black));
+            box-shadow: 0 0 10px var(--gothic-silver);
         }
 
         .character {
@@ -75,29 +69,45 @@
             height: 150px;
             margin: 20px auto;
             position: relative;
-            filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
+            filter: drop-shadow(0 0 10px rgba(192,192,192,0.5));
             transition: transform 0.3s;
         }
 
-        .character img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
+        .character.attack {
+            animation: attackAnimation 0.3s;
+        }
+
+        .character.take-damage {
+            animation: takeDamageAnimation 0.3s;
+        }
+
+        @keyframes attackAnimation {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(20px); }
+            100% { transform: translateX(0); }
+        }
+
+        @keyframes takeDamageAnimation {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            75% { transform: translateX(-10px); }
+            100% { transform: translateX(0); }
         }
 
         .health-bar {
             width: 100%;
             height: 30px;
-            background: var(--gothic-dark);
+            background: var(--gothic-black);
             margin: 20px 0;
-            border: 2px solid var(--gothic-accent);
+            border: 2px solid var(--gothic-silver);
             position: relative;
             overflow: hidden;
         }
 
         .health-fill {
             height: 100%;
-            background: var(--gothic-red);
+            background: var(--gothic-dark-silver);
             transition: width 0.3s;
             position: relative;
         }
@@ -122,7 +132,7 @@
             background: rgba(0,0,0,0.7);
             padding: 15px;
             margin: 20px 0;
-            border: 1px solid var(--gothic-accent);
+            border: 1px solid var(--gothic-silver);
             text-align: left;
             font-size: 0.9em;
             box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
@@ -137,9 +147,9 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: var(--gothic-gray);
+            background: var(--gothic-black);
             padding: 30px;
-            border: 3px solid var(--gothic-accent);
+            border: 3px solid var(--gothic-silver);
             z-index: 1000;
             max-width: 500px;
             width: 90%;
@@ -147,7 +157,7 @@
         }
 
         .modal h3 {
-            border-bottom: 2px solid var(--gothic-accent);
+            border-bottom: 2px solid var(--gothic-silver);
             padding-bottom: 10px;
             margin-bottom: 20px;
         }
@@ -166,7 +176,7 @@
             background: rgba(0,0,0,0.7);
             padding: 20px;
             margin: 20px 0;
-            border: 2px solid var(--gothic-accent);
+            border: 2px solid var(--gothic-silver);
         }
 
         .stats p {
@@ -177,30 +187,8 @@
         }
 
         .stats span {
-            color: var(--gothic-accent);
+            color: var(--gothic-silver);
             font-size: 1.1em;
-        }
-
-        @keyframes attack {
-            0% { transform: translateX(0); }
-            50% { transform: translateX(20px); }
-            100% { transform: translateX(0); }
-        }
-
-        @keyframes takeDamage {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            50% { transform: translateX(10px); }
-            75% { transform: translateX(-10px); }
-            100% { transform: translateX(0); }
-        }
-
-        .attack-animation {
-            animation: attack 0.3s ease-out;
-        }
-
-        .damage-animation {
-            animation: takeDamage 0.3s ease-out;
         }
 
         .icon {
@@ -213,11 +201,11 @@
 </head>
 <body>
     <div id="mainMenu">
-        <h1>Gothic Arena</h1>
+        <h1>Silver Gothic Arena</h1>
         <div class="stats">
             <p>Level: <span id="level">1</span></p>
             <p>Experience: <span id="xp">0</span>/100</p>
-            <p>Gold: <span id="coins">0</span></p>
+            <p>Silver: <span id="coins">0</span></p>
             <p>Attack: <span id="attack">10</span></p>
             <p>Defense: <span id="defense">0</span></p>
             <p>Health: <span id="maxHealth">100</span></p>
@@ -232,7 +220,7 @@
                 <div id="playerHealth" class="health-fill" style="width: 100%"></div>
             </div>
             <div class="character" id="playerCharacter">
-                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzhCODA4MCIgZD0iTTEyIDJjMy45IDAgNyAzLjEgNyA3IDAgMi40LTEuMiA0LjUtMyA1LjdWMjJINXYtNy4zQzYuMiAxMy41IDUgMTEuNCA1IDljMC0zLjkgMy4xLTcgNy03em0wIDJjLTIuOCAwLTUgMi4yLTUgNSAwIDEuOSAxLjEgMy42IDIuNyA0LjRsLjMuMlYyMGg0di02LjRsLjMtLjJjMS42LS44IDIuNy0yLjUgMi43LTQuNCAwLTIuOC0yLjItNS01LTV6Ii8+PC9zdmc+" alt="Player">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI0MwQzBDMCIgZD0iTTEyIDJjMy45IDAgNyAzLjEgNyA3IDAgMi40LTEuMiA0LjUtMyA1LjdWMjJINXYtNy4zQzYuMiAxMy41IDUgMTEuNCA1IDljMC0zLjkgMy4xLTcgNy03em0wIDJjLTIuOCAwLTUgMi4yLTUgNSAwIDEuOSAxLjEgMy42IDIuNyA0LjRsLjMuMlYyMGg0di02LjRsLjMtLjJjMS42LS44IDIuNy0yLjUgMi43LTQuNCAwLTIuOC0yLjItNS01LTV6Ii8+PC9zdmc+" alt="Player">
             </div>
         </div>
         
@@ -241,7 +229,7 @@
                 <div id="enemyHealth" class="health-fill" style="width: 100%"></div>
             </div>
             <div class="character" id="enemyCharacter">
-                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzhCODA4MCIgZD0iTTE0LjggMmwtMyAzIDIuOCAyLjgtNS4xIDUuMS0xLjQtMS40LTIuOCAyLjggMS40IDEuNEwzIDE5Ljh2Mi4ybDQuNC00LjQgMS40IDEuNCAyLjgtMi44LTEuNC0xLjQgNS4xLTUuMSAyLjggMi44IDMtMy02LjgtNi44ek0xMS42IDE4LjJsLTEuNC0xLjQgMi44LTIuOCAxLjQgMS40LTIuOCAyLjh6Ii8+PC9zdmc+" alt="Enemy">
+                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI0MwQzBDMCIgZD0iTTE0LjggMmwtMyAzIDIuOCAyLjgtNS4xIDUuMS0xLjQtMS40LTIuOCAyLjggMS40IDEuNEwzIDE5Ljh2Mi4ybDQuNC00LjQgMS40IDEuNCAyLjgtMi44LTEuNC0xLjQgNS4xLTUuMSAyLjggMi44IDMtMy02LjgtNi44ek0xMS42IDE4LjJsLTEuNC0xLjQgMi44LTIuOCAxLjQgMS40LTIuOCAyLjh6Ii8+PC9zdmc+" alt="Enemy">
             </div>
         </div>
 
@@ -255,14 +243,14 @@
     <div id="upgradeModal" class="hidden modal">
         <h3>Blacksmith's Forge</h3>
         <button class="button" onclick="upgradeStat('attack')">
-            <img class="icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzhCODA4MCIgZD0iTTE0LjggMmwtMyAzIDIuOCAyLjgtNS4xIDUuMS0xLjQtMS40LTIuOCAyLjggMS40IDEuNEwzIDE5Ljh2Mi4ybDQuNC00LjQgMS40IDEuNCAyLjgtMi44LTEuNC0xLjQgNS4xLTUuMSAyLjggMi44IDMtMy02LjgtNi44ek0xMS42IDE4LjJsLTEuNC0xLjQgMi44LTIuOCAxLjQgMS40LTIuOCAyLjh6Ii8+PC9zdmc+" alt="Sword">
+            <img class="icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI0MwQzBDMCIgZD0iTTE0LjggMmwtMyAzIDIuOCAyLjgtNS4xIDUuMS0xLjQtMS40LTIuOCAyLjggMS40IDEuNEwzIDE5Ljh2Mi4ybDQuNC00LjQgMS40IDEuNCAyLjgtMi44LTEuNC0xLjQgNS4xLTUuMSAyLjggMi44IDMtMy02LjgtNi44ek0xMS42IDE4LjJsLTEuNC0xLjQgMi44LTIuOCAxLjQgMS40LTIuOCAyLjh6Ii8+PC9zdmc+" alt="Sword">
             Sharpen Blade (+5 Attack)
-            <div class="cost">50 Gold</div>
+            <div class="cost">50 Silver</div>
         </button>
         <button class="button" onclick="upgradeStat('health')">
-            <img class="icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzhCODA4MCIgZD0iTTEyIDJjMy45IDAgNyAzLjEgNyA3IDAgMi40LTEuMiA0LjUtMyA1LjdWMjJINXYtNy4zQzYuMiAxMy41IDUgMTEuNCA1IDljMC0zLjkgMy4xLTcgNy03em0wIDJjLTIuOCAwLTUgMi4yLTUgNSAwIDEuOSAxLjEgMy42IDIuNyA0LjRsLjMuMlYyMGg0di02LjRsLjMtLjJjMS42LS44IDIuNy0yLjUgMi43LTQuNCAwLTIuOC0yLjItNS01LTV6Ii8+PC9zdmc+" alt="Shield">
+            <img class="icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI0MwQzBDMCIgZD0iTTEyIDJjMy45IDAgNyAzLjEgNyA3IDAgMi40LTEuMiA0LjUtMyA1LjdWMjJINXYtNy4zQzYuMiAxMy41IDUgMTEuNCA1IDljMC0zLjkgMy4xLTcgNy03em0wIDJjLTIuOCAwLTUgMi4yLTUgNSAwIDEuOSAxLjEgMy42IDIuNyA0LjRsLjMuMlYyMGg0di02LjRsLjMtLjJjMS42LS44IDIuNy0yLjUgMi43LTQuNCAwLTIuOC0yLjItNS01LTV6Ii8+PC9zdmc+" alt="Shield">
             Reinforce Armor (+20 Health)
-            <div class="cost">50 Gold</div>
+            <div class="cost">50 Silver</div>
         </button>
         <button class="button" onclick="hideUpgrades()">Leave Forge</button>
     </div>
@@ -323,23 +311,19 @@
         }
 
         function fightRound() {
-            // Player attack
             const playerDamage = Math.max(0, player.attack - currentEnemy.defense);
             currentEnemy.health -= playerDamage;
-            document.getElementById('playerCharacter').classList.add('attack-animation');
+            document.getElementById('enemyCharacter').classList.add('take-damage');
             logBattle(`You dealt ${playerDamage} damage!`);
 
-            // Enemy attack
             const enemyDamage = Math.max(0, currentEnemy.attack - player.defense);
             player.health -= enemyDamage;
-            document.getElementById('enemyCharacter').classList.add('attack-animation');
-            document.getElementById('playerCharacter').classList.add('damage-animation');
+            document.getElementById('playerCharacter').classList.add('take-damage');
             logBattle(`Enemy dealt ${enemyDamage} damage!`);
 
             setTimeout(() => {
-                document.getElementById('playerCharacter').classList.remove('attack-animation');
-                document.getElementById('enemyCharacter').classList.remove('attack-animation');
-                document.getElementById('playerCharacter').classList.remove('damage-animation');
+                document.getElementById('enemyCharacter').classList.remove('take-damage');
+                document.getElementById('playerCharacter').classList.remove('take-damage');
             }, 300);
 
             updateHealthBars();
@@ -354,7 +338,7 @@
                 player.wins++;
                 player.xp += 25;
                 player.coins += 10;
-                logBattle("Victory! +25 XP +10 Gold");
+                logBattle("Victory! +25 XP +10 Silver");
                 
                 if(player.xp >= 100) {
                     player.level++;
