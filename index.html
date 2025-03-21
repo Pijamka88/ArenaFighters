@@ -26,6 +26,7 @@
             position: absolute;
             top: 0;
             left: 0;
+            z-index: 1;
         }
 
         .menu {
@@ -39,6 +40,7 @@
             border-radius: 20px;
             border: 3px solid var(--main-color);
             box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            z-index: 2;
         }
 
         .menu-title {
@@ -71,6 +73,7 @@
             padding: 1rem;
             background: rgba(0,0,0,0.7);
             border-radius: 10px;
+            z-index: 3;
         }
 
         #topHud {
@@ -95,15 +98,7 @@
             pointer-events: none;
             background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="%23FF6B6B" d="M16 2C8.3 2 2 8.3 2 16s6.3 14 14 14 14-6.3 14-14S23.7 2 16 2zm0 22c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8z"/><path fill="%23FF6B6B" d="M16 11c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5z"/></svg>');
             transform: translate(-16px, -16px);
-        }
-
-        #pistol {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 3rem;
-            filter: drop-shadow(0 0 5px rgba(0,0,0,0.5));
+            z-index: 4;
         }
 
         #pauseBtn {
@@ -111,6 +106,11 @@
             top: 10px;
             right: 10px;
             padding: 0.5rem 1rem;
+            z-index: 5;
+        }
+
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
@@ -122,26 +122,25 @@
         <button class="btn" id="highScoreBtn">HIGH SCORES</button>
     </div>
 
-    <div id="highScoreMenu" class="menu" style="display: none;">
+    <div id="highScoreMenu" class="menu hidden">
         <h1 class="menu-title">🏆 HIGH SCORES</h1>
         <div id="scoresList"></div>
         <button class="btn" onclick="showMenu('mainMenu')">BACK</button>
     </div>
 
-    <div id="topHud" class="hud">
+    <div id="topHud" class="hud hidden">
         SCORE: <span id="score">0</span>
     </div>
 
-    <div id="bottomHud" class="hud">
+    <div id="bottomHud" class="hud hidden">
         <div>AMMO: <span id="ammo">10</span></div>
         <div>HITS: <span id="hits">0</span></div>
         <div>MISS: <span id="miss">0</span></div>
     </div>
 
-    <button class="btn" id="pauseBtn">⏸ PAUSE</button>
-    <div id="pistol">🔫</div>
+    <button class="btn hidden" id="pauseBtn">⏸ PAUSE</button>
     <canvas id="gameCanvas"></canvas>
-    <div class="crosshair"></div>
+    <div class="crosshair hidden"></div>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
@@ -186,13 +185,11 @@
                 ctx.translate(this.x, this.y);
                 ctx.scale(this.direction, 1);
 
-                // Body
                 ctx.fillStyle = this.config.color;
                 ctx.beginPath();
                 ctx.ellipse(0, 0, this.config.size/2, this.config.size/3, 0, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Wings
                 ctx.strokeStyle = 'rgba(255,255,255,0.8)';
                 ctx.lineWidth = 4;
                 ctx.beginPath();
@@ -225,28 +222,23 @@
         function gameLoop(timestamp) {
             if (!gameState.isPlaying || gameState.isPaused) return;
 
-            // Spawn cows
             if (Math.random() < 0.03 && gameState.cows.length < 15) {
                 gameState.cows.push(new FlyingCow());
             }
 
-            // Update game objects
             gameState.cows = gameState.cows.filter(cow => {
                 cow.update();
                 return cow.x > -150 && cow.x < canvas.width + 150;
             });
 
-            // Update HUD
             document.getElementById('score').textContent = gameState.score;
             document.getElementById('ammo').textContent = gameState.ammo;
             document.getElementById('hits').textContent = gameState.hits;
             document.getElementById('miss').textContent = gameState.miss;
 
-            // Clear canvas
             ctx.fillStyle = '#2D3436';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Draw cows
             gameState.cows.forEach(cow => cow.draw());
 
             requestAnimationFrame(gameLoop);
@@ -274,23 +266,19 @@
                     }
                 });
 
-                hit ? playSound('hit') : playSound('miss');
                 if (!hit) gameState.miss++;
             }
         }
 
-        function playSound(type) {
-            const sounds = {
-                hit: new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU'),
-                miss: new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU'),
-                reload: new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU')
-            };
-            sounds[type].play();
-        }
-
         function showMenu(menuId) {
-            document.querySelectorAll('.menu').forEach(m => m.style.display = 'none');
-            document.getElementById(menuId).style.display = 'block';
+            document.querySelectorAll('.menu').forEach(m => m.classList.add('hidden'));
+            document.querySelectorAll('.hud, #pauseBtn, .crosshair').forEach(e => e.classList.add('hidden'));
+            
+            if (menuId) {
+                document.getElementById(menuId).classList.remove('hidden');
+            } else {
+                document.querySelectorAll('.hud, #pauseBtn, .crosshair').forEach(e => e.classList.remove('hidden'));
+            }
         }
 
         // Event Listeners
@@ -298,15 +286,14 @@
         canvas.addEventListener('touchstart', handleShoot);
 
         document.getElementById('startBtn').addEventListener('click', () => {
-            showMenu(null);
+            showMenu();
             initGame();
             gameState.isPlaying = true;
             gameLoop();
             
-            // Game timer
             setTimeout(() => {
                 gameState.isPlaying = false;
-                if (gameState.score > Math.min(...highScores)) {
+                if (gameState.score > Math.min(...highScores) || highScores.length < 5) {
                     highScores.push(gameState.score);
                     highScores.sort((a,b) => b - a).splice(5);
                     localStorage.setItem('highScores', JSON.stringify(highScores));
@@ -343,7 +330,6 @@
         initGame();
         showMenu('mainMenu');
 
-        // Crosshair movement
         document.addEventListener('mousemove', e => {
             document.querySelector('.crosshair').style.transform = 
                 `translate(${e.clientX - 16}px, ${e.clientY - 16}px)`;
