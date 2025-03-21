@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sky Ranch Showdown</title>
+    <title>Cyber Cow Invasion</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -180,9 +180,30 @@
             reloading: false,
             particles: [],
             cowTypes: [
-                { speed: 2, color: '#FF6B6B', pattern: 'linear', score: 20, radius: 25 },
-                { speed: 3, color: '#4ECDC4', pattern: 'sinus', score: 30, radius: 20 },
-                { speed: 4, color: '#FFE66D', pattern: 'zigzag', score: 40, radius: 30 }
+                { 
+                    speed: 2,
+                    pattern: 'linear',
+                    score: 20,
+                    radius: 30,
+                    wingSpeed: 0.03,
+                    color: '#FF6B6B'
+                },
+                { 
+                    speed: 3,
+                    pattern: 'sinus',
+                    score: 30,
+                    radius: 25,
+                    wingSpeed: 0.05,
+                    color: '#4ECDC4'
+                },
+                { 
+                    speed: 4,
+                    pattern: 'zigzag',
+                    score: 40,
+                    radius: 35,
+                    wingSpeed: 0.04,
+                    color: '#FFE66D'
+                }
             ],
             highScore: localStorage.getItem('highScore') || 0
         };
@@ -258,44 +279,48 @@
             ctx.save();
             const type = gameState.cowTypes[cow.type];
             
-            // Body
-            ctx.fillStyle = type.color;
+            // Body outline
+            ctx.strokeStyle = type.color;
+            ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.ellipse(
                 cow.x + 30, 
                 cow.y + 30, 
-                30, 
-                25, 
+                28, 
+                23, 
                 Math.PI/4 * cow.direction, 
                 0, 
                 Math.PI * 2
             );
-            ctx.fill();
+            ctx.stroke();
 
-            // Head
+            // Head outline
             ctx.beginPath();
             ctx.arc(
                 cow.x + 30 + (25 * cow.direction), 
                 cow.y + 25, 
-                15, 
+                13, 
                 0, 
                 Math.PI * 2
             );
-            ctx.fill();
+            ctx.stroke();
 
             // Legs
-            ctx.fillRect(cow.x + 15, cow.y + 45, 8, 20);
-            ctx.fillRect(cow.x + 35, cow.y + 45, 8, 20);
+            ctx.strokeRect(cow.x + 15, cow.y + 45, 8, 20);
+            ctx.strokeRect(cow.x + 35, cow.y + 45, 8, 20);
 
             // Wings
             ctx.strokeStyle = '#FFE66D';
             ctx.lineWidth = 4;
             ctx.beginPath();
-            ctx.moveTo(cow.x + 30, cow.y + 30);
-            ctx.lineTo(
-                cow.x + 30 + Math.cos(cow.wingAngle) * 25 * cow.direction,
-                cow.y + 30 + Math.sin(cow.wingAngle) * 10
-            );
+            for(let i = 0; i < 3; i++) {
+                const angle = cow.wingAngle + (i * Math.PI/6);
+                ctx.moveTo(cow.x + 30, cow.y + 30);
+                ctx.lineTo(
+                    cow.x + 30 + Math.cos(angle) * 25 * cow.direction,
+                    cow.y + 30 + Math.sin(angle) * 10
+                );
+            }
             ctx.stroke();
 
             ctx.restore();
@@ -332,8 +357,10 @@
 
             // Update cows
             gameState.targets = gameState.targets.filter(cow => {
+                const type = gameState.cowTypes[cow.type];
+                
                 // Movement patterns
-                switch(gameState.cowTypes[cow.type].pattern) {
+                switch(type.pattern) {
                     case 'sinus':
                         cow.y += Math.sin(timestamp * 0.002 + cow.patternOffset) * 0.5;
                         break;
@@ -343,16 +370,11 @@
                 }
 
                 cow.x += cow.speed * cow.direction;
-                cow.wingAngle = Math.sin(timestamp * 0.01) * 0.5;
+                cow.wingAngle = Math.sin(timestamp * type.wingSpeed) * 1.5;
 
                 // Check escape
                 if ((cow.direction === 1 && cow.x > canvas.width + 100) ||
                     (cow.direction === -1 && cow.x < -100)) {
-                    if(cow.active) {
-                        gameState.lives--;
-                        updateLivesDisplay();
-                        if(gameState.lives <= 0) endGame();
-                    }
                     return false;
                 }
                 return true;
@@ -388,6 +410,12 @@
                     hit = true;
                 }
             });
+
+            if (!hit) {
+                gameState.lives--;
+                updateLivesDisplay();
+                if(gameState.lives <= 0) endGame();
+            }
 
             if (gameState.ammo <= 0) startReload();
         }
@@ -441,7 +469,7 @@
 - SHOOT FLYING CYBER-COWS
 - 10 BULLETS BEFORE RELOAD
 - DIFFERENT COLORS = DIFFERENT POINTS
-- DON'T LET THEM ESCAPE (3 LIVES)
+- 3 LIVES (LOSE LIFE ON MISS)
 - GAME DURATION: 60 SECONDS`);
         });
 
