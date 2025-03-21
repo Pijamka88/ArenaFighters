@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Space Hunt</title>
+    <title>Space Cow Invasion</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -13,9 +13,9 @@
         }
 
         body {
-            background: #000;
-            color: #fff;
-            font-family: 'Orbitron', sans-serif;
+            background: #1a1a1a;
+            color: white;
+            font-family: 'Arial Black', sans-serif;
             touch-action: none;
             overflow: hidden;
         }
@@ -27,51 +27,53 @@
             display: none;
             align-items: center;
             justify-content: center;
-            background: radial-gradient(circle, #000428 0%, #004e92 100%);
+            background: rgba(0,0,0,0.95);
         }
 
         .menu {
             flex-direction: column;
-            gap: 25px;
+            gap: 20px;
             text-align: center;
-            text-shadow: 0 0 10px #00f7ff;
         }
 
         .btn {
             padding: 15px 30px;
             font-size: 1.2em;
-            background: linear-gradient(45deg, #0011ff, #00f7ff);
+            background: #6a1b9a;
             border: none;
             color: white;
-            border-radius: 8px;
+            border-radius: 25px;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 0 15px #00f7ff;
+            margin: 5px;
+            box-shadow: 0 0 15px #9c27b0;
         }
 
         .btn:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 25px #00f7ff;
+            background: #9c27b0;
         }
 
         #gameCanvas {
-            background: #000;
+            background: linear-gradient(#2a0845, #1a1a1a);
         }
 
         .hud {
             position: fixed;
-            padding: 15px;
-            background: rgba(0, 0, 50, 0.8);
-            border-radius: 10px;
-            border: 1px solid #00f7ff;
-            box-shadow: 0 0 10px #00f7ff;
+            padding: 15px 25px;
+            background: rgba(0,0,0,0.7);
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            border: 1px solid #9c27b0;
+            box-shadow: 0 0 20px rgba(156,39,176,0.5);
         }
 
         #topHud {
             top: 20px;
-            width: 100%;
-            text-align: center;
-            font-size: 1.5em;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 30px;
         }
 
         #bottomHud {
@@ -80,19 +82,17 @@
             transform: translateX(-50%);
             display: flex;
             gap: 30px;
-            font-size: 1.2em;
         }
 
         .hearts {
             display: flex;
-            gap: 10px;
+            gap: 8px;
         }
 
         .heart {
-            width: 30px;
-            height: 30px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ff0055"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>');
-            filter: drop-shadow(0 0 5px #ff0055);
+            width: 28px;
+            height: 28px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ff1744"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>');
         }
 
         .crosshair {
@@ -100,15 +100,8 @@
             width: 40px;
             height: 40px;
             pointer-events: none;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%2300f7ff" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-12.5c-2.49 0-4.5 2.01-4.5 4.5s2.01 4.5 4.5 4.5 4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5zm0 7c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>');
-            filter: drop-shadow(0 0 5px #00f7ff);
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(0.95); opacity: 0.8; }
-            50% { transform: scale(1.05); opacity: 1; }
-            100% { transform: scale(0.95); opacity: 0.8; }
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%239c27b0"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-12.5c-2.49 0-4.5 2.01-4.5 4.5s2.01 4.5 4.5 4.5 4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5zm0 7c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/><circle cx="12" cy="12" r="2" fill="%23ff1744"/></svg>');
+            filter: drop-shadow(0 0 8px rgba(156,39,176,0.8));
         }
 
         #leaderboard {
@@ -118,44 +111,50 @@
         }
 
         .score-item {
-            padding: 15px;
-            background: rgba(0, 247, 255, 0.1);
-            border-radius: 8px;
-            width: 300px;
-            border: 1px solid #00f7ff;
+            padding: 15px 25px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            width: 280px;
             text-align: center;
+            border: 1px solid #9c27b0;
         }
 
-        .stars {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 1.5s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
         }
     </style>
 </head>
 <body>
-    <!-- Star background -->
-    <div class="stars"></div>
+    <!-- Stars background -->
+    <div id="stars"></div>
 
     <!-- Main Menu -->
     <div id="mainMenu" class="screen menu">
-        <h1 style="font-size: 3em; color: #00f7ff">🚀 SPACE HUNT 🌌</h1>
-        <button class="btn" onclick="startGame()">START MISSION</button>
-        <button class="btn" onclick="showScreen('howToPlay')">COMMAND MANUAL</button>
-        <button class="btn" onclick="showScreen('leaderboard')">GALACTIC LEADERS</button>
+        <h1 style="font-size: 2.5em; text-shadow: 0 0 20px #9c27b0;">🚀 COSMIC COWS 🐮</h1>
+        <button class="btn" onclick="startGame()">Start Game</button>
+        <button class="btn" onclick="showScreen('howToPlay')">How to Play</button>
+        <button class="btn" onclick="showScreen('leaderboard')">High Scores</button>
     </div>
 
     <!-- Game Screen -->
     <div id="gameScreen" class="screen">
         <canvas id="gameCanvas"></canvas>
         <div class="hud" id="topHud">
-            ENERGY: <span id="score">0</span> UNITS
+            <div>SCORE: <span id="score">0</span></div>
+            <div>LEVEL: <span id="level">1</span></div>
         </div>
         <div class="hud" id="bottomHud">
-            <div>LASER: <span id="ammo">10</span>%</div>
-            <div>TARGETS: <span id="hits">0</span></div>
-            <div>SHIELDS: <span id="misses">100</span>%</div>
+            <div>🔫 <span id="ammo">10</span></div>
+            <div>🎯 <span id="hits">0</span></div>
+            <div>💔 <span id="misses">0</span></div>
             <div class="hearts" id="hearts"></div>
         </div>
         <div class="crosshair" id="crosshair"></div>
@@ -163,24 +162,24 @@
 
     <!-- Leaderboard -->
     <div id="leaderboard" class="screen">
-        <h2>🚨 GALACTIC LEADERS 🏆</h2>
+        <h2 style="text-shadow: 0 0 15px #9c27b0;">TOP 10 SCORES</h2>
         <div id="scoresList"></div>
-        <button class="btn" onclick="showScreen('mainMenu')">RETURN</button>
+        <button class="btn" onclick="showScreen('mainMenu')">BACK</button>
     </div>
 
     <!-- How to Play -->
     <div id="howToPlay" class="screen">
-        <div style="max-width: 400px; text-align: center; padding: 20px;">
-            <h2>🌠 COMMAND MANUAL 🌠</h2>
-            <p>🎯 DESTROY ENEMY SHIPS!</p>
-            <p>❤️ SHIELD INTEGRITY (3 LAYERS)</p>
-            <p>🔫 LASER OVERHEATS AFTER 10 SHOTS</p>
-            <p>⏱ 60 SECOND MISSION TIME</p>
-            <p>🚀 SHIP TYPES:</p>
-            <p>- SCOUT (10)</p>
-            <p>- FIGHTER (20)</p>
-            <p>- BATTLE CRUISER (30)</p>
-            <button class="btn" onclick="showScreen('mainMenu')">RETURN</button>
+        <div style="max-width: 320px; padding: 25px; text-align: center;">
+            <h2 style="color: #9c27b0;">HOW TO PLAY</h2>
+            <p>🎯 Shoot space cows!</p>
+            <p>❤️ 3 Lives</p>
+            <p>🔫 10 shots before reload</p>
+            <p>⏱ 60 seconds</p>
+            <p>🐄 Cow types:</p>
+            <p>- Basic (10 pts)</p>
+            <p>- Speedy (20 pts)</p>
+            <p>- Alien (50 pts)</p>
+            <button class="btn" onclick="showScreen('mainMenu')">BACK</button>
         </div>
     </div>
 
@@ -189,42 +188,304 @@
         const ctx = canvas.getContext('2d');
         let gameState = null;
         let highScores = JSON.parse(localStorage.getItem('highScores')) || [];
-
-        // Initialize stars
+        
+        // Create stars background
+        function createStars() {
+            const stars = document.getElementById('stars');
+            for(let i = 0; i < 150; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.width = Math.random() * 3 + 'px';
+                star.style.height = star.style.width;
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 1.5 + 's';
+                stars.appendChild(star);
+            }
+        }
         createStars();
 
         // Game Constants
-        const SHIP_TYPES = {
-            SCOUT: { speed: 2, score: 10, color: '#00f7ff', size: 30 },
-            FIGHTER: { speed: 4, score: 20, color: '#ff0055', size: 40 },
-            CRUISER: { speed: 3, score: 30, color: '#9400ff', size: 50 }
+        const COW_TYPES = {
+            BASIC: { speed: 2, score: 10, color: '#7e57c2' },
+            SPEEDY: { speed: 4, score: 20, color: '#f06292' },
+            ALIEN: { speed: 3, score: 50, color: '#64ffda' }
         };
 
-        // Initialize game
+        // Initialize screens
         showScreen('mainMenu');
         initHearts();
 
-        function createStars() {
-            const container = document.querySelector('.stars');
-            for(let i = 0; i < 200; i++) {
-                const star = document.createElement('div');
-                star.style.position = 'absolute';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.width = Math.random() * 2 + 'px';
-                star.style.height = star.style.width;
-                star.style.background = '#fff';
-                star.style.borderRadius = '50%';
-                star.style.animation = `twinkle ${Math.random() * 3 + 2}s infinite`;
-                container.appendChild(star);
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+            document.getElementById(screenId).style.display = 'flex';
+            if(screenId === 'leaderboard') updateLeaderboard();
+        }
+
+        function initHearts() {
+            const hearts = document.getElementById('hearts');
+            hearts.innerHTML = Array(3).fill('<div class="heart"></div>').join('');
+        }
+
+        function updateLeaderboard() {
+            const list = document.getElementById('scoresList');
+            list.innerHTML = highScores.sort((a,b) => b - a)
+                .slice(0,10)
+                .map((score,i) => `<div class="score-item">${i+1}. ${score}</div>`)
+                .join('');
+        }
+
+        // Game initialization
+        function startGame() {
+            showScreen('gameScreen');
+            initGameState();
+            resizeCanvas();
+            gameLoop();
+        }
+
+        function initGameState() {
+            gameState = {
+                targets: [],
+                score: 0,
+                ammo: 10,
+                hits: 0,
+                misses: 0,
+                lives: 3,
+                isPlaying: true,
+                crosshair: { x: 0, y: 0 },
+                lastSpawn: 0,
+                particles: [],
+                reloading: false,
+                gameTime: 60000,
+                startTime: Date.now(),
+                level: 1
+            };
+            updateHearts();
+        }
+
+        // Canvas setup
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        // Input handling
+        document.addEventListener('mousemove', e => {
+            const rect = canvas.getBoundingClientRect();
+            gameState.crosshair.x = e.clientX - rect.left;
+            gameState.crosshair.y = e.clientY - rect.top;
+            document.getElementById('crosshair').style.transform = 
+                `translate(${e.clientX - 20}px, ${e.clientY - 20}px)`;
+        });
+
+        document.addEventListener('touchmove', e => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            gameState.crosshair.x = e.touches[0].clientX - rect.left;
+            gameState.crosshair.y = e.touches[0].clientY - rect.top;
+            document.getElementById('crosshair').style.transform = 
+                `translate(${e.touches[0].clientX - 20}px, ${e.touches[0].clientY - 20}px)`;
+        }, { passive: false });
+
+        // Game objects
+        function createCow() {
+            const type = Math.random();
+            let cowType;
+            if(type < 0.6) cowType = COW_TYPES.BASIC;
+            else if(type < 0.9) cowType = COW_TYPES.SPEEDY;
+            else cowType = COW_TYPES.ALIEN;
+
+            return {
+                x: Math.random() < 0.5 ? -80 : canvas.width + 80,
+                y: Math.random() * (canvas.height - 80),
+                speed: cowType.speed,
+                direction: Math.random() < 0.5 ? 1 : -1,
+                width: 60,
+                height: 40,
+                type: cowType,
+                active: true,
+                wingAngle: 0,
+                zigzagPhase: Math.random() * Math.PI * 2,
+                rotation: 0
+            };
+        }
+
+        function drawCow(cow) {
+            ctx.save();
+            ctx.translate(cow.x + 30, cow.y + 20);
+            ctx.rotate(cow.rotation);
+            
+            // Body
+            ctx.fillStyle = cow.type.color;
+            ctx.beginPath();
+            ctx.ellipse(0, 0, 30, 20, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Head
+            ctx.fillStyle = '#FFF';
+            ctx.beginPath();
+            ctx.arc(25, -5, 12, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Alien features
+            if(cow.type === COW_TYPES.ALIEN) {
+                ctx.fillStyle = '#00ff00';
+                ctx.beginPath();
+                ctx.arc(28, -8, 3, 0, Math.PI * 2);
+                ctx.arc(33, -8, 3, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            
+            // Jetpack
+            ctx.fillStyle = '#607d8b';
+            ctx.fillRect(-25, -10, 10, 20);
+            
+            ctx.restore();
+        }
+
+        // Game logic
+        function updateGameState() {
+            // Spawn cows
+            if(Date.now() - gameState.lastSpawn > 1000) {
+                gameState.targets.push(createCow());
+                gameState.lastSpawn = Date.now();
+            }
+
+            // Update cows
+            gameState.targets = gameState.targets.filter(cow => {
+                cow.rotation = Math.sin(Date.now() * 0.005) * 0.2;
+                cow.wingAngle += 0.1;
+                if(cow.type === COW_TYPES.ALIEN) {
+                    cow.y += Math.sin(Date.now() * 0.01) * 2;
+                }
+                cow.x += cow.speed * cow.direction;
+                
+                return cow.active && cow.x > -100 && cow.x < canvas.width + 100;
+            });
+
+            // Update particles
+            gameState.particles = gameState.particles.filter(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life -= 0.03;
+                return p.life > 0;
+            });
+
+            // Check game over
+            if(Date.now() - gameState.startTime > gameState.gameTime) {
+                endGame();
             }
         }
 
-        // Остальной JavaScript код остается аналогичным предыдущей версии
-        // с заменой cow на ship и обновлением визуальных элементов
-        
-        // ... (остальной код аналогичен предыдущей версии с заменой визуальных элементов)
-        
+        function drawGame() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw cows
+            gameState.targets.forEach(drawCow);
+            
+            // Draw particles
+            ctx.fillStyle = '#9c27b0';
+            gameState.particles.forEach(p => {
+                ctx.globalAlpha = p.life;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 3 + p.life * 5, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1;
+        }
+
+        function updateUI() {
+            document.getElementById('score').textContent = gameState.score;
+            document.getElementById('ammo').textContent = gameState.ammo;
+            document.getElementById('hits').textContent = gameState.hits;
+            document.getElementById('misses').textContent = gameState.misses;
+            document.getElementById('level').textContent = gameState.level;
+            updateHearts();
+        }
+
+        function updateHearts() {
+            const hearts = document.querySelectorAll('.heart');
+            hearts.forEach((h, i) => 
+                h.style.opacity = i < gameState.lives ? 1 : 0.3);
+        }
+
+        // Shooting logic
+        function handleShoot() {
+            if(!gameState.isPlaying || gameState.ammo <= 0 || gameState.reloading) return;
+
+            gameState.ammo--;
+            let hit = false;
+
+            gameState.targets.forEach(cow => {
+                const cx = gameState.crosshair.x;
+                const cy = gameState.crosshair.y;
+                
+                if(cx > cow.x && cx < cow.x + cow.width &&
+                   cy > cow.y && cy < cow.y + cow.height) {
+                    gameState.score += cow.type.score;
+                    gameState.hits++;
+                    cow.active = false;
+                    createParticles(cx, cy);
+                    hit = true;
+                }
+            });
+
+            if(!hit) {
+                gameState.misses++;
+                if(gameState.misses % 5 === 0) {
+                    gameState.lives = Math.max(0, gameState.lives - 1);
+                    if(gameState.lives === 0) endGame();
+                }
+            }
+
+            if(gameState.ammo <= 0) {
+                gameState.reloading = true;
+                setTimeout(() => {
+                    gameState.ammo = 10;
+                    gameState.reloading = false;
+                }, 2000);
+            }
+        }
+
+        function createParticles(x, y) {
+            for(let i = 0; i < 20; i++) {
+                gameState.particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 10,
+                    vy: (Math.random() - 0.5) * 10,
+                    life: 1
+                });
+            }
+        }
+
+        function endGame() {
+            gameState.isPlaying = false;
+            highScores.push(gameState.score);
+            localStorage.setItem('highScores', JSON.stringify(highScores));
+            showScreen('mainMenu');
+            alert(`GAME OVER! SCORE: ${gameState.score}`);
+        }
+
+        // Game loop
+        function gameLoop() {
+            if(!gameState.isPlaying) return;
+            
+            updateGameState();
+            drawGame();
+            updateUI();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Event listeners
+        document.addEventListener('mousedown', handleShoot);
+        document.addEventListener('touchstart', handleShoot);
+
+        // Telegram integration
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
     </script>
 </body>
 </html>
