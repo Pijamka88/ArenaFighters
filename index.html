@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Mad Cow Hunt</title>
+    <title>Square Cow Invasion</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --main-color: #FF5722;
-            --secondary-color: #4CAF50;
-            --bg-color: #1A237E;
+            --main-color: #4a752c;
+            --accent-color: #ffd700;
+            --danger-color: #ff4444;
         }
 
         body {
@@ -17,8 +17,8 @@
             padding: 0;
             overflow: hidden;
             touch-action: none;
-            font-family: 'Arial Black', sans-serif;
-            background: var(--bg-color);
+            font-family: 'Press Start 2P', cursive;
+            background: #87CEEB;
             color: white;
         }
 
@@ -36,155 +36,149 @@
             text-align: center;
             background: rgba(0,0,0,0.9);
             padding: 2rem;
-            border-radius: 15px;
-            border: 3px solid var(--main-color);
+            border-radius: 1rem;
+            border: 4px solid var(--accent-color);
             z-index: 2;
         }
 
-        .menuBtn {
-            padding: 1rem 2rem;
-            font-size: 1.2rem;
-            background: linear-gradient(45deg, var(--main-color), #FF9800);
-            border: none;
-            color: white;
-            border-radius: 8px;
-            margin: 0.5rem;
-            cursor: pointer;
-            transition: transform 0.2s;
-            width: 200px;
+        .menu-title {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: var(--accent-color);
+            text-shadow: 3px 3px 0 var(--main-color);
         }
 
-        .menuBtn:hover {
+        .menu-btn {
+            display: block;
+            width: 200px;
+            padding: 1rem;
+            margin: 1rem auto;
+            font-family: inherit;
+            font-size: 1rem;
+            background: var(--main-color);
+            border: 3px solid var(--accent-color);
+            color: white;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .menu-btn:hover {
             transform: scale(1.05);
+            background: #5a8c3c;
         }
 
         #hud {
-            position: fixed;
+            position: absolute;
             top: 10px;
             width: 100%;
             display: flex;
             justify-content: space-between;
-            padding: 0 20px;
+            padding: 0 1rem;
             box-sizing: border-box;
-            z-index: 1;
         }
 
         #bottomPanel {
-            position: fixed;
+            position: absolute;
             bottom: 0;
             width: 100%;
+            height: 100px;
             background: rgba(0,0,0,0.7);
-            padding: 10px;
             display: flex;
-            justify-content: space-around;
             align-items: center;
+            justify-content: space-around;
+            border-top: 4px solid var(--accent-color);
         }
 
-        .life {
-            width: 30px;
-            height: 30px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ff0000"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>');
-            margin-left: 5px;
+        .ammo-counter {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        #crosshair {
-            position: absolute;
-            width: 32px;
-            height: 32px;
-            pointer-events: none;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23FF5722"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-12.5c-2.49 0-4.5 2.01-4.5 4.5s2.01 4.5 4.5 4.5 4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5zm0 7c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>');
-            background-size: contain;
-            filter: drop-shadow(0 0 5px rgba(255,87,34,0.7));
-        }
-
-        #gun {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+        #gunImage {
             width: 80px;
-            height: 80px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ffffff"><path d="M20 3h-5c0-1.7-1.3-3-3-3S9 1.3 9 3H4v2h1l1.5 6.7c-.6.3-1 1-1 1.8v8c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2v-8c0-.8-.4-1.5-1-1.8L19 5h1V3zM12 3c.6 0 1 .4 1 1h-2c0-.6.4-1 1-1zm6 18H6v-7h12v7zm-6-11c-1.1 0-2-.9-2-2h4c0 1.1-.9 2-2 2z"/></svg>');
-            background-size: contain;
-            transition: transform 0.1s;
+            height: 60px;
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAACWElEQVR4Xu2bTUsCQRiFh4hKiqIoKgoi6lL/QHfpVn9A6lAQFARBEAQRdIjo0LHo0B8QwY8OfURBFEQQRBBEURBBH4v3lXWX3dFdZ2dndvDdLrPvPO+ZM7OrrlgsJvCPE3AB4B8HwBHgCHAR4CLARYCLABcBLgJcBLgIcBHgIsBFgIsAFwEuAlwEuAhwEeAiwEWAiwAXAS4CXAS4CHAR4CLARYCLABcBLgJcBLgIcBHgIsBFgIsAFwEuAlwEuAhwEeAiwEWAiwAXAS4CXAS4CHAR4CLARYCLABcBLgJcBLgIcBHgIsBFgIsAFwEuAlwEuAhwEeAiwEWAiwAXAS4CXAS4CHAR4CLARYCLABcBLgJcBLgIcBHgIsBFgIsAFwEuAlwEuAhwEeAiwEWAiwAXAS4CXAS4CHAR4CLARYCLABcBLgJcBLgIcBHgIsBFgIsAFwEuAlwEuAhwEeAiwEWAiwAXAS4CXAS4CHAR4CLARYCLABcBLgJcBLgIcBHgIsBFgIsAFwEuAlwEuAhwEeAiwEWAiwAXAS4CXAS4CHAR4CLARYCLABcBLgJcBLgIcBHgIsBFgIsAFwEuAlwEuAhwEeAiwEWAiwAXAS4CXAS4CHAR4CLARYCLABcBLgJcBLgIcBHgIsBFgIsAFwEuAlwEuAhwEeAiwEWAiwAXAS4CXAS4CHAR4CLARYCLABcBLgJcBLgIcBHgIsBFgIsAFwEuAlwEuAhwEeAiwEWAiwAXAS4CXAS4CHAR4CLARYCLABcBLgJcBLgIcBHgIsBFgIsAFwEuAlwEuAhwEeAiwEWAiwAXAS4CXAS4CHAR4CLARYCLABcBLgJcBLgIcBHgIsBFgIsAFwEuAlwEuAhwEeAiwEWAiwAXAS4CXAS4CHAR4CLARYCLABcBLgJcBLgIcBHgIsBFgIsAFwEuAlwEuAhwEeAiwEWAiwAXAS4CXAS4CHAR4CLARYCLABcBLgJcBLgIcBHgIsBFgIsAFwEuAlwEuAhwEeAiwEWAiwAXAS4CXAS4CHAR4CLARYCLABcBLgJcBLgIcBHgIsBFgIsAFwEuAlwEuAhwEeAiwEWAiwAXAS4CXAS4CHAR4CLARYCLABcBLgJcBLgIcBHgIsBFgIsAFwEuAlwEuAhwEeAiwEWAiwAXAS4CXAS4CHAR4CLARYCLABcBLgJcBLgIcBHgIsBFgIsAFwEuAlwEuAhwEeAiwEWAiwAXAS4CXAQ4Av4Dm9vQHZQ4xLwAAAAASUVORK5CYII=') center/contain no-repeat;
         }
 
-        .paused {
-            position: fixed;
-            top: 50%;
-            left: 50%;
+        .crosshair {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ff0000"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/><path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4z"/></svg>');
+            pointer-events: none;
             transform: translate(-50%, -50%);
-            font-size: 3rem;
-            color: var(--main-color);
-            text-shadow: 0 0 10px black;
-            z-index: 3;
-            display: none;
+        }
+
+        #pauseBtn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 0.5rem 1rem;
+            background: var(--main-color);
+            border: 2px solid var(--accent-color);
+            color: white;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
     <div id="mainMenu">
-        <h1 style="color: var(--main-color); margin-bottom: 2rem;">MAD COW HUNT</h1>
-        <button class="menuBtn" id="startBtn">START GAME</button>
-        <button class="menuBtn" id="howToBtn">HOW TO PLAY</button>
-        <button class="menuBtn" id="highscoresBtn">HIGH SCORES</button>
+        <div class="menu-title">SQUARE COW INVASION</div>
+        <button class="menu-btn" id="startBtn">START GAME</button>
+        <button class="menu-btn" id="howToBtn">HOW TO PLAY</button>
+        <button class="menu-btn" id="highscoresBtn">HIGH SCORES</button>
     </div>
 
     <div id="hud">
         <div>SCORE: <span id="score">0</span></div>
-        <div id="lives"></div>
+        <div>LIVES: <span id="lives">3</span></div>
     </div>
 
     <div id="bottomPanel">
-        <div>AMMO: <span id="ammo">10</span></div>
-        <div>HITS: <span id="hits">0</span></div>
-        <div>MISS: <span id="miss">0</span></div>
-        <button id="pauseBtn" style="background: none; border: none;">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="#fff">
-                <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-            </svg>
-        </button>
+        <div class="ammo-counter">
+            <div>AMMO: <span id="ammo">10</span></div>
+            <div>HITS: <span id="hits">0</span></div>
+            <div>MISS: <span id="miss">0</span></div>
+        </div>
+        <div id="gunImage"></div>
     </div>
 
-    <div id="crosshair"></div>
-    <div id="gun"></div>
-    <div class="paused">PAUSED</div>
+    <button id="pauseBtn">PAUSE</button>
     <canvas id="gameCanvas"></canvas>
+    <div class="crosshair"></div>
 
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        const SCORE_KEY = 'madCowHighscores';
+        const SCORE_KEY = 'cowInvasionHighscores';
         
-        class GameState {
-            constructor() {
-                this.reset();
-            }
-            
-            reset() {
-                this.cows = [];
-                this.score = 0;
-                this.ammo = 10;
-                this.lives = 3;
-                this.hits = 0;
-                this.miss = 0;
-                this.isPlaying = false;
-                this.paused = false;
-                this.lastSpawn = 0;
-                this.maxCows = 4;
-                this.cowTypes = [
-                    { speed: 2, color: '#8B4513', score: 20 },
-                    { speed: 3.5, color: '#A0522D', score: 30 },
-                    { speed: 4.5, color: '#CD853F', score: 50 }
-                ];
-            }
-        }
+        // Game state
+        let gameState = {
+            cows: [],
+            score: 0,
+            ammo: 10,
+            lives: 3,
+            hits: 0,
+            miss: 0,
+            isPlaying: false,
+            isPaused: false,
+            crosshair: { x: 0, y: 0 },
+            lastSpawn: 0,
+            maxCows: 4,
+            particles: [],
+            trajectorySeed: 0,
+            highScores: JSON.parse(localStorage.getItem(SCORE_KEY)) || []
+        };
 
-        let game = new GameState();
-        let crosshairPos = { x: 0, y: 0 };
-        let highscores = JSON.parse(localStorage.getItem(SCORE_KEY)) || [];
+        // Cow types
+        const cowTypes = [
+            { color: '#ffffff', speed: 2, score: 50, pattern: 'sine' },
+            { color: '#brown', speed: 3, score: 75, pattern: 'zigzag' },
+            { color: '#black', speed: 4, score: 100, pattern: 'random' }
+        ];
 
-        // Canvas setup
+        // Game setup
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -194,202 +188,185 @@
 
         // Input handling
         document.addEventListener('mousemove', e => {
-            crosshairPos = { x: e.clientX, y: e.clientY };
-            document.getElementById('crosshair').style.transform = 
-                `translate(${e.clientX - 16}px, ${e.clientY - 16}px)`;
+            gameState.crosshair.x = e.clientX;
+            gameState.crosshair.y = e.clientY;
+            document.querySelector('.crosshair').style.left = `${e.clientX}px`;
+            document.querySelector('.crosshair').style.top = `${e.clientY}px`;
         });
 
-        document.addEventListener('touchmove', e => {
-            e.preventDefault();
-            crosshairPos = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-            document.getElementById('crosshair').style.transform = 
-                `translate(${e.touches[0].clientX - 16}px, ${e.touches[0].clientY - 16}px)`;
-        }, { passive: false });
+        // Game objects
+        function createCow() {
+            const type = cowTypes[Math.floor(Math.random() * cowTypes.length)];
+            return {
+                x: Math.random() < 0.5 ? -60 : canvas.width + 60,
+                y: Math.random() * (canvas.height - 160) + 60,
+                size: 40,
+                type: type,
+                direction: Math.random() < 0.5 ? 1 : -1,
+                patternOffset: Math.random() * 100,
+                health: 1,
+                hit: false
+            };
+        }
 
-        // Game functions
-        class Cow {
-            constructor(type) {
-                this.type = type;
-                this.x = Math.random() < 0.5 ? -100 : canvas.width + 100;
-                this.y = Math.random() * (canvas.height - 100);
-                this.speed = type.speed * (this.x < 0 ? 1 : -1);
-                this.angle = 0;
-                this.health = 1;
-                this.width = 60;
-                this.height = 40;
-            }
-
-            update() {
-                this.x += this.speed;
-                this.y += Math.sin(this.angle) * 2;
-                this.angle += 0.1;
-            }
-
-            draw() {
-                ctx.fillStyle = this.type.color;
+        function drawTerrain() {
+            // Draw grass
+            ctx.fillStyle = '#2d5a27';
+            ctx.fillRect(0, canvas.height - 60, canvas.width, 60);
+            
+            // Draw trees
+            ctx.fillStyle = '#3d2813';
+            for(let i = 0; i < 5; i++) {
+                const x = (canvas.width / 5) * i + 30;
+                ctx.fillRect(x, canvas.height - 100, 20, 40);
                 ctx.beginPath();
-                ctx.ellipse(this.x + 30, this.y + 20, 30, 20, 0, 0, Math.PI * 2);
+                ctx.arc(x + 10, canvas.height - 120, 30, 0, Math.PI * 2);
+                ctx.fillStyle = '#1a4720';
                 ctx.fill();
-                
-                // Wings
-                ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                ctx.moveTo(this.x + 40, this.y + 15);
-                ctx.lineTo(this.x + 40 + Math.cos(Date.now()*0.01)*15, 
-                         this.y + 15 + Math.sin(Date.now()*0.01)*5);
-                ctx.stroke();
             }
         }
 
-        function spawnCow() {
-            if(game.cows.length >= game.maxCows) return;
-            const type = game.cowTypes[Math.floor(Math.random() * game.cowTypes.length)];
-            game.cows.push(new Cow(type));
+        function updateCowPosition(cow) {
+            const baseSpeed = cow.type.speed * cow.direction;
+            const pattern = cow.type.pattern;
+            
+            switch(pattern) {
+                case 'sine':
+                    cow.x += baseSpeed;
+                    cow.y += Math.sin(Date.now() * 0.002 + cow.patternOffset) * 2;
+                    break;
+                case 'zigzag':
+                    cow.x += baseSpeed;
+                    cow.y += Math.sin(Date.now() * 0.005) * 3;
+                    break;
+                case 'random':
+                    cow.x += baseSpeed + Math.sin(Date.now() * 0.003) * 1.5;
+                    cow.y += Math.cos(Date.now() * 0.002) * 2;
+                    break;
+            }
         }
 
         function checkCollision(cow) {
             const rect = canvas.getBoundingClientRect();
-            const cx = crosshairPos.x - rect.left;
-            const cy = crosshairPos.y - rect.top;
-            return cx > cow.x && cx < cow.x + cow.width &&
-                   cy > cow.y && cy < cow.y + cow.height;
-        }
-
-        function updateHUD() {
-            document.getElementById('score').textContent = game.score;
-            document.getElementById('ammo').textContent = game.ammo;
-            document.getElementById('hits').textContent = game.hits;
-            document.getElementById('miss').textContent = game.miss;
-            
-            let livesHTML = '';
-            for(let i = 0; i < game.lives; i++) {
-                livesHTML += '<div class="life"></div>';
-            }
-            document.getElementById('lives').innerHTML = livesHTML;
+            const cowRect = {
+                x: cow.x - rect.left,
+                y: cow.y - rect.top,
+                width: cow.size,
+                height: cow.size
+            };
+            return (
+                gameState.crosshair.x > cowRect.x &&
+                gameState.crosshair.x < cowRect.x + cowRect.width &&
+                gameState.crosshair.y > cowRect.y &&
+                gameState.crosshair.y < cowRect.y + cowRect.height
+            );
         }
 
         function gameLoop() {
-            if(!game.isPlaying || game.paused) return;
+            if (!gameState.isPlaying || gameState.isPaused) return;
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
+            drawTerrain();
+
             // Spawn cows
-            if(Date.now() - game.lastSpawn > 1500) {
-                spawnCow();
-                game.lastSpawn = Date.now();
+            if (gameState.cows.length < gameState.maxCows && 
+                Date.now() - gameState.lastSpawn > 2000) {
+                gameState.cows.push(createCow());
+                gameState.lastSpawn = Date.now();
             }
 
             // Update cows
-            game.cows = game.cows.filter(cow => {
-                cow.update();
-                
-                // Check if cow escaped
-                if(cow.x < -150 || cow.x > canvas.width + 150) {
-                    game.lives--;
-                    if(game.lives <= 0) gameOver();
-                    return false;
+            gameState.cows = gameState.cows.filter(cow => {
+                if (cow.hit) {
+                    cow.size -= 2;
+                    return cow.size > 0;
                 }
-                return true;
+                updateCowPosition(cow);
+                return cow.x > -100 && cow.x < canvas.width + 100;
             });
 
             // Draw cows
-            game.cows.forEach(cow => cow.draw());
+            gameState.cows.forEach(cow => {
+                ctx.fillStyle = cow.hit ? '#ff4444' : cow.type.color;
+                ctx.fillRect(cow.x, cow.y, cow.size, cow.size);
+            });
 
-            updateHUD();
             requestAnimationFrame(gameLoop);
         }
 
-        function shoot() {
-            if(!game.isPlaying || game.paused || game.ammo <= 0) return;
+        // Game controls
+        function handleShoot() {
+            if (!gameState.isPlaying || gameState.ammo <= 0 || gameState.isPaused) return;
 
-            game.ammo--;
+            gameState.ammo--;
             let hit = false;
 
-            game.cows = game.cows.filter(cow => {
-                if(checkCollision(cow)) {
-                    game.score += cow.type.score;
-                    game.hits++;
+            gameState.cows.forEach(cow => {
+                if (!cow.hit && checkCollision(cow)) {
+                    cow.hit = true;
+                    gameState.score += cow.type.score;
+                    gameState.hits++;
                     hit = true;
-                    return false;
                 }
-                return true;
             });
 
-            if(!hit) game.miss++;
-            if(game.ammo <= 0) reload();
+            if (!hit) gameState.miss++;
+            updateHUD();
 
-            // Gun animation
-            document.getElementById('gun').style.transform = 
-                `translateX(-50%) scale(1.2)`;
-            setTimeout(() => {
-                document.getElementById('gun').style.transform = 
-                    `translateX(-50%) scale(1)`;
-            }, 100);
+            if (gameState.ammo <= 0) {
+                setTimeout(() => {
+                    gameState.ammo = 10;
+                    updateHUD();
+                }, 2000);
+            }
         }
 
-        function reload() {
-            game.ammo = 10;
-            game.miss++;
-        }
-
-        function gameOver() {
-            game.isPlaying = false;
-            document.getElementById('mainMenu').style.display = 'block';
-            updateHighscores(game.score);
-            alert(`GAME OVER! Score: ${game.score}`);
-        }
-
-        function updateHighscores(score) {
-            highscores.push(score);
-            highscores.sort((a,b) => b - a);
-            highscores = highscores.slice(0, 5);
-            localStorage.setItem(SCORE_KEY, JSON.stringify(highscores));
+        function updateHUD() {
+            document.getElementById('score').textContent = gameState.score;
+            document.getElementById('ammo').textContent = gameState.ammo;
+            document.getElementById('hits').textContent = gameState.hits;
+            document.getElementById('miss').textContent = gameState.miss;
+            document.getElementById('lives').textContent = gameState.lives;
         }
 
         // Event listeners
-        document.addEventListener('mousedown', shoot);
-        document.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            shoot();
-        });
-
-        document.getElementById('startBtn').addEventListener('click', () => {
-            document.getElementById('mainMenu').style.display = 'none';
-            game.reset();
-            game.isPlaying = true;
-            gameLoop();
-        });
-
-        document.getElementById('howToBtn').addEventListener('click', () => {
-            alert(`HOW TO PLAY:
-- Shoot flying cows with your crosshair
-- You have 10 bullets before auto-reload
-- 3 types of cows with different speeds
-- 3 lives - don't let cows escape!
-- Manage your ammo carefully
-- Different cows give different points
-- Top 5 scores are saved locally`);
-        });
-
-        document.getElementById('highscoresBtn').addEventListener('click', () => {
-            const scores = highscores.length > 0 ? 
-                highscores.join('\n') : 'No scores yet!';
-            alert(`TOP 5 SCORES:\n${scores}`);
-        });
-
+        canvas.addEventListener('mousedown', handleShoot);
         document.getElementById('pauseBtn').addEventListener('click', () => {
-            game.paused = !game.paused;
-            document.querySelector('.paused').style.display = 
-                game.paused ? 'block' : 'none';
-            if(game.paused) cancelAnimationFrame(animationFrame);
-            else gameLoop();
+            gameState.isPaused = !gameState.isPaused;
         });
+
+        document.getElementById('startBtn').addEventListener('click', startGame);
+        document.getElementById('howToBtn').addEventListener('click', () => {
+            alert('HOW TO PLAY:\n- Shoot square cows before they escape\n- 3 lives, lose life if cow escapes\n- 10 shots before auto-reload\n- Different cow types give more points\n- Avoid shooting behind terrain');
+        });
+        document.getElementById('highscoresBtn').addEventListener('click', showHighscores);
+
+        // Game management
+        function startGame() {
+            document.getElementById('mainMenu').style.display = 'none';
+            gameState = {
+                ...gameState,
+                cows: [],
+                score: 0,
+                ammo: 10,
+                lives: 3,
+                hits: 0,
+                miss: 0,
+                isPlaying: true,
+                isPaused: false
+            };
+            updateHUD();
+            gameLoop();
+        }
+
+        function showHighscores() {
+            const scores = gameState.highScores.sort((a,b) => b - a).slice(0, 5);
+            alert('HIGH SCORES:\n' + scores.join('\n'));
+        }
 
         // Init
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
-        updateHUD();
     </script>
 </body>
 </html>
