@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cyber Cow Invasion</title>
+    <title>Космические Коровы</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -18,9 +18,10 @@
             padding: 0;
             overflow: hidden;
             touch-action: none;
-            font-family: 'Luckiest Guy', cursive;
+            font-family: 'Rubik', sans-serif;
             background: var(--dark-bg);
             color: white;
+            text-align: center;
         }
 
         #gameCanvas {
@@ -29,7 +30,7 @@
             left: 0;
         }
 
-        #hud {
+        .hud {
             position: fixed;
             top: 15px;
             width: 100%;
@@ -44,22 +45,9 @@
             background: rgba(0,0,0,0.7);
             padding: 10px 20px;
             border-radius: 15px;
-            border: 3px solid var(--light-text);
-            box-shadow: 0 0 10px rgba(255,230,109,0.3);
+            border: 2px solid var(--light-text);
             font-size: 1.2em;
-        }
-
-        #lives {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .life {
-            width: 30px;
-            height: 30px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23FF6B6B" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>');
-            background-size: contain;
+            margin: 0 auto;
         }
 
         #menu {
@@ -67,92 +55,64 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            text-align: center;
             background: rgba(45,48,71,0.95);
             padding: 30px 50px;
             border-radius: 25px;
-            border: 3px solid var(--light-text);
-            box-shadow: 0 0 25px rgba(255,230,109,0.4);
+            border: 2px solid var(--light-text);
             z-index: 100;
+            width: 90%;
+            max-width: 500px;
         }
 
         .menu-title {
-            font-size: 2.5em;
+            font-size: 2em;
             color: var(--light-text);
-            text-shadow: 3px 3px 0 var(--main-color);
             margin: 0 0 20px 0;
         }
 
         .btn {
-            padding: 15px 30px;
-            font-size: 1.2em;
+            padding: 12px 24px;
+            font-size: 1em;
             background: linear-gradient(45deg, var(--main-color), var(--accent-color));
             border: none;
             color: white;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
-            margin: 10px;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 15px var(--accent-color);
+            margin: 8px;
+            display: block;
+            width: 100%;
         }
 
         .crosshair {
             position: absolute;
-            width: 40px;
-            height: 40px;
+            width: 32px;
+            height: 32px;
             pointer-events: none;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="%234ECDC4" stroke-width="4"/><path d="M50 20V50M50 80V50M20 50H50M80 50H50" stroke="%23FF6B6B" stroke-width="4"/></svg>');
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%234ECDC4" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-12.5c-2.49 0-4.5 2.01-4.5 4.5s2.01 4.5 4.5 4.5 4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5zm0 7c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>');
             background-size: contain;
-            filter: drop-shadow(0 0 5px rgba(78,205,196,0.7));
         }
 
-        #bottomPanel {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            height: 120px;
-            background: linear-gradient(transparent, rgba(0,0,0,0.9));
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 30px;
-        }
-
-        .ammo-bullet {
-            width: 25px;
-            height: 40px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23FFE66D" d="M20 9H22V15H20zM12 2C8.1 2 4.9 4 2 7l3 3c1.7-2.3 4.1-3.7 7-3.7s5.3 1.4 7 3.7l3-3c-2.9-3-6.1-5-10-5z"/></svg>');
-            background-size: contain;
-            opacity: 0.8;
-            transition: transform 0.2s;
+        #leaderboard {
+            max-height: 200px;
+            overflow-y: auto;
+            margin: 15px 0;
         }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="menu">
-        <h1 class="menu-title">🛸 COW INVASION 👽</h1>
-        <div id="highScore" class="hud-item" style="margin-bottom: 20px;">HIGH SCORE: 0</div>
-        <button class="btn" id="startBtn">LAUNCH</button>
-        <button class="btn" id="howToBtn">COMMANDS</button>
-        <button class="btn" id="highScoreBtn">LEADERBOARD</button>
+        <h1 class="menu-title">🐮 КОСМИЧЕСКИЕ КОРОВЫ 🚀</h1>
+        <div class="hud-item" style="margin-bottom:15px;">Рекорд: <span id="highScore">0</span></div>
+        <button class="btn" id="startBtn">ИГРАТЬ</button>
+        <button class="btn" id="howToBtn">ПРАВИЛА</button>
+        <button class="btn" id="leaderboardBtn">ТОП-10</button>
     </div>
 
-    <div id="hud">
+    <div class="hud">
         <div class="hud-item">
-            SCORE: <span id="score">0</span>
+            Очки: <span id="score">0</span> | Жизни: <span id="lives">3</span>
         </div>
-        <div id="lives" class="hud-item"></div>
-    </div>
-
-    <div id="bottomPanel">
-        <div id="ammoDisplay" style="display: flex; gap: 5px;"></div>
     </div>
 
     <canvas id="gameCanvas"></canvas>
@@ -160,63 +120,22 @@
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        const startBtn = document.getElementById('startBtn');
-        const howToBtn = document.getElementById('howToBtn');
-        const highScoreBtn = document.getElementById('highScoreBtn');
-        const scoreElement = document.getElementById('score');
-        const livesElement = document.getElementById('lives');
-        const ammoDisplay = document.getElementById('ammoDisplay');
-        const highScoreElement = document.getElementById('highScore');
-
         let gameState = {
             targets: [],
             score: 0,
             ammo: 10,
             lives: 3,
+            misses: 0,
             isPlaying: false,
             crosshair: { x: 0, y: 0 },
             lastSpawn: 0,
             gameTime: 60000,
             reloading: false,
-            particles: [],
-            cowTypes: [
-                { 
-                    speed: 2,
-                    pattern: 'linear',
-                    score: 20,
-                    radius: 30,
-                    wingSpeed: 0.03,
-                    color: '#FF6B6B'
-                },
-                { 
-                    speed: 3,
-                    pattern: 'sinus',
-                    score: 30,
-                    radius: 25,
-                    wingSpeed: 0.05,
-                    color: '#4ECDC4'
-                },
-                { 
-                    speed: 4,
-                    pattern: 'zigzag',
-                    score: 40,
-                    radius: 35,
-                    wingSpeed: 0.04,
-                    color: '#FFE66D'
-                }
-            ],
-            highScore: localStorage.getItem('highScore') || 0
+            leaderboard: JSON.parse(localStorage.getItem('leaderboard')) || []
         };
 
-        // Initialization
-        highScoreElement.textContent = `HIGH SCORE: ${gameState.highScore}`;
-        updateAmmoDisplay();
-        updateLivesDisplay();
-
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
+        // Инициализация
+        document.getElementById('highScore').textContent = Math.max(...gameState.leaderboard, 0);
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
 
@@ -224,264 +143,178 @@
         crosshair.className = 'crosshair';
         document.body.appendChild(crosshair);
 
-        // Input Handling
-        canvas.addEventListener('mousemove', e => {
+        // Обработка ввода
+        canvas.addEventListener('mousemove', updateCrosshair);
+        canvas.addEventListener('touchmove', e => {
+            e.preventDefault();
+            updateCrosshair(e.touches[0]);
+        }, { passive: false });
+
+        function updateCrosshair(e) {
             const rect = canvas.getBoundingClientRect();
             gameState.crosshair.x = e.clientX - rect.left;
             gameState.crosshair.y = e.clientY - rect.top;
-            crosshair.style.transform = `translate(${e.clientX - 20}px, ${e.clientY - 20}px)`;
-        });
+            crosshair.style.transform = `translate(${e.clientX - 16}px, ${e.clientY - 16}px)`;
+        }
 
-        canvas.addEventListener('touchmove', e => {
-            e.preventDefault();
-            const rect = canvas.getBoundingClientRect();
-            gameState.crosshair.x = e.touches[0].clientX - rect.left;
-            gameState.crosshair.y = e.touches[0].clientY - rect.top;
-            crosshair.style.transform = `translate(${e.touches[0].clientX - 20}px, ${e.touches[0].clientY - 20}px)`;
-        }, { passive: false });
-
-        // Game Objects
-        function createFlyingCow() {
-            const type = Math.floor(Math.random() * gameState.cowTypes.length);
+        // Игровые объекты
+        function createCow() {
             return {
                 x: Math.random() < 0.5 ? -80 : canvas.width + 80,
-                y: Math.random() * (canvas.height * 0.7),
-                type: type,
-                speed: gameState.cowTypes[type].speed,
+                y: Math.random() * (canvas.height * 0.6),
+                speed: 2 + Math.random() * 3,
                 direction: Math.random() < 0.5 ? 1 : -1,
-                width: 60,
-                height: 60,
-                active: true,
-                wingAngle: 0,
-                hit: false,
-                patternOffset: Math.random() * 100
+                size: 50,
+                angle: 0,
+                wingPhase: Math.random() * Math.PI * 2
             };
         }
 
-        function drawEnvironment() {
-            // Grass
-            ctx.fillStyle = '#2d5a27';
-            ctx.fillRect(0, canvas.height - 100, canvas.width, 100);
-            
-            // Trees
-            ctx.fillStyle = '#4ECDC4';
-            for(let i = 0; i < 5; i++) {
-                const x = i * (canvas.width / 4) + 50;
-                ctx.fillRect(x, canvas.height - 180, 30, 150);
-                ctx.beginPath();
-                ctx.arc(x + 15, canvas.height - 200, 60, 0, Math.PI * 2);
-                ctx.fillStyle = '#FF6B6B';
-                ctx.fill();
-            }
+        function drawTree(x, height) {
+            ctx.fillStyle = '#5C4033';
+            ctx.fillRect(x - 10, canvas.height - height, 20, height - 40);
+            ctx.beginPath();
+            ctx.arc(x, canvas.height - height - 20, 40, 0, Math.PI * 2);
+            ctx.fillStyle = '#228B22';
+            ctx.fill();
         }
 
         function drawCow(cow) {
             ctx.save();
-            const type = gameState.cowTypes[cow.type];
+            ctx.translate(cow.x, cow.y);
             
-            // Body outline
-            ctx.strokeStyle = type.color;
+            // Тело
+            ctx.strokeStyle = '#FFF';
             ctx.lineWidth = 3;
             ctx.beginPath();
-            ctx.ellipse(
-                cow.x + 30, 
-                cow.y + 30, 
-                28, 
-                23, 
-                Math.PI/4 * cow.direction, 
-                0, 
-                Math.PI * 2
-            );
+            ctx.ellipse(0, 0, cow.size/2, cow.size/3, cow.angle, 0, Math.PI * 2);
             ctx.stroke();
-
-            // Head outline
+            
+            // Крылья
             ctx.beginPath();
-            ctx.arc(
-                cow.x + 30 + (25 * cow.direction), 
-                cow.y + 25, 
-                13, 
-                0, 
-                Math.PI * 2
-            );
+            const wingY = Math.sin(cow.wingPhase) * 15;
+            ctx.moveTo(-15, 0);
+            ctx.lineTo(-35, wingY);
+            ctx.moveTo(15, 0);
+            ctx.lineTo(35, wingY);
             ctx.stroke();
-
-            // Legs
-            ctx.strokeRect(cow.x + 15, cow.y + 45, 8, 20);
-            ctx.strokeRect(cow.x + 35, cow.y + 45, 8, 20);
-
-            // Wings
-            ctx.strokeStyle = '#FFE66D';
-            ctx.lineWidth = 4;
-            ctx.beginPath();
-            for(let i = 0; i < 3; i++) {
-                const angle = cow.wingAngle + (i * Math.PI/6);
-                ctx.moveTo(cow.x + 30, cow.y + 30);
-                ctx.lineTo(
-                    cow.x + 30 + Math.cos(angle) * 25 * cow.direction,
-                    cow.y + 30 + Math.sin(angle) * 10
-                );
-            }
-            ctx.stroke();
-
+            
             ctx.restore();
         }
 
-        // Game Functions
-        function checkCollision(cow) {
-            const type = gameState.cowTypes[cow.type];
-            const centerX = cow.x + 30;
-            const centerY = cow.y + 30;
-            const distance = Math.hypot(
-                gameState.crosshair.x - centerX,
-                gameState.crosshair.y - centerY
-            );
-            return distance < type.radius;
-        }
-
-        function updateLivesDisplay() {
-            livesElement.innerHTML = Array(gameState.lives).fill('<div class="life"></div>').join('');
-        }
-
-        function updateAmmoDisplay() {
-            ammoDisplay.innerHTML = Array(gameState.ammo).fill('<div class="ammo-bullet"></div>').join('');
+        // Логика игры
+        function checkHit(cow) {
+            const dx = gameState.crosshair.x - cow.x;
+            const dy = gameState.crosshair.y - cow.y;
+            return Math.hypot(dx, dy) < cow.size/2;
         }
 
         function gameLoop(timestamp) {
             if (!gameState.isPlaying) return;
 
-            // Spawn cows
-            if (timestamp - gameState.lastSpawn > 1500 && gameState.targets.length < 4) {
-                gameState.targets.push(createFlyingCow());
+            // Спавн коров
+            if (timestamp - gameState.lastSpawn > 1200 && gameState.targets.length < 8) {
+                gameState.targets.push(createCow());
                 gameState.lastSpawn = timestamp;
             }
 
-            // Update cows
+            // Обновление коров
             gameState.targets = gameState.targets.filter(cow => {
-                const type = gameState.cowTypes[cow.type];
-                
-                // Movement patterns
-                switch(type.pattern) {
-                    case 'sinus':
-                        cow.y += Math.sin(timestamp * 0.002 + cow.patternOffset) * 0.5;
-                        break;
-                    case 'zigzag':
-                        cow.x += Math.sin(timestamp * 0.003) * 0.7;
-                        break;
-                }
-
                 cow.x += cow.speed * cow.direction;
-                cow.wingAngle = Math.sin(timestamp * type.wingSpeed) * 1.5;
-
-                // Check escape
-                if ((cow.direction === 1 && cow.x > canvas.width + 100) ||
-                    (cow.direction === -1 && cow.x < -100)) {
-                    return false;
-                }
-                return true;
+                cow.angle += 0.02 * cow.direction;
+                cow.wingPhase += 0.1;
+                return cow.x > -100 && cow.x < canvas.width + 100;
             });
 
-            // Update HUD
-            scoreElement.textContent = gameState.score;
-            updateAmmoDisplay();
-
-            // Clear canvas
+            // Отрисовка
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Draw environment
-            drawEnvironment();
-
-            // Draw cows
+            
+            // Деревья
+            for(let i = 0; i < 6; i++) {
+                drawTree(canvas.width * (i/5), 120 + Math.random() * 80);
+            }
+            
+            // Коровы
             gameState.targets.forEach(drawCow);
 
             requestAnimationFrame(gameLoop);
         }
 
+        // Обработка выстрела
         function handleShoot() {
-            if (!gameState.isPlaying || gameState.ammo <= 0 || gameState.reloading) return;
+            if (!gameState.isPlaying || gameState.reloading) return;
 
-            gameState.ammo--;
-            updateAmmoDisplay();
             let hit = false;
-
-            gameState.targets.forEach(cow => {
-                if (checkCollision(cow)) {
-                    cow.active = false;
-                    gameState.score += gameState.cowTypes[cow.type].score;
+            gameState.targets.forEach((cow, i) => {
+                if (checkHit(cow)) {
+                    gameState.score += 100;
+                    gameState.targets.splice(i, 1);
                     hit = true;
                 }
             });
 
             if (!hit) {
-                gameState.lives--;
-                updateLivesDisplay();
-                if(gameState.lives <= 0) endGame();
+                gameState.misses++;
+                if (gameState.misses % 3 === 0) {
+                    gameState.lives--;
+                    document.getElementById('lives').textContent = gameState.lives;
+                    if (gameState.lives <= 0) endGame();
+                }
             }
 
-            if (gameState.ammo <= 0) startReload();
-        }
-
-        function startReload() {
-            gameState.reloading = true;
-            setTimeout(() => {
-                gameState.ammo = 10;
-                gameState.reloading = false;
-                updateAmmoDisplay();
-            }, 2000);
+            document.getElementById('score').textContent = gameState.score;
         }
 
         function endGame() {
             gameState.isPlaying = false;
+            updateLeaderboard();
             document.getElementById('menu').style.display = 'block';
             crosshair.style.display = 'none';
-            
-            if(gameState.score > gameState.highScore) {
-                gameState.highScore = gameState.score;
-                localStorage.setItem('highScore', gameState.highScore);
-                highScoreElement.textContent = `HIGH SCORE: ${gameState.highScore}`;
-            }
-            
-            alert(`GAME OVER! SCORE: ${gameState.score}`);
+            alert(`Игра окончена! Счет: ${gameState.score}`);
         }
 
-        // Event Listeners
-        startBtn.addEventListener('click', () => {
-            document.getElementById('menu').style.display = 'none';
-            crosshair.style.display = 'block';
-            
+        function updateLeaderboard() {
+            gameState.leaderboard.push(gameState.score);
+            gameState.leaderboard.sort((a,b) => b - a);
+            gameState.leaderboard = [...new Set(gameState.leaderboard)].slice(0,10);
+            localStorage.setItem('leaderboard', JSON.stringify(gameState.leaderboard));
+        }
+
+        // События
+        document.getElementById('startBtn').addEventListener('click', () => {
             gameState = {
                 ...gameState,
                 targets: [],
                 score: 0,
-                ammo: 10,
                 lives: 3,
-                isPlaying: true,
-                lastSpawn: 0
+                misses: 0,
+                isPlaying: true
             };
-            
-            updateLivesDisplay();
-            updateAmmoDisplay();
-            setTimeout(endGame, gameState.gameTime);
+            document.getElementById('menu').style.display = 'none';
+            crosshair.style.display = 'block';
+            document.getElementById('lives').textContent = '3';
+            document.getElementById('score').textContent = '0';
+            setTimeout(endGame, 60000);
             requestAnimationFrame(gameLoop);
         });
 
-        howToBtn.addEventListener('click', () => {
-            alert(`HOW TO PLAY:
-- SHOOT FLYING CYBER-COWS
-- 10 BULLETS BEFORE RELOAD
-- DIFFERENT COLORS = DIFFERENT POINTS
-- 3 LIVES (LOSE LIFE ON MISS)
-- GAME DURATION: 60 SECONDS`);
+        document.getElementById('howToBtn').addEventListener('click', () => {
+            alert(`ПРАВИЛА ИГРЫ:
+1. Стреляйте в летающих коров
+2. Каждые 3 промаха отнимают жизнь
+3. 10 лучших результатов сохраняются
+4. Игра длится 60 секунд`);
         });
 
-        highScoreBtn.addEventListener('click', () => {
-            alert(`CYBER LEADERBOARD
-HIGH SCORE: ${gameState.highScore}`);
+        document.getElementById('leaderboardBtn').addEventListener('click', () => {
+            const list = gameState.leaderboard.map((s,i) => `${i+1}. ${s}`).join('\n');
+            alert(`ТОП-10 РЕЗУЛЬТАТОВ:\n${list || 'Пока нет результатов'}`);
         });
 
         canvas.addEventListener('mousedown', handleShoot);
         canvas.addEventListener('touchstart', handleShoot);
 
-        // Init Telegram Web App
+        // Инициализация Telegram
         Telegram.WebApp.ready();
         Telegram.WebApp.expand();
     </script>
