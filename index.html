@@ -29,7 +29,6 @@
             left: 0;
         }
 
-        /* Retro-style HUD */
         #hud {
             position: fixed;
             top: 15px;
@@ -47,6 +46,7 @@
             border-radius: 15px;
             border: 3px solid var(--light-text);
             box-shadow: 0 0 10px rgba(255,230,109,0.3);
+            font-size: 1.2em;
         }
 
         #lives {
@@ -62,7 +62,6 @@
             background-size: contain;
         }
 
-        /* Neon Menu */
         #menu {
             position: fixed;
             top: 50%;
@@ -103,7 +102,6 @@
             box-shadow: 0 0 15px var(--accent-color);
         }
 
-        /* Cyber Crosshair */
         .crosshair {
             position: absolute;
             width: 40px;
@@ -114,7 +112,6 @@
             filter: drop-shadow(0 0 5px rgba(78,205,196,0.7));
         }
 
-        /* Bottom Panel */
         #bottomPanel {
             position: fixed;
             bottom: 0;
@@ -133,6 +130,7 @@
             background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23FFE66D" d="M20 9H22V15H20zM12 2C8.1 2 4.9 4 2 7l3 3c1.7-2.3 4.1-3.7 7-3.7s5.3 1.4 7 3.7l3-3c-2.9-3-6.1-5-10-5z"/></svg>');
             background-size: contain;
             opacity: 0.8;
+            transition: transform 0.2s;
         }
 
         #pauseBtn {
@@ -181,9 +179,284 @@
     <canvas id="gameCanvas"></canvas>
 
     <script>
-        // ... (Игровая логика из предыдущей версии с адаптацией под новый дизайн) ...
-        // Основные изменения только в визуальной части, игровая механика остается прежней
-        // Полный код игры доступен по запросу
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const startBtn = document.getElementById('startBtn');
+        const howToBtn = document.getElementById('howToBtn');
+        const highScoreBtn = document.getElementById('highScoreBtn');
+        const scoreElement = document.getElementById('score');
+        const livesElement = document.getElementById('lives');
+        const ammoDisplay = document.getElementById('ammoDisplay');
+        const highScoreElement = document.getElementById('highScore');
+
+        let gameState = {
+            targets: [],
+            score: 0,
+            ammo: 10,
+            lives: 3,
+            isPlaying: false,
+            paused: false,
+            crosshair: { x: 0, y: 0 },
+            lastSpawn: 0,
+            gameTime: 60000,
+            reloading: false,
+            particles: [],
+            cowTypes: [
+                { speed: 2, color: '#FF6B6B', pattern: 'linear', score: 20 },
+                { speed: 3, color: '#4ECDC4', pattern: 'sinus', score: 30 },
+                { speed: 4, color: '#FFE66D', pattern: 'zigzag', score: 40 }
+            ],
+            highScore: localStorage.getItem('highScore') || 0
+        };
+
+        // Initialization
+        highScoreElement.textContent = `HIGH SCORE: ${gameState.highScore}`;
+        updateAmmoDisplay();
+        updateLivesDisplay();
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const crosshair = document.createElement('div');
+        crosshair.className = 'crosshair';
+        document.body.appendChild(crosshair);
+
+        // Input Handling
+        canvas.addEventListener('mousemove', e => {
+            gameState.crosshair.x = e.clientX;
+            gameState.crosshair.y = e.clientY;
+            crosshair.style.transform = `translate(${e.clientX - 20}px, ${e.clientY - 20}px)`;
+        });
+
+        canvas.addEventListener('touchmove', e => {
+            e.preventDefault();
+            gameState.crosshair.x = e.touches[0].clientX;
+            gameState.crosshair.y = e.touches[0].clientY;
+            crosshair.style.transform = `translate(${e.touches[0].clientX - 20}px, ${e.touches[0].clientY - 20}px)`;
+        }, { passive: false });
+
+        // Game Objects
+        function createFlyingCow() {
+            const type = Math.floor(Math.random() * gameState.cowTypes.length);
+            return {
+                x: Math.random() < 0.5 ? -80 : canvas.width + 80,
+                y: Math.random() * (canvas.height * 0.7),
+                type: type,
+                speed: gameState.cowTypes[type].speed,
+                direction: Math.random() < 0.5 ? 1 : -1,
+                width: 60,
+                height: 40,
+                active: true,
+                wingAngle: 0,
+                hit: false,
+                patternOffset: Math.random() * 100
+            };
+        }
+
+        function drawEnvironment() {
+            // Draw neon grass
+            ctx.fillStyle = '#2d5a27';
+            ctx.fillRect(0, canvas.height - 100, canvas.width, 100);
+            
+            // Draw cyber trees
+            ctx.fillStyle = '#4ECDC4';
+            for(let i = 0; i < 5; i++) {
+                const x = i * (canvas.width / 4) + 50;
+                ctx.fillRect(x, canvas.height - 180, 30, 150);
+                ctx.beginPath();
+                ctx.arc(x + 15, canvas.height - 200, 60, 0, Math.PI * 2);
+                ctx.fillStyle = '#FF6B6B';
+                ctx.fill();
+            }
+        }
+
+        function drawCow(cow) {
+            ctx.save();
+            if(cow.hit) ctx.globalAlpha = 0.5;
+            
+            // Cyber cow body
+            ctx.fillStyle = gameState.cowTypes[cow.type].color;
+            ctx.beginPath();
+            ctx.ellipse(cow.x + 30, cow.y + 20, 30, 20, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Neon head
+            ctx.beginPath();
+            ctx.arc(cow.x + 55, cow.y + 20, 15, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // Glowing wings
+            ctx.strokeStyle = '#FFE66D';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(cow.x + 30, cow.y + 20);
+            ctx.lineTo(cow.x + 30 + Math.cos(cow.wingAngle) * 25, cow.y + 20 + Math.sin(cow.wingAngle) * 10);
+            ctx.stroke();
+            
+            ctx.restore();
+        }
+
+        // Game Functions
+        function checkCollision(target) {
+            const rect = canvas.getBoundingClientRect();
+            const cx = gameState.crosshair.x - rect.left;
+            const cy = gameState.crosshair.y - rect.top;
+            return cx > target.x && cx < target.x + target.width &&
+                   cy > target.y && cy < target.y + target.height;
+        }
+
+        function updateLivesDisplay() {
+            livesElement.innerHTML = Array(gameState.lives).fill('<div class="life"></div>').join('');
+        }
+
+        function updateAmmoDisplay() {
+            ammoDisplay.innerHTML = Array(gameState.ammo).fill('<div class="ammo-bullet"></div>').join('');
+        }
+
+        function gameLoop(timestamp) {
+            if (!gameState.isPlaying || gameState.paused) return;
+
+            // Spawn cows
+            if (timestamp - gameState.lastSpawn > 1500 && gameState.targets.length < 4) {
+                gameState.targets.push(createFlyingCow());
+                gameState.lastSpawn = timestamp;
+            }
+
+            // Update cows
+            gameState.targets = gameState.targets.filter(cow => {
+                switch(gameState.cowTypes[cow.type].pattern) {
+                    case 'sinus':
+                        cow.y += Math.sin(timestamp * 0.002 + cow.patternOffset) * 0.5;
+                        break;
+                    case 'zigzag':
+                        cow.x += Math.sin(timestamp * 0.003) * 0.7;
+                        break;
+                }
+
+                cow.x += cow.speed * cow.direction;
+                cow.wingAngle = Math.sin(timestamp * 0.01) * 0.5;
+
+                if ((cow.direction === 1 && cow.x > canvas.width + 100) ||
+                    (cow.direction === -1 && cow.x < -100)) {
+                    if(cow.active) {
+                        gameState.lives--;
+                        updateLivesDisplay();
+                        if(gameState.lives <= 0) endGame();
+                    }
+                    return false;
+                }
+                return true;
+            });
+
+            // Update HUD
+            scoreElement.textContent = gameState.score;
+            updateAmmoDisplay();
+
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw environment
+            drawEnvironment();
+
+            // Draw cows
+            gameState.targets.forEach(drawCow);
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function handleShoot() {
+            if (!gameState.isPlaying || gameState.ammo <= 0 || gameState.reloading) return;
+
+            gameState.ammo--;
+            updateAmmoDisplay();
+            let hit = false;
+
+            gameState.targets.forEach(cow => {
+                if (checkCollision(cow)) {
+                    cow.active = false;
+                    gameState.score += gameState.cowTypes[cow.type].score;
+                    hit = true;
+                }
+            });
+
+            if (!hit) gameState.miss++;
+            if (gameState.ammo <= 0) startReload();
+        }
+
+        function startReload() {
+            gameState.reloading = true;
+            setTimeout(() => {
+                gameState.ammo = 10;
+                gameState.reloading = false;
+                updateAmmoDisplay();
+            }, 2000);
+        }
+
+        function endGame() {
+            gameState.isPlaying = false;
+            document.getElementById('menu').style.display = 'block';
+            crosshair.style.display = 'none';
+            
+            if(gameState.score > gameState.highScore) {
+                gameState.highScore = gameState.score;
+                localStorage.setItem('highScore', gameState.highScore);
+                highScoreElement.textContent = `HIGH SCORE: ${gameState.highScore}`;
+            }
+            
+            alert(`GAME OVER! SCORE: ${gameState.score}`);
+        }
+
+        // Event Listeners
+        startBtn.addEventListener('click', () => {
+            document.getElementById('menu').style.display = 'none';
+            crosshair.style.display = 'block';
+            
+            gameState = {
+                ...gameState,
+                targets: [],
+                score: 0,
+                ammo: 10,
+                lives: 3,
+                isPlaying: true,
+                paused: false,
+                lastSpawn: 0
+            };
+            
+            updateLivesDisplay();
+            updateAmmoDisplay();
+            setTimeout(endGame, gameState.gameTime);
+            requestAnimationFrame(gameLoop);
+        });
+
+        howToBtn.addEventListener('click', () => {
+            alert(`HOW TO PLAY:
+- SHOOT FLYING CYBER-COWS
+- 10 BULLETS BEFORE RELOAD
+- DIFFERENT COLORS = DIFFERENT POINTS
+- DON'T LET THEM ESCAPE (3 LIVES)
+- GAME DURATION: 60 SECONDS`);
+        });
+
+        highScoreBtn.addEventListener('click', () => {
+            alert(`CYBER LEADERBOARD
+HIGH SCORE: ${gameState.highScore}`);
+        });
+
+        document.getElementById('pauseBtn').addEventListener('click', () => {
+            gameState.paused = !gameState.paused;
+            document.getElementById('pauseBtn').textContent = gameState.paused ? '▶' : '❚❚';
+        });
+
+        canvas.addEventListener('mousedown', handleShoot);
+        canvas.addEventListener('touchstart', handleShoot);
+
+        // Init Telegram Web App
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
     </script>
 </body>
 </html>
