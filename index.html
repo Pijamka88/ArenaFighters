@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Galactic Cow Hunt</title>
+    <title>Cyber Cow Hunt</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Все стили из предыдущей версии */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -14,9 +13,9 @@
         }
 
         body {
-            background: #000;
-            color: #fff;
-            font-family: 'Orbitron', sans-serif;
+            background: #0a0a14;
+            color: #00ff9d;
+            font-family: 'Courier New', monospace;
             touch-action: none;
             overflow: hidden;
         }
@@ -28,36 +27,40 @@
             display: none;
             align-items: center;
             justify-content: center;
-            background: radial-gradient(circle, #000428 0%, #004e92 100%);
+            background: radial-gradient(circle, #000428 0%, #1a1a2e 100%);
         }
 
         .menu {
             flex-direction: column;
-            gap: 20px;
+            gap: 25px;
             text-align: center;
-            background: rgba(0, 0, 50, 0.9);
             padding: 2rem;
+            border: 2px solid #00ff9d;
             border-radius: 15px;
-            border: 2px solid #00f7ff;
-            box-shadow: 0 0 20px #00f7ff;
+            box-shadow: 0 0 30px #00ff9d33;
+            background: #00000055;
+            backdrop-filter: blur(10px);
         }
 
         .btn {
-            padding: 15px 30px;
+            padding: 15px 40px;
             font-size: 1.2em;
-            background: linear-gradient(45deg, #00f7ff, #0066ff);
+            background: linear-gradient(45deg, #00ff9d, #0066ff);
             border: none;
-            color: white;
+            color: black;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.3s;
-            margin: 5px;
-            text-shadow: 0 0 10px #00f7ff;
+            margin: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 15px #00ff9d;
         }
 
         .btn:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 15px #00f7ff;
+            box-shadow: 0 0 25px #00ff9d;
         }
 
         #gameCanvas {
@@ -68,18 +71,21 @@
 
         .hud {
             position: fixed;
-            padding: 15px;
-            background: rgba(0, 0, 50, 0.8);
+            padding: 15px 25px;
+            background: #000000aa;
             border-radius: 10px;
-            border: 1px solid #00f7ff;
+            border: 1px solid #00ff9d;
             backdrop-filter: blur(5px);
-            text-align: center;
+            font-size: 1.1em;
+            text-shadow: 0 0 10px #00ff9d;
         }
 
         #topHud {
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
+            display: flex;
+            gap: 30px;
         }
 
         #bottomHud {
@@ -88,7 +94,6 @@
             transform: translateX(-50%);
             display: flex;
             gap: 30px;
-            padding: 15px 30px;
         }
 
         .hearts {
@@ -97,8 +102,8 @@
         }
 
         .heart {
-            width: 28px;
-            height: 28px;
+            width: 30px;
+            height: 30px;
             background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23FF3366" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>');
             filter: drop-shadow(0 0 5px #FF3366);
         }
@@ -108,8 +113,19 @@
             width: 40px;
             height: 40px;
             pointer-events: none;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2300f7ff"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-12.5c-2.49 0-4.5 2.01-4.5 4.5s2.01 4.5 4.5 4.5 4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5zm0 7c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>');
-            filter: drop-shadow(0 0 8px #00f7ff);
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%2300ff9d" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-12.5c-2.49 0-4.5 2.01-4.5 4.5s2.01 4.5 4.5 4.5 4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5zm0 7c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>');
+            filter: drop-shadow(0 0 8px #00ff9d);
+        }
+
+        .grid {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(#00ff9d33 1px, transparent 1px),
+                linear-gradient(90deg, #00ff9d33 1px, transparent 1px);
+            background-size: 30px 30px;
+            pointer-events: none;
         }
 
         #leaderboard {
@@ -119,56 +135,35 @@
         }
 
         .score-item {
-            padding: 10px 20px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 5px;
-            width: 250px;
-            border: 1px solid #00f7ff;
-        }
-
-        .stars {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-
-        @keyframes twinkle {
-            0% { opacity: 0.2; }
-            50% { opacity: 1; }
-            100% { opacity: 0.2; }
-        }
-
-        .star {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            animation: twinkle 1s infinite;
+            padding: 12px 20px;
+            background: #00000055;
+            border-radius: 8px;
+            border: 1px solid #00ff9d;
+            min-width: 250px;
         }
     </style>
 </head>
 <body>
-    <!-- Star background -->
-    <div class="stars" id="stars"></div>
-
+    <div class="grid"></div>
+    
     <!-- Main Menu -->
     <div id="mainMenu" class="screen menu">
-        <h1 style="font-size: 2.5em; text-shadow: 0 0 20px #00f7ff;">🚀 GALACTIC COWS 🐮</h1>
-        <button class="btn" onclick="startGame()">START MISSION</button>
+        <h1 style="font-size: 3em; color: #00ff9d; text-shadow: 0 0 20px #00ff9d;">CYBER COW</h1>
+        <button class="btn" onclick="startGame()">INIT SYSTEM</button>
         <button class="btn" onclick="showScreen('howToPlay')">INSTRUCTIONS</button>
-        <button class="btn" onclick="showScreen('leaderboard')">HIGH SCORES</button>
+        <button class="btn" onclick="showScreen('leaderboard')">DATA CORE</button>
     </div>
 
     <!-- Game Screen -->
     <div id="gameScreen" class="screen">
         <canvas id="gameCanvas"></canvas>
         <div class="hud" id="topHud">
-            SCORE: <span id="score">0</span>
+            <div>SCORE: <span id="score">0</span></div>
+            <div>AMMO: <span id="ammo">10</span></div>
         </div>
         <div class="hud" id="bottomHud">
-            <div>🔫 <span id="ammo">10</span></div>
-            <div>🎯 <span id="hits">0</span></div>
-            <div>💔 <span id="misses">0</span></div>
+            <div>HITS: <span id="hits">0</span></div>
+            <div>MISS: <span id="misses">0</span></div>
             <div class="hearts" id="hearts"></div>
         </div>
         <div class="crosshair" id="crosshair"></div>
@@ -176,22 +171,23 @@
 
     <!-- Leaderboard -->
     <div id="leaderboard" class="screen menu">
-        <h2>🌟 TOP 10 SCORES 🌟</h2>
+        <h2>DATA CORE - TOP 10</h2>
         <div id="scoresList"></div>
         <button class="btn" onclick="showScreen('mainMenu')">BACK</button>
     </div>
 
     <!-- How to Play -->
     <div id="howToPlay" class="screen menu">
-        <h2>📡 HOW TO PLAY</h2>
-        <p>🌌 Shoot space cows!</p>
-        <p>❤️ 3 lives</p>
-        <p>🔫 10 shots before reload</p>
-        <p>⏱ 60 seconds</p>
-        <p>🐄 Cow types:</p>
-        <p>- Standard (10pts)</p>
-        <p>- Turbo (20pts)</p>
-        <p>- Phase (30pts)</p>
+        <h2>SYSTEM PROTOCOL</h2>
+        <div style="text-align: left; line-height: 1.5;">
+            <p>> TERMINATE ROGUE COWS</p>
+            <p>> 3 SYSTEM LIFELINES</p>
+            <p>> 10 PLASMA SHOTS/RELOAD</p>
+            <p>> COW CLASSES:</p>
+            <p>  - BASIC (10 UNITS)</p>
+            <p>  - TURBO (20 UNITS)</p>
+            <p>  - PHANTOM (30 UNITS)</p>
+        </div>
         <button class="btn" onclick="showScreen('mainMenu')">BACK</button>
     </div>
 
@@ -200,29 +196,13 @@
         const ctx = canvas.getContext('2d');
         let gameState = null;
         let highScores = JSON.parse(localStorage.getItem('highScores')) || [];
-        
-        // Initialize star background
-        createStars(200);
-        
-        function createStars(count) {
-            const stars = document.getElementById('stars');
-            for(let i = 0; i < count; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.width = Math.random() * 3 + 'px';
-                star.style.height = star.style.width;
-                star.style.animationDelay = Math.random() * 1 + 's';
-                stars.appendChild(star);
-            }
-        }
+        let lastShotTime = 0;
 
         // Game Constants
         const COW_TYPES = {
-            STANDARD: { speed: 2, score: 10, color: '#00f7ff', trail: '#00f7ff55' },
-            TURBO: { speed: 4, score: 20, color: '#ff00ff', trail: '#ff00ff55' },
-            PHASE: { speed: 3, score: 30, color: '#00ff88', trail: '#00ff8855' }
+            BASIC: { speed: 2, score: 10, color: '#00ff9d', trail: '#00ff9d33' },
+            TURBO: { speed: 4, score: 20, color: '#ff00ff', trail: '#ff00ff33' },
+            PHANTOM: { speed: 3, score: 30, color: '#00ffff', trail: '#00ffff33' }
         };
 
         // Initialize screens
@@ -244,7 +224,10 @@
             const list = document.getElementById('scoresList');
             list.innerHTML = highScores.sort((a,b) => b - a)
                 .slice(0,10)
-                .map((score,i) => `<div class="score-item">${i+1}. ${score} PTS</div>`)
+                .map((score,i) => `
+                    <div class="score-item">
+                        ${i+1}. ${score} UNITS
+                    </div>`)
                 .join('');
         }
 
@@ -270,8 +253,7 @@
                 particles: [],
                 reloading: false,
                 gameTime: 60000,
-                startTime: Date.now(),
-                isShooting: false // Добавлен флаг для блокировки двойных выстрелов
+                startTime: Date.now()
             };
             updateHearts();
         }
@@ -283,35 +265,73 @@
         }
         window.addEventListener('resize', resizeCanvas);
 
-        // Input handling
-        function updateCrosshairPosition(x, y) {
+        // Input handling with cooldown
+        function handleShoot() {
+            const now = Date.now();
+            if(now - lastShotTime < 200) return; // 200ms cooldown
+            lastShotTime = now;
+
+            if(!gameState.isPlaying || gameState.ammo <= 0 || gameState.reloading) return;
+
+            gameState.ammo--;
+            let hit = false;
+
             const rect = canvas.getBoundingClientRect();
-            gameState.crosshair.x = x - rect.left;
-            gameState.crosshair.y = y - rect.top;
-            
-            // Обновление позиции прицела
-            document.getElementById('crosshair').style.transform = 
-                `translate(${x - 20}px, ${y - 20}px)`;
+            const cx = gameState.crosshair.x;
+            const cy = gameState.crosshair.y;
+
+            gameState.targets.forEach(cow => {
+                const dx = cx - (cow.x + 35);
+                const dy = cy - (cow.y + 25);
+                if(Math.hypot(dx, dy) < 35) {
+                    gameState.score += cow.type.score;
+                    gameState.hits++;
+                    cow.active = false;
+                    createParticles(cow.x + 35, cow.y + 25);
+                    hit = true;
+                }
+            });
+
+            if(!hit) {
+                gameState.misses++;
+                if(gameState.misses % 5 === 0) {
+                    gameState.lives = Math.max(0, gameState.lives - 1);
+                    updateHearts();
+                    if(gameState.lives === 0) endGame();
+                }
+            }
+
+            if(gameState.ammo <= 0) {
+                gameState.reloading = true;
+                setTimeout(() => {
+                    gameState.ammo = 10;
+                    gameState.reloading = false;
+                }, 2000);
+            }
         }
 
-        document.addEventListener('mousemove', e => {
-            updateCrosshairPosition(e.clientX, e.clientY);
-        });
+        // Correct crosshair positioning
+        function updateCrosshair(e) {
+            const rect = canvas.getBoundingClientRect();
+            gameState.crosshair.x = e.clientX - rect.left;
+            gameState.crosshair.y = e.clientY - rect.top;
+            document.getElementById('crosshair').style.transform = 
+                `translate(${e.clientX - 20}px, ${e.clientY - 20}px)`;
+        }
 
+        document.addEventListener('mousemove', updateCrosshair);
         document.addEventListener('touchmove', e => {
             e.preventDefault();
-            if(e.touches.length > 0) {
-                updateCrosshairPosition(e.touches[0].clientX, e.touches[0].clientY);
-            }
+            updateCrosshair(e.touches[0]);
         }, { passive: false });
 
         // Game objects
         function createCow() {
             const type = Math.random();
             let cowType;
-            if(type < 0.6) cowType = COW_TYPES.STANDARD;
+            if(type < 0.6) cowType = COW_TYPES.BASIC;
             else if(type < 0.9) cowType = COW_TYPES.TURBO;
-            else cowType = COW_TYPES.PHASE;
+            else cowType = COW_TYPES.PHANTOM;
 
             return {
                 x: Math.random() < 0.5 ? -80 : canvas.width + 80,
@@ -370,29 +390,23 @@
 
         // Game logic
         function updateGameState() {
-            // Spawn cows
             if(Date.now() - gameState.lastSpawn > 800) {
                 gameState.targets.push(createCow());
                 gameState.lastSpawn = Date.now();
             }
 
-            // Update cows
             gameState.targets = gameState.targets.filter(cow => {
                 cow.wingAngle += 0.15;
                 
-                // Special movement patterns
-                if(cow.type === COW_TYPES.PHASE) {
+                if(cow.type === COW_TYPES.PHANTOM) {
                     cow.phase += 0.1;
                     cow.y += Math.sin(cow.phase) * 3;
                 }
                 cow.x += cow.speed * cow.direction;
                 
-                return cow.active && 
-                       cow.x > -100 && 
-                       cow.x < canvas.width + 100;
+                return cow.active && cow.x > -100 && cow.x < canvas.width + 100;
             });
 
-            // Update particles
             gameState.particles = gameState.particles.filter(p => {
                 p.x += p.vx;
                 p.y += p.vy;
@@ -400,23 +414,17 @@
                 return p.life > 0;
             });
 
-            // Check game over
-            if(Date.now() - gameState.startTime > gameState.gameTime) {
-                endGame();
-            }
+            if(Date.now() - gameState.startTime > gameState.gameTime) endGame();
         }
 
         function drawGame() {
-            // Clear canvas
-            ctx.fillStyle = 'rgba(0, 0, 30, 0.2)';
+            ctx.fillStyle = 'rgba(0, 0, 20, 0.2)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Draw cows
             gameState.targets.forEach(drawCow);
             
-            // Draw particles
             gameState.particles.forEach(p => {
-                ctx.fillStyle = `rgba(255, ${Math.random() * 255}, ${Math.random() * 255}, ${p.life})`;
+                ctx.fillStyle = `hsla(${Math.random() * 360}, 100%, 50%, ${p.life})`;
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.life * 5, 0, Math.PI * 2);
                 ctx.fill();
@@ -436,52 +444,6 @@
                 h.style.opacity = i < gameState.lives ? 1 : 0.3);
         }
 
-        // Shooting logic
-        function handleShoot() {
-            if(!gameState.isPlaying || gameState.ammo <= 0 || gameState.reloading || gameState.isShooting) return;
-
-            gameState.isShooting = true; // Блокируем повторные выстрелы
-            gameState.ammo--;
-            let hit = false;
-
-            gameState.targets.forEach(cow => {
-                const distance = Math.hypot(
-                    gameState.crosshair.x - (cow.x + 35),
-                    gameState.crosshair.y - (cow.y + 25)
-                );
-                
-                if(distance < 40) {
-                    gameState.score += cow.type.score;
-                    gameState.hits++;
-                    cow.active = false;
-                    createParticles(cow.x + 35, cow.y + 25);
-                    hit = true;
-                }
-            });
-
-            if(!hit) {
-                gameState.misses++;
-                if(gameState.misses % 5 === 0) {
-                    gameState.lives = Math.max(0, gameState.lives - 1);
-                    updateHearts();
-                    if(gameState.lives === 0) endGame();
-                }
-            }
-
-            if(gameState.ammo <= 0) {
-                gameState.reloading = true;
-                setTimeout(() => {
-                    gameState.ammo = 10;
-                    gameState.reloading = false;
-                }, 2000);
-            }
-
-            // Разблокируем выстрел через 100мс
-            setTimeout(() => {
-                gameState.isShooting = false;
-            }, 100);
-        }
-
         function createParticles(x, y) {
             for(let i = 0; i < 25; i++) {
                 gameState.particles.push({
@@ -499,13 +461,12 @@
             highScores.push(gameState.score);
             localStorage.setItem('highScores', JSON.stringify(highScores));
             showScreen('mainMenu');
-            alert(`MISSION COMPLETE!\nSCORE: ${gameState.score}`);
+            alert(`SYSTEM SHUTDOWN\nFINAL SCORE: ${gameState.score}`);
         }
 
         // Game loop
         function gameLoop() {
             if(!gameState.isPlaying) return;
-            
             updateGameState();
             drawGame();
             updateUI();
