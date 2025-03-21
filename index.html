@@ -6,6 +6,7 @@
     <title>Galactic Cow Hunt</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        /* Все стили из предыдущей версии */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -269,7 +270,8 @@
                 particles: [],
                 reloading: false,
                 gameTime: 60000,
-                startTime: Date.now()
+                startTime: Date.now(),
+                isShooting: false // Добавлен флаг для блокировки двойных выстрелов
             };
             updateHearts();
         }
@@ -282,21 +284,25 @@
         window.addEventListener('resize', resizeCanvas);
 
         // Input handling
-        document.addEventListener('mousemove', e => {
+        function updateCrosshairPosition(x, y) {
             const rect = canvas.getBoundingClientRect();
-            gameState.crosshair.x = e.clientX - rect.left;
-            gameState.crosshair.y = e.clientY - rect.top;
+            gameState.crosshair.x = x - rect.left;
+            gameState.crosshair.y = y - rect.top;
+            
+            // Обновление позиции прицела
             document.getElementById('crosshair').style.transform = 
-                `translate(${e.clientX - 20}px, ${e.clientY - 20}px)`;
+                `translate(${x - 20}px, ${y - 20}px)`;
+        }
+
+        document.addEventListener('mousemove', e => {
+            updateCrosshairPosition(e.clientX, e.clientY);
         });
 
         document.addEventListener('touchmove', e => {
             e.preventDefault();
-            const rect = canvas.getBoundingClientRect();
-            gameState.crosshair.x = e.touches[0].clientX - rect.left;
-            gameState.crosshair.y = e.touches[0].clientY - rect.top;
-            document.getElementById('crosshair').style.transform = 
-                `translate(${e.touches[0].clientX - 20}px, ${e.touches[0].clientY - 20}px)`;
+            if(e.touches.length > 0) {
+                updateCrosshairPosition(e.touches[0].clientX, e.touches[0].clientY);
+            }
         }, { passive: false });
 
         // Game objects
@@ -432,8 +438,9 @@
 
         // Shooting logic
         function handleShoot() {
-            if(!gameState.isPlaying || gameState.ammo <= 0 || gameState.reloading) return;
+            if(!gameState.isPlaying || gameState.ammo <= 0 || gameState.reloading || gameState.isShooting) return;
 
+            gameState.isShooting = true; // Блокируем повторные выстрелы
             gameState.ammo--;
             let hit = false;
 
@@ -468,6 +475,11 @@
                     gameState.reloading = false;
                 }, 2000);
             }
+
+            // Разблокируем выстрел через 100мс
+            setTimeout(() => {
+                gameState.isShooting = false;
+            }, 100);
         }
 
         function createParticles(x, y) {
