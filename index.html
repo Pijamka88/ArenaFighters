@@ -1,440 +1,544 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Neon Arena</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Galactic Cow Rescue</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root {
-            --neon-blue: #00FFFF;
-            --neon-pink: #FF00FF;
-            --neon-green: #39FF14;
-            --cyber-black: #0A0A0A;
-            --cyber-gray: #1A1A1A;
-            --cyber-white: #F0F0F0;
-            --glow-blue: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
-            --glow-pink: 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink);
-            --glow-green: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green);
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            margin: 0;
-            background: var(--cyber-black);
-            color: var(--cyber-white);
-            font-family: 'Roboto Mono', monospace;
-            text-align: center;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background-image: 
-                linear-gradient(
-                    rgba(10, 10, 10, 0.9), 
-                    rgba(10, 10, 10, 0.9)
-                ),
-                url('data:image/png;base64,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');
-            background-size: cover;
-            background-attachment: fixed;
-        }
-
-        h1, h2, h3 {
+            background: #000;
+            color: #fff;
             font-family: 'Orbitron', sans-serif;
-            color: var(--neon-blue);
-            text-shadow: var(--glow-blue);
+            touch-action: none;
+            overflow: hidden;
         }
 
-        #mainMenu, #arena {
-            padding: 20px;
-            max-width: 800px;
-            margin: 20px auto;
-            background: rgba(26, 26, 26, 0.9);
-            border: 2px solid var(--neon-blue);
-            box-shadow: var(--glow-blue);
+        .screen {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at center, #2b0057 0%, #ff00ff 100%);
         }
 
-        .button {
-            background: var(--cyber-gray);
-            border: 2px solid var(--neon-pink);
-            color: var(--cyber-white);
-            padding: 15px 30px;
-            margin: 10px;
+        .menu {
+            flex-direction: column;
+            gap: 25px;
+            text-align: center;
+            background: rgba(40, 0, 80, 0.95);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 3px solid #ff69f4;
+            box-shadow: 0 0 30px #ff00ff;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.3em;
+            background: linear-gradient(45deg, #ff00ff, #9400d3);
+            border: 2px solid #ffffff;
+            color: white;
+            border-radius: 15px;
             cursor: pointer;
-            border-radius: 0;
-            font-size: 1.2em;
-            text-transform: uppercase;
-            letter-spacing: 2px;
             transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
-            box-shadow: var(--glow-pink);
+            margin: 10px;
+            text-shadow: 0 0 15px #ffffff;
         }
 
-        .button:hover {
-            background: var(--neon-pink);
-            color: var(--cyber-black);
-            box-shadow: var(--glow-pink), 0 0 20px var(--neon-pink);
+        .btn:active {
+            transform: scale(0.95);
+            background: linear-gradient(45deg, #9400d3, #ff00ff);
         }
 
-        .character {
-            width: 150px;
-            height: 150px;
-            margin: 20px auto;
-            position: relative;
-            filter: drop-shadow(var(--glow-green));
-        }
-
-        .character img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        .health-bar {
-            width: 100%;
-            height: 20px;
-            background: var(--cyber-gray);
-            margin: 20px 0;
-            border: 2px solid var(--neon-green);
-            position: relative;
-            overflow: hidden;
-            box-shadow: var(--glow-green);
-        }
-
-        .health-fill {
-            height: 100%;
-            background: var(--neon-green);
-            transition: width 0.3s;
-            position: relative;
-        }
-
-        .health-fill:after {
-            content: '';
+        #gameCanvas {
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(
-                to right,
-                transparent 50%,
-                rgba(255,255,255,0.1) 50%
-            );
         }
 
-        #battleLog {
-            max-height: 200px;
-            overflow-y: auto;
-            background: rgba(0,0,0,0.7);
-            padding: 15px;
-            margin: 20px 0;
-            border: 1px solid var(--neon-blue);
-            text-align: left;
-            font-size: 0.9em;
-            box-shadow: inset var(--glow-blue);
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        .modal {
+        .hud {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--cyber-gray);
-            padding: 30px;
-            border: 2px solid var(--neon-pink);
-            z-index: 1000;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: var(--glow-pink);
-        }
-
-        .modal h3 {
-            border-bottom: 2px solid var(--neon-pink);
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-
-        .modal-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.9);
-            z-index: 999;
-        }
-
-        .stats {
-            background: rgba(0,0,0,0.7);
-            padding: 20px;
-            margin: 20px 0;
-            border: 2px solid var(--neon-blue);
-            box-shadow: var(--glow-blue);
-        }
-
-        .stats p {
-            margin: 10px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .stats span {
-            color: var(--neon-blue);
+            padding: 15px 25px;
+            background: rgba(80, 0, 120, 0.9);
+            border-radius: 15px;
+            border: 2px solid #ff69f4;
+            backdrop-filter: blur(10px);
             font-size: 1.1em;
-            text-shadow: var(--glow-blue);
+            text-shadow: 0 0 10px #ff00ff;
         }
 
-        @keyframes attack {
-            0% { transform: translateX(0); }
-            50% { transform: translateX(20px); }
-            100% { transform: translateX(0); }
+        #topHud {
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 40px;
         }
 
-        @keyframes takeDamage {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-20px); }
-            50% { transform: translateX(20px); }
-            75% { transform: translateX(-10px); }
-            100% { transform: translateX(0); }
+        #bottomHud {
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 30px;
         }
 
-        .attack-animation {
-            animation: attack 0.3s ease-out;
+        .hearts {
+            display: flex;
+            gap: 12px;
         }
 
-        .damage-animation {
-            animation: takeDamage 0.5s ease-out;
+        .heart {
+            width: 32px;
+            height: 32px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="%23ff00ff" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>');
+            filter: drop-shadow(0 0 8px #ff00ff);
         }
 
-        .icon {
-            width: 24px;
-            height: 24px;
-            margin-right: 10px;
-            vertical-align: middle;
-            filter: drop-shadow(var(--glow-blue));
+        .crosshair {
+            position: fixed;
+            width: 48px;
+            height: 48px;
+            pointer-events: none;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ff00ff"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-12.5c-2.49 0-4.5 2.01-4.5 4.5s2.01 4.5 4.5 4.5 4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5zm0 7c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>');
+            filter: drop-shadow(0 0 15px #ff00ff);
+        }
+
+        .stars {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .star {
+            position: absolute;
+            background: #ff00ff;
+            border-radius: 50%;
+            animation: twinkle 1.5s infinite;
+        }
+
+        #timer {
+            color: #ff00ff;
+            font-size: 1.4em;
         }
     </style>
 </head>
 <body>
-    <div id="mainMenu">
-        <h1>Neon Arena</h1>
-        <div class="stats">
-            <p>Level: <span id="level">1</span></p>
-            <p>Experience: <span id="xp">0</span>/100</p>
-            <p>Credits: <span id="coins">0</span></p>
-            <p>Attack: <span id="attack">10</span></p>
-            <p>Defense: <span id="defense">0</span></p>
-            <p>Health: <span id="maxHealth">100</span></p>
-        </div>
-        <button class="button" onclick="startGame()">Enter Arena</button>
-        <button class="button" onclick="showUpgrades()">Upgrade Station</button>
+    <div class="stars" id="stars"></div>
+
+    <!-- Main Menu -->
+    <div id="mainMenu" class="screen menu">
+        <h1 style="font-size: 2.8em; color: #ff00ff; text-shadow: 0 0 30px #ffffff;">🐮 GALACTIC COW RESCUE 🌌</h1>
+        <button class="btn" onclick="startGame()">START RESCUE</button>
+        <button class="btn" onclick="showScreen('howToPlay')">MISSION BRIEF</button>
+        <button class="btn" onclick="showScreen('leaderboard')">TOP PILOTS</button>
     </div>
 
-    <div id="arena" class="hidden">
-        <div id="playerArea">
-            <div class="health-bar">
-                <div id="playerHealth" class="health-fill" style="width: 100%"></div>
-            </div>
-            <div class="character">
-                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzAwRkZGRiIgZD0iTTEyIDJjMy45IDAgNyAzLjEgNyA3IDAgMi40LTEuMiA0LjUtMyA1LjdWMjJINXYtNy4zQzYuMiAxMy41IDUgMTEuNCA1IDljMC0zLjkgMy4xLTcgNy03em0wIDJjLTIuOCAwLTUgMi4yLTUgNSAwIDEuOSAxLjEgMy42IDIuNyA0LjRsLjMuMlYyMGg0di02LjRsLjMtLjJjMS42LS44IDIuNy0yLjUgMi43LTQuNCAwLTIuOC0yLjItNS01LTV6Ii8+PC9zdmc+" alt="Player">
-            </div>
+    <!-- Game Screen -->
+    <div id="gameScreen" class="screen">
+        <canvas id="gameCanvas"></canvas>
+        <div class="hud" id="topHud">
+            <div>TIME: <span id="timer">01:00</span></div>
+            <div>SCORE: <span id="score">0</span></div>
         </div>
-        
-        <div id="enemyArea">
-            <div class="health-bar">
-                <div id="enemyHealth" class="health-fill" style="width: 100%"></div>
-            </div>
-            <div class="character">
-                <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI0ZGMDBGRiIgZD0iTTE0LjggMmwtMyAzIDIuOCAyLjgtNS4xIDUuMS0xLjQtMS40LTIuOCAyLjggMS40IDEuNEwzIDE5Ljh2Mi4ybDQuNC00LjQgMS40IDEuNCAyLjgtMi44LTEuNC0xLjQgNS4xLTUuMSAyLjggMi44IDMtMy02LjgtNi44ek0xMS42IDE4LjJsLTEuNC0xLjQgMi44LTIuOCAxLjQgMS40LTIuOCAyLjh6Ii8+PC9zdmc+" alt="Enemy">
-            </div>
+        <div class="hud" id="bottomHud">
+            <div>🔫 <span id="ammo">10</span></div>
+            <div class="hearts" id="hearts"></div>
         </div>
-
-        <div id="battleLog"></div>
-        <div>
-            <button class="button hidden" id="continueButton" onclick="startGame()">Continue</button>
-            <button class="button" onclick="returnToMenu()">Retreat</button>
-        </div>
+        <div class="crosshair" id="crosshair"></div>
     </div>
 
-    <div id="upgradeModal" class="hidden modal">
-        <h3>Upgrade Station</h3>
-        <button class="button" onclick="upgradeStat('attack')">
-            <img class="icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzAwRkZGRiIgZD0iTTE0LjggMmwtMyAzIDIuOCAyLjgtNS4xIDUuMS0xLjQtMS40LTIuOCAyLjggMS40IDEuNEwzIDE5Ljh2Mi4ybDQuNC00LjQgMS40IDEuNCAyLjgtMi44LTEuNC0xLjQgNS4xLTUuMSAyLjggMi44IDMtMy02LjgtNi44ek0xMS42IDE4LjJsLTEuNC0xLjQgMi44LTIuOCAxLjQgMS40LTIuOCAyLjh6Ii8+PC9zdmc+" alt="Sword">
-            Enhance Weapon (+5 Attack)
-            <div class="cost">50 Credits</div>
-        </button>
-        <button class="button" onclick="upgradeStat('health')">
-            <img class="icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iIzAwRkZGRiIgZD0iTTEyIDJjMy45IDAgNyAzLjEgNyA3IDAgMi40LTEuMiA0LjUtMyA1LjdWMjJINXYtNy4zQzYuMiAxMy41IDUgMTEuNCA1IDljMC0zLjkgMy4xLTcgNy03em0wIDJjLTIuOCAwLTUgMi4yLTUgNSAwIDEuOSAxLjEgMy42IDIuNyA0LjRsLjMuMlYyMGg0di02LjRsLjMtLjJjMS42LS44IDIuNy0yLjUgMi43LTQuNCAwLTIuOC0yLjItNS01LTV6Ii8+PC9zdmc+" alt="Shield">
-            Reinforce Armor (+20 Health)
-            <div class="cost">50 Credits</div>
-        </button>
-        <button class="button" onclick="hideUpgrades()">Exit Station</button>
+    <!-- Leaderboard -->
+    <div id="leaderboard" class="screen menu">
+        <h2>🚀 TOP 10 PILOTS 🏆</h2>
+        <div id="scoresList"></div>
+        <button class="btn" onclick="showScreen('mainMenu')">BACK</button>
     </div>
-    <div id="modalBackdrop" class="hidden modal-backdrop"></div>
+
+    <!-- How to Play -->
+    <div id="howToPlay" class="screen menu">
+        <h2>📡 MISSION PROTOCOL</h2>
+        <p>🎯 Tap to beam up cows!</p>
+        <p>❤️ 3 shield charges</p>
+        <p>🔫 10 shots per energy cell</p>
+        <p>⏱ 60 second mission</p>
+        <p>🐄 Cow types:</p>
+        <p>- Standard (10pts)</p>
+        <p>- Turbo (20pts)</p>
+        <p>- Phase (30pts)</p>
+        <button class="btn" onclick="showScreen('mainMenu')">BACK</button>
+    </div>
 
     <script>
-        const ENEMY_TYPES = [
-            { name: 'Cyborg', attack: 15, defense: 5, health: 100 },
-            { name: 'Drone', attack: 20, defense: 2, health: 80 },
-            { name: 'Mech', attack: 25, defense: 8, health: 150 }
-        ];
-
-        let player = {
-            level: 1,
-            xp: 0,
-            coins: 0,
-            attack: 10,
-            defense: 0,
-            health: 100,
-            maxHealth: 100,
-            wins: 0
-        };
-
-        let currentEnemy = null;
-        let battleInterval = null;
-
-        function loadGame() {
-            const saved = localStorage.getItem('arenaSave');
-            if(saved) {
-                player = JSON.parse(saved);
-                updateStatsDisplay();
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let gameState = null;
+        let highScores = JSON.parse(localStorage.getItem('highScores')) || [];
+        
+        // Initialize star background
+        createStars(300);
+        
+        function createStars(count) {
+            const stars = document.getElementById('stars');
+            for(let i = 0; i < count; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 4 + 'px';
+                star.style.height = star.style.width;
+                star.style.animationDelay = Math.random() * 2 + 's';
+                stars.appendChild(star);
             }
         }
 
-        function saveGame() {
-            localStorage.setItem('arenaSave', JSON.stringify(player));
+        // Game Constants
+        const COW_TYPES = {
+            STANDARD: { speed: 2, score: 10, color: '#ff00ff', trail: '#ff00ff33' },
+            TURBO: { speed: 4, score: 20, color: '#ff69b4', trail: '#ff69b433' },
+            PHASE: { speed: 3, score: 30, color: '#bf00ff', trail: '#bf00ff33' }
+        };
+
+        // Initialize screens
+        showScreen('mainMenu');
+        initHearts();
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+            document.getElementById(screenId).style.display = 'flex';
+            if(screenId === 'leaderboard') updateLeaderboard();
         }
 
-        function createEnemy() {
-            const type = ENEMY_TYPES[Math.floor(Math.random() * ENEMY_TYPES.length)];
+        function initHearts() {
+            const hearts = document.getElementById('hearts');
+            hearts.innerHTML = Array(3).fill('<div class="heart"></div>').join('');
+        }
+
+        function updateLeaderboard() {
+            const list = document.getElementById('scoresList');
+            list.innerHTML = highScores.sort((a,b) => b - a)
+                .slice(0,10)
+                .map((score,i) => `<div class="score-item">${i+1}. ${score} PTS</div>`)
+                .join('');
+        }
+
+        // Game initialization
+        function startGame() {
+            showScreen('gameScreen');
+            initGameState();
+            resizeCanvas();
+            gameLoop();
+            startTimer();
+        }
+
+        function initGameState() {
+            gameState = {
+                targets: [],
+                score: 0,
+                ammo: 10,
+                lives: 3,
+                isPlaying: true,
+                crosshair: { x: 0, y: 0 },
+                lastSpawn: 0,
+                particles: [],
+                reloading: false,
+                gameTime: 60,
+                startTime: Date.now(),
+                timerInterval: null
+            };
+            updateHearts();
+        }
+
+        // Canvas setup
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        // Touch handling optimized for iOS
+        let lastTouch = { x: 0, y: 0 };
+        
+        document.addEventListener('touchstart', e => {
+            e.preventDefault();
+            handleTouch(e);
+            handleShoot();
+        }, { passive: false });
+
+        document.addEventListener('touchmove', e => {
+            e.preventDefault();
+            handleTouch(e);
+        }, { passive: false });
+
+        document.addEventListener('mousemove', e => {
+            const rect = canvas.getBoundingClientRect();
+            gameState.crosshair.x = e.clientX - rect.left;
+            gameState.crosshair.y = e.clientY - rect.top;
+            updateCrosshairPosition(e.clientX, e.clientY);
+        });
+
+        function handleTouch(e) {
+            const touch = e.touches[0];
+            const rect = canvas.getBoundingClientRect();
+            gameState.crosshair.x = touch.clientX - rect.left;
+            gameState.crosshair.y = touch.clientY - rect.top;
+            updateCrosshairPosition(touch.clientX, touch.clientY);
+            lastTouch = { x: touch.clientX, y: touch.clientY };
+        }
+
+        function updateCrosshairPosition(x, y) {
+            document.getElementById('crosshair').style.transform = 
+                `translate(${x - 24}px, ${y - 24}px)`;
+        }
+
+        // Timer system
+        function startTimer() {
+            const timerElement = document.getElementById('timer');
+            
+            function updateTimer() {
+                const elapsed = Math.floor((Date.now() - gameState.startTime) / 1000);
+                const remaining = gameState.gameTime - elapsed;
+                const minutes = Math.floor(remaining / 60);
+                const seconds = remaining % 60;
+                timerElement.textContent = 
+                    `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                
+                if(remaining <= 0) endGame();
+            }
+            
+            gameState.timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        // Game objects
+        function createCow() {
+            const type = Math.random();
+            let cowType;
+            if(type < 0.6) cowType = COW_TYPES.STANDARD;
+            else if(type < 0.9) cowType = COW_TYPES.TURBO;
+            else cowType = COW_TYPES.PHASE;
+
             return {
-                ...type,
-                maxHealth: type.health + player.wins * 20,
-                health: type.health + player.wins * 20
+                x: Math.random() < 0.5 ? -100 : canvas.width + 100,
+                y: Math.random() * (canvas.height - 100),
+                speed: cowType.speed,
+                direction: Math.random() < 0.5 ? 1 : -1,
+                width: 80,
+                height: 60,
+                type: cowType,
+                active: true,
+                wingAngle: 0,
+                phase: Math.random() * Math.PI * 2
             };
         }
 
-        function startGame() {
-            document.getElementById('mainMenu').classList.add('hidden');
-            document.getElementById('arena').classList.remove('hidden');
-            document.getElementById('continueButton').classList.add('hidden');
-            
-            player.health = player.maxHealth;
-            currentEnemy = createEnemy();
-            
-            updateHealthBars();
-            battleInterval = setInterval(fightRound, 1500);
+        function drawCow(cow) {
+            // Trail effect
+            ctx.fillStyle = cow.type.trail;
+            ctx.beginPath();
+            ctx.ellipse(
+                cow.x + 40 * cow.direction,
+                cow.y + 30,
+                60,
+                20,
+                0,
+                0,
+                Math.PI * 2
+            );
+            ctx.fill();
+
+            // Body
+            ctx.fillStyle = cow.type.color;
+            ctx.beginPath();
+            ctx.ellipse(cow.x + 40, cow.y + 30, 40, 30, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Wings
+            ctx.strokeStyle = `${cow.type.color}cc`;
+            ctx.lineWidth = 8;
+            ctx.lineCap = 'round';
+            const wingY = Math.sin(cow.wingAngle) * 20;
+            ctx.beginPath();
+            ctx.moveTo(cow.x + 10, cow.y + 30);
+            ctx.lineTo(cow.x - 40 + Math.cos(cow.wingAngle) * 50, cow.y + 30 + wingY);
+            ctx.moveTo(cow.x + 70, cow.y + 30);
+            ctx.lineTo(cow.x + 90 + Math.cos(-cow.wingAngle) * 50, cow.y + 30 - wingY);
+            ctx.stroke();
+
+            // Eyes
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(cow.x + 55, cow.y + 20, 5, 0, Math.PI * 2);
+            ctx.arc(cow.x + 65, cow.y + 20, 5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Legs
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            for(let i = 0; i < 4; i++) {
+                ctx.moveTo(cow.x + 30 + i*10, cow.y + 50);
+                ctx.lineTo(cow.x + 30 + i*10, cow.y + 65);
+            }
+            ctx.stroke();
+
+            // Glowing effect
+            ctx.shadowColor = cow.type.color;
+            ctx.shadowBlur = 30;
+            ctx.beginPath();
+            ctx.arc(cow.x + 40, cow.y + 30, 15, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
         }
 
-        function fightRound() {
-            const playerDamage = Math.max(0, player.attack - currentEnemy.defense);
-            currentEnemy.health -= playerDamage;
-            document.getElementById('enemyArea').classList.add('attack-animation');
-            logBattle(`You dealt ${playerDamage} damage!`);
+        // Game logic
+        function updateGameState() {
+            // Spawn cows
+            if(Date.now() - gameState.lastSpawn > 700) {
+                gameState.targets.push(createCow());
+                gameState.lastSpawn = Date.now();
+            }
 
-            const enemyDamage = Math.max(0, currentEnemy.attack - player.defense);
-            player.health -= enemyDamage;
-            document.getElementById('playerArea').classList.add('damage-animation');
-            logBattle(`Enemy dealt ${enemyDamage} damage!`);
-
-            setTimeout(() => {
-                document.getElementById('enemyArea').classList.remove('attack-animation');
-                document.getElementById('playerArea').classList.remove('damage-animation');
-            }, 300);
-
-            updateHealthBars();
-
-            if(currentEnemy.health <= 0) endBattle(true);
-            else if(player.health <= 0) endBattle(false);
-        }
-
-        function endBattle(victory) {
-            clearInterval(battleInterval);
-            if(victory) {
-                player.wins++;
-                player.xp += 25;
-                player.coins += 10;
-                logBattle("Victory! +25 XP +10 Credits");
+            // Update cows
+            gameState.targets = gameState.targets.filter(cow => {
+                cow.wingAngle += 0.12;
                 
-                if(player.xp >= 100) {
-                    player.level++;
-                    player.attack += 5;
-                    player.maxHealth += 20;
-                    player.xp = 0;
-                    logBattle("Level Up! +5 Attack +20 Health");
+                if(cow.type === COW_TYPES.PHASE) {
+                    cow.phase += 0.08;
+                    cow.y += Math.sin(cow.phase) * 4;
                 }
+                cow.x += cow.speed * cow.direction;
                 
-                document.getElementById('continueButton').classList.remove('hidden');
-            } else {
-                logBattle("Defeat...");
-                player.wins = 0;
-            }
+                return cow.active && 
+                       cow.x > -150 && 
+                       cow.x < canvas.width + 150;
+            });
+
+            // Update particles
+            gameState.particles = gameState.particles.filter(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life -= 0.04;
+                return p.life > 0;
+            });
+        }
+
+        function drawGame() {
+            // Clear canvas
+            ctx.fillStyle = 'rgba(0, 0, 20, 0.15)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            updateStatsDisplay();
-            saveGame();
+            // Draw cows
+            gameState.targets.forEach(drawCow);
+            
+            // Draw particles
+            gameState.particles.forEach(p => {
+                ctx.fillStyle = `hsla(${Math.random() * 360}, 100%, 70%, ${p.life})`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.life * 8, 0, Math.PI * 2);
+                ctx.fill();
+            });
         }
 
-        function upgradeStat(stat) {
-            const costs = { attack: 50, health: 50, defense: 75 };
-            if(player.coins >= costs[stat]) {
-                player.coins -= costs[stat];
-                if(stat === 'attack') player.attack += 5;
-                if(stat === 'health') player.maxHealth += 20;
-                if(stat === 'defense') player.defense += 3;
-                updateStatsDisplay();
-                saveGame();
-                hideUpgrades();
+        function updateUI() {
+            document.getElementById('score').textContent = gameState.score;
+            document.getElementById('ammo').textContent = gameState.ammo;
+        }
+
+        function updateHearts() {
+            const hearts = document.querySelectorAll('.heart');
+            hearts.forEach((h, i) => 
+                h.style.opacity = i < gameState.lives ? 1 : 0.3);
+        }
+
+        // Shooting logic
+        function handleShoot() {
+            if(!gameState.isPlaying || gameState.ammo <= 0 || gameState.reloading) return;
+
+            gameState.ammo--;
+            let hit = false;
+
+            gameState.targets.forEach(cow => {
+                const distance = Math.hypot(
+                    gameState.crosshair.x - (cow.x + 40),
+                    gameState.crosshair.y - (cow.y + 30)
+                );
+                
+                if(distance < 50) {
+                    gameState.score += cow.type.score;
+                    cow.active = false;
+                    createParticles(cow.x + 40, cow.y + 30);
+                    hit = true;
+                }
+            });
+
+            if(!hit) {
+                gameState.lives--;
+                updateHearts();
+                if(gameState.lives <= 0) endGame();
+            }
+
+            if(gameState.ammo <= 0) {
+                gameState.reloading = true;
+                setTimeout(() => {
+                    gameState.ammo = 10;
+                    gameState.reloading = false;
+                }, 1500);
             }
         }
 
-        function updateHealthBars() {
-            const playerHealthPercent = Math.min(100, Math.max(0, (player.health / player.maxHealth) * 100);
-            const enemyHealthPercent = Math.min(100, Math.max(0, (currentEnemy.health / currentEnemy.maxHealth) * 100);
+        function createParticles(x, y) {
+            for(let i = 0; i < 30; i++) {
+                gameState.particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 15,
+                    vy: (Math.random() - 0.5) * 15,
+                    life: 1
+                });
+            }
+        }
+
+        function endGame() {
+            clearInterval(gameState.timerInterval);
+            gameState.isPlaying = false;
+            highScores.push(gameState.score);
+            localStorage.setItem('highScores', JSON.stringify(highScores));
+            showScreen('mainMenu');
+            alert(`MISSION COMPLETE!\nFINAL SCORE: ${gameState.score}`);
+        }
+
+        // Game loop
+        function gameLoop() {
+            if(!gameState.isPlaying) return;
             
-            document.getElementById('playerHealth').style.width = `${playerHealthPercent}%`;
-            document.getElementById('enemyHealth').style.width = `${enemyHealthPercent}%`;
+            updateGameState();
+            drawGame();
+            updateUI();
+            requestAnimationFrame(gameLoop);
         }
 
-        function updateStatsDisplay() {
-            document.getElementById('level').textContent = player.level;
-            document.getElementById('xp').textContent = player.xp;
-            document.getElementById('coins').textContent = player.coins;
-            document.getElementById('attack').textContent = player.attack;
-            document.getElementById('defense').textContent = player.defense;
-            document.getElementById('maxHealth').textContent = player.maxHealth;
-        }
+        // Event listeners
+        document.addEventListener('mousedown', handleShoot);
+        document.addEventListener('touchend', e => e.preventDefault(), { passive: false });
 
-        function logBattle(text) {
-            const log = document.getElementById('battleLog');
-            const newEntry = document.createElement('div');
-            newEntry.innerHTML = text;
-            log.appendChild(newEntry);
-            log.scrollTop = log.scrollHeight;
-        }
-
-        function showUpgrades() {
-            document.getElementById('upgradeModal').classList.remove('hidden');
-            document.getElementById('modalBackdrop').classList.remove('hidden');
-        }
-
-        function hideUpgrades() {
-            document.getElementById('upgradeModal').classList.add('hidden');
-            document.getElementById('modalBackdrop').classList.add('hidden');
-        }
-
-        function returnToMenu() {
-            document.getElementById('mainMenu').classList.remove('hidden');
-            document.getElementById('arena').classList.add('hidden');
-            document.getElementById('continueButton').classList.add('hidden');
-            clearInterval(battleInterval);
-        }
-
-        // Инициализация игры
-        window.onload = loadGame;
+        // Telegram integration
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
     </script>
 </body>
 </html>
