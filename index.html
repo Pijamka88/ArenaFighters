@@ -136,6 +136,14 @@
             color: #ff00ff;
             font-size: 1.4em;
         }
+
+        .score-item {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            margin: 5px;
+            border: 1px solid #ff00ff;
+        }
     </style>
 </head>
 <body>
@@ -144,9 +152,9 @@
     <!-- Main Menu -->
     <div id="mainMenu" class="screen menu">
         <h1 style="font-size: 2.8em; color: #ff00ff; text-shadow: 0 0 30px #ffffff;">🐮 GALACTIC COW RESCUE 🌌</h1>
-        <button class="btn" onclick="startGame()">START RESCUE</button>
-        <button class="btn" onclick="showScreen('howToPlay')">MISSION BRIEF</button>
-        <button class="btn" onclick="showScreen('leaderboard')">TOP PILOTS</button>
+        <button class="btn" id="startBtn">START RESCUE</button>
+        <button class="btn" id="howToBtn">MISSION BRIEF</button>
+        <button class="btn" id="scoresBtn">TOP PILOTS</button>
     </div>
 
     <!-- Game Screen -->
@@ -167,7 +175,7 @@
     <div id="leaderboard" class="screen menu">
         <h2>🚀 TOP 10 PILOTS 🏆</h2>
         <div id="scoresList"></div>
-        <button class="btn" onclick="showScreen('mainMenu')">BACK</button>
+        <button class="btn" id="backBtn1">BACK</button>
     </div>
 
     <!-- How to Play -->
@@ -181,7 +189,7 @@
         <p>- Standard (10pts)</p>
         <p>- Turbo (20pts)</p>
         <p>- Phase (30pts)</p>
-        <button class="btn" onclick="showScreen('mainMenu')">BACK</button>
+        <button class="btn" id="backBtn2">BACK</button>
     </div>
 
     <script>
@@ -191,8 +199,6 @@
         let highScores = JSON.parse(localStorage.getItem('highScores')) || [];
         
         // Initialize star background
-        createStars(300);
-        
         function createStars(count) {
             const stars = document.getElementById('stars');
             for(let i = 0; i < count; i++) {
@@ -214,16 +220,6 @@
             PHASE: { speed: 3, score: 30, color: '#bf00ff', trail: '#bf00ff33' }
         };
 
-        // Initialize screens
-        showScreen('mainMenu');
-        initHearts();
-
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
-            document.getElementById(screenId).style.display = 'flex';
-            if(screenId === 'leaderboard') updateLeaderboard();
-        }
-
         function initHearts() {
             const hearts = document.getElementById('hearts');
             hearts.innerHTML = Array(3).fill('<div class="heart"></div>').join('');
@@ -235,6 +231,12 @@
                 .slice(0,10)
                 .map((score,i) => `<div class="score-item">${i+1}. ${score} PTS</div>`)
                 .join('');
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.style.display = 'none');
+            document.getElementById(screenId).style.display = 'flex';
+            if(screenId === 'leaderboard') updateLeaderboard();
         }
 
         // Game initialization
@@ -271,7 +273,7 @@
         }
         window.addEventListener('resize', resizeCanvas);
 
-        // Touch handling optimized for iOS
+        // Touch handling
         let lastTouch = { x: 0, y: 0 };
         
         document.addEventListener('touchstart', e => {
@@ -407,13 +409,11 @@
 
         // Game logic
         function updateGameState() {
-            // Spawn cows
             if(Date.now() - gameState.lastSpawn > 700) {
                 gameState.targets.push(createCow());
                 gameState.lastSpawn = Date.now();
             }
 
-            // Update cows
             gameState.targets = gameState.targets.filter(cow => {
                 cow.wingAngle += 0.12;
                 
@@ -428,7 +428,6 @@
                        cow.x < canvas.width + 150;
             });
 
-            // Update particles
             gameState.particles = gameState.particles.filter(p => {
                 p.x += p.vx;
                 p.y += p.vy;
@@ -438,14 +437,11 @@
         }
 
         function drawGame() {
-            // Clear canvas
             ctx.fillStyle = 'rgba(0, 0, 20, 0.15)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // Draw cows
             gameState.targets.forEach(drawCow);
             
-            // Draw particles
             gameState.particles.forEach(p => {
                 ctx.fillStyle = `hsla(${Math.random() * 360}, 100%, 70%, ${p.life})`;
                 ctx.beginPath();
@@ -533,12 +529,26 @@
         }
 
         // Event listeners
-        document.addEventListener('mousedown', handleShoot);
-        document.addEventListener('touchend', e => e.preventDefault(), { passive: false });
+        function initEventListeners() {
+            document.getElementById('startBtn').addEventListener('click', startGame);
+            document.getElementById('howToBtn').addEventListener('click', () => showScreen('howToPlay'));
+            document.getElementById('scoresBtn').addEventListener('click', () => showScreen('leaderboard'));
+            document.getElementById('backBtn1').addEventListener('click', () => showScreen('mainMenu'));
+            document.getElementById('backBtn2').addEventListener('click', () => showScreen('mainMenu'));
+            document.addEventListener('mousedown', handleShoot);
+            document.addEventListener('touchend', e => e.preventDefault(), { passive: false });
+        }
 
-        // Telegram integration
-        Telegram.WebApp.ready();
-        Telegram.WebApp.expand();
+        function init() {
+            createStars(300);
+            initHearts();
+            initEventListeners();
+            showScreen('mainMenu');
+            Telegram.WebApp.ready();
+            Telegram.WebApp.expand();
+        }
+
+        init();
     </script>
 </body>
 </html>
