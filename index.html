@@ -1,282 +1,383 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
+    <title>Medieval Clash</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Cosmic Cow Hunt</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            touch-action: manipulation;
+        :root {
+            --wood-1: #6B4423;
+            --wood-2: #4A2B0F;
+            --metal-1: #808080;
+            --metal-2: #D4AF37;
+            --red-1: #8B0000;
+            --text-light: #FFE4C4;
         }
 
         body {
-            background: #000;
-            color: white;
-            font-family: 'Arial Black', sans-serif;
+            margin: 0;
+            background: var(--wood-2);
+            color: var(--text-light);
+            font-family: 'MedievalSharp', cursive;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: 
+                linear-gradient(rgba(0,0,0,0.5), 
+                url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAM1BMVEWNjY2Pj4+SkpKQkJCUlJSRkZGTk5OSkpKRkZGTk5OSkpKRkZGUlJSSkpKRkZGTk5OSkpJ0dXhZAAAAEHRSTlMAECAwQFBgcICPn6+/z9/vkqJP8wAAAY1JREFUWMPtl9sSgyAMRGkUBfz/X24VtNp2Z9ruvNCT6QkPh0BCVJ3Yl2Hw1wU8Hv/4gH3fTdO0bRvHcZ7nZVnWdV3XdX+UQghCiGVZtm3btu04juM4juO4ruu6ruv6E1JKKaWcc0oppZRzzjnnnHPOOeecc36FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmsf8A1+BQ8T5UJjBwAAAABJRU5ErkJggg==');
+        }
+
+        #mainMenu, #arena {
+            padding: 2rem;
+            max-width: 800px;
+            margin: 2rem auto;
+            background: var(--wood-1);
+            border: 3px solid var(--metal-2);
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .button {
+            background: var(--metal-1);
+            border: 2px solid var(--metal-2);
+            color: var(--text-light);
+            padding: 1rem 2rem;
+            margin: 1rem;
+            cursor: pointer;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            position: relative;
             overflow: hidden;
         }
 
-        .screen {
-            position: fixed;
+        .button:hover {
+            background: var(--metal-2);
+            transform: scale(1.05);
+        }
+
+        .character {
+            width: 150px;
+            height: 150px;
+            margin: 2rem auto;
+            background-size: contain;
+            background-repeat: no-repeat;
+            filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
+        }
+
+        .health-bar {
             width: 100%;
+            height: 30px;
+            background: var(--wood-2);
+            border: 2px solid var(--metal-2);
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .health-fill {
             height: 100%;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            background: radial-gradient(circle at center, #3a0066, #000);
+            background: var(--red-1);
+            transition: width 0.3s;
+            position: relative;
         }
 
-        .menu {
-            flex-direction: column;
-            gap: 20px;
-            text-align: center;
+        .health-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(transparent 50%, rgba(0,0,0,0.2) 50%);
         }
 
-        .btn {
-            padding: 15px 30px;
-            font-size: 1.2em;
-            background: linear-gradient(45deg, #6a00ff, #a100f6);
-            border: none;
-            color: white;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: transform 0.2s, filter 0.2s;
-            box-shadow: 0 0 15px rgba(106,0,255,0.5);
+        #battleLog {
+            height: 150px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.7);
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 2px solid var(--metal-2);
+            text-align: left;
         }
 
-        .btn:active {
-            transform: scale(0.95);
-            filter: brightness(1.2);
-        }
-
-        #gameCanvas {
-            background: radial-gradient(circle at center, #3a0066aa, #000000);
-            backdrop-filter: blur(5px);
-        }
-
-        .hud {
+        .modal {
             position: fixed;
-            padding: 12px 20px;
-            background: rgba(0,0,0,0.6);
-            border-radius: 10px;
-            border: 1px solid #6a00ff;
-            backdrop-filter: blur(5px);
-        }
-
-        #topHud {
-            top: 10px;
-            left: 10px;
-            display: flex;
-            gap: 20px;
-        }
-
-        #bottomHud {
-            bottom: 10px;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translate(-50%, -50%);
+            background: var(--wood-1);
+            padding: 2rem;
+            border: 3px solid var(--metal-2);
+            z-index: 1000;
+            max-width: 500px;
         }
 
-        .crosshair {
+        .modal-backdrop {
             position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 999;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(0,0,0,0.5);
+            border: 2px solid var(--metal-2);
+            margin: 1rem 0;
+        }
+
+        @keyframes attack {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(50px); }
+            100% { transform: translateX(0); }
+        }
+
+        @keyframes hit {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .attack-animation {
+            animation: attack 0.3s ease-in-out;
+        }
+
+        .hit-animation {
+            animation: hit 0.3s ease-in-out;
+        }
+
+        .icon {
             width: 32px;
             height: 32px;
-            pointer-events: none;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%236a00ff"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-12.5c-2.49 0-4.5 2.01-4.5 4.5s2.01 4.5 4.5 4.5 4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5zm0 7c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>');
-            filter: drop-shadow(0 0 5px #6a00ff);
+            vertical-align: middle;
+            margin-right: 0.5rem;
         }
 
-        #timer {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            font-size: 1.5em;
-            text-shadow: 0 0 10px #6a00ff;
-        }
-
-        .stars {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-
-        @keyframes twinkle {
-            0% { opacity: 0.2; }
-            50% { opacity: 1; }
-            100% { opacity: 0.2; }
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <!-- Main Menu -->
-    <div id="mainMenu" class="screen menu">
-        <div class="stars"></div>
-        <h1 style="color: #a100f6; text-shadow: 0 0 20px #6a00ff;">COSMIC COW HUNT</h1>
-        <button class="btn" onclick="startGame()">Start Mission</button>
-        <button class="btn" onclick="showScreen('howToPlay')">How to Play</button>
-        <button class="btn" onclick="showScreen('leaderboard')">High Scores</button>
+    <div id="mainMenu">
+        <h1>⚔️ Medieval Clash 🛡️</h1>
+        <div class="stats">
+            <div>Level: <span id="level">1</span></div>
+            <div>XP: <span id="xp">0</span>/100</div>
+            <div>Gold: <span id="coins">0</span></div>
+            <div>Attack: <span id="attack">10</span></div>
+            <div>Defense: <span id="defense">0</span></div>
+            <div>Health: <span id="maxHealth">100</span></div>
+        </div>
+        <button class="button" onclick="startGame()">Start Battle</button>
+        <button class="button" onclick="showSmithy()">Blacksmith</button>
     </div>
 
-    <!-- Game Screen -->
-    <div id="gameScreen" class="screen">
-        <canvas id="gameCanvas"></canvas>
-        <div class="hud" id="topHud">
-            <div>Score: <span id="score">0</span></div>
-            <div>Ammo: <span id="ammo">10</span></div>
+    <div id="arena" class="hidden">
+        <div id="playerArea">
+            <div class="health-bar">
+                <div id="playerHealth" class="health-fill" style="width: 100%"></div>
+            </div>
+            <div class="character" id="playerIcon" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEyIDJjLTMuOSAwLTcgMy4xLTcgN3MzLjEgNyA3IDcgNy0zLjEgNy03LTMuMS03LTctN3ptMCAyYzIuOCAwIDUgMi4yIDUgNXMtMi4yIDUtNSA1LTUtMi4yLTUtNSAyLjItNSA1LTV6Ii8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEyIDEwbC0yIDJoNHoiLz48L3N2Zz4=')"></div>
         </div>
-        <div class="hud" id="bottomHud">
-            <div>Hits: <span id="hits">0</span> | Misses: <span id="misses">0</span></div>
+        
+        <div id="enemyArea">
+            <div class="health-bar">
+                <div id="enemyHealth" class="health-fill" style="width: 100%"></div>
+            </div>
+            <div class="character" id="enemyIcon" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEyIDJjLTMuOSAwLTcgMy4xLTcgN3MzLjEgNyA3IDcgNy0zLjEgNy03LTMuMS03LTctN3ptMCAyYzIuOCAwIDUgMi4yIDUgNXMtMi4yIDUtNSA1LTUtMi4yLTUtNSAyLjItNSA1LTV6Ii8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEwIDEwaDR2NGgtNHoiLz48L3N2Zz4=')"></div>
         </div>
-        <div id="timer">03:00</div>
-        <div class="crosshair" id="crosshair"></div>
+
+        <div id="battleLog"></div>
+        <div>
+            <button class="button hidden" id="continueBtn" onclick="startGame()">Continue</button>
+            <button class="button" onclick="returnToMenu()">Retreat</button>
+        </div>
     </div>
 
-    <!-- Leaderboard и How to Play остаются без изменений -->
+    <div id="smithyModal" class="hidden modal">
+        <h2>⚒️ Blacksmith</h2>
+        <button class="button" onclick="upgrade('attack')">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI0Q0QUYzNyIgZD0iTTE0LjggMmwtMyAzIDIuOCAyLjgtNS4xIDUuMS0xLjQtMS40LTIuOCAyLjggMS40IDEuNEwzIDE5Ljh2Mi4ybDQuNC00LjQgMS40IDEuNCAyLjgtMi44LTEuNC0xLjQgNS4xLTUuMSAyLjggMi44IDMtMy02LjgtNi44ek0xMS42IDE4LjJsLTEuNC0xLjQgMi44LTIuOCAxLjQgMS40LTIuOCAyLjh6Ii8+PC9zdmc+" class="icon">
+            Sharpen Sword (+5)
+            <div class="cost">50 Gold</div>
+        </button>
+        <button class="button" onclick="upgrade('health')">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI0Q0QUYzNyIgZD0iTTEyIDJjMy45IDAgNyAzLjEgNyA3IDAgMi40LTEuMiA0LjUtMyA1LjdWMjJINXYtNy4zQzYuMiAxMy41IDUgMTEuNCA1IDljMC0zLjkgMy4xLTcgNy03em0wIDJjLTIuOCAwLTUgMi4yLTUgNSAwIDEuOSAxLjEgMy42IDIuNyA0LjRsLjMuMlYyMGg0di02LjRsLjMtLjJjMS42LS44IDIuNy0yLjUgMi43LTQuNCAwLTIuOC0yLjItNS01LTV6Ii8+PC9zdmc+" class="icon">
+            Reinforce Armor (+20)
+            <div class="cost">50 Gold</div>
+        </button>
+        <button class="button" onclick="hideSmithy()">Exit</button>
+    </div>
+    <div id="modalBackdrop" class="hidden modal-backdrop"></div>
 
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        let gameState = null;
-        let highScores = JSON.parse(localStorage.getItem('highScores')) || [];
-
-        // Game Constants
-        const COW_TYPES = {
-            BASIC: { speed: 2, score: 10, color: '#a100f6' },
-            SPEEDY: { speed: 4, score: 20, color: '#ff00ff' },
-            ZIGZAG: { speed: 3, score: 30, color: '#00ffff' }
+        let player = {
+            level: 1,
+            xp: 0,
+            coins: 0,
+            attack: 10,
+            defense: 0,
+            health: 100,
+            maxHealth: 100,
+            wins: 0
         };
 
-        // Инициализация звездного фона
-        function createStars() {
-            const stars = document.querySelector('.stars');
-            for(let i = 0; i < 100; i++) {
-                const star = document.createElement('div');
-                star.style.cssText = `
-                    position: absolute;
-                    width: ${Math.random() * 3}px;
-                    height: ${Math.random() * 3}px;
-                    background: white;
-                    top: ${Math.random() * 100}%;
-                    left: ${Math.random() * 100}%;
-                    animation: twinkle ${2 + Math.random() * 3}s infinite;
-                    border-radius: 50%;
-                `;
-                stars.appendChild(star);
-            }
-        }
-        createStars();
+        let currentEnemy = null;
+        let battleInterval = null;
 
-        // Остальной код остается аналогичным предыдущей версии с изменениями:
-
-        // Перерисованные коровы с глазами и ногами
-        function drawCow(cow) {
-            ctx.save();
-            ctx.translate(cow.x + 30, cow.y + 20);
-            
-            // Тело
-            ctx.fillStyle = cow.type.color;
-            ctx.beginPath();
-            ctx.ellipse(0, 0, 30, 20, 0, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Голова
-            ctx.fillStyle = '#ffffff';
-            ctx.beginPath();
-            ctx.arc(25, -5, 12, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Глаза
-            ctx.fillStyle = '#000';
-            ctx.beginPath();
-            ctx.arc(30, -8, 3, 0, Math.PI * 2);
-            ctx.arc(35, -8, 3, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Ноги
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(-10, 15);
-            ctx.lineTo(-15, 25);
-            ctx.moveTo(10, 15);
-            ctx.lineTo(15, 25);
-            ctx.stroke();
-            
-            // Крылья
-            ctx.strokeStyle = 'rgba(255,255,255,0.8)';
-            ctx.lineWidth = 4;
-            const wingY = Math.sin(cow.wingAngle) * 5;
-            ctx.beginPath();
-            ctx.moveTo(-10, wingY);
-            ctx.lineTo(-30, wingY + 10);
-            ctx.stroke();
-            
-            ctx.restore();
-        }
-
-        // Исправленное позиционирование прицела
-        function updateCrosshairPosition(x, y) {
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            
-            gameState.crosshair.x = (x - rect.left) * scaleX;
-            gameState.crosshair.y = (y - rect.top) * scaleY;
-            
-            document.getElementById('crosshair').style.transform = 
-                `translate(${x - 16}px, ${y - 16}px)`;
-        }
-
-        // Оптимизированное управление для iPhone
-        document.addEventListener('touchstart', e => {
-            e.preventDefault();
-            handleShoot();
-            updateCrosshairPosition(e.touches[0].clientX, e.touches[0].clientY);
-        });
-
-        document.addEventListener('touchmove', e => {
-            e.preventDefault();
-            updateCrosshairPosition(e.touches[0].clientX, e.touches[0].clientY);
-        }, { passive: false });
-
-        document.addEventListener('mousemove', e => {
-            updateCrosshairPosition(e.clientX, e.clientY);
-        });
-
-        // Таймер миссии
-        function updateTimer() {
-            const timeLeft = gameState.gameTime - (Date.now() - gameState.startTime);
-            const minutes = Math.floor(timeLeft / 60000);
-            const seconds = Math.floor((timeLeft % 60000) / 1000);
-            document.getElementById('timer').textContent = 
-                `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        }
-
-        // В игровой цикл добавлен вызов updateTimer()
-        function gameLoop() {
-            if(!gameState.isPlaying) return;
-            
-            updateGameState();
-            drawGame();
-            updateUI();
-            updateTimer();
-            requestAnimationFrame(gameLoop);
-        }
-
-        // Инициализация игры с таймером
-        function initGameState() {
-            gameState = {
-                // ... предыдущие параметры ...
-                gameTime: 180000, // 3 минуты
-                startTime: Date.now()
+        function createEnemy(isBoss = false) {
+            const baseHealth = isBoss ? 300 : 80 + player.wins * 20;
+            return {
+                name: isBoss ? 'Dragon' : ['Orc', 'Troll', 'Goblin'][Math.floor(Math.random()*3)],
+                health: baseHealth,
+                maxHealth: baseHealth,
+                attack: 15 + player.wins * 3,
+                defense: 5 + player.wins
             };
         }
 
-        // Остальной код остается без существенных изменений
+        function startGame() {
+            document.getElementById('mainMenu').classList.add('hidden');
+            document.getElementById('arena').classList.remove('hidden');
+            document.getElementById('continueBtn').classList.add('hidden');
+            
+            player.health = player.maxHealth;
+            currentEnemy = createEnemy(player.wins >= 5);
+            
+            if(player.wins >= 5) {
+                logBattle('DRAGON APPEARS!');
+                player.wins = 0;
+            }
+
+            updateHealthBars();
+            battleInterval = setInterval(fightRound, 1500);
+        }
+
+        function fightRound() {
+            // Player attack
+            const playerDamage = Math.max(0, player.attack - currentEnemy.defense);
+            currentEnemy.health -= playerDamage;
+            document.getElementById('enemyIcon').classList.add('attack-animation');
+            logBattle(`You hit for ${playerDamage} damage!`);
+
+            // Enemy attack
+            const enemyDamage = Math.max(0, currentEnemy.attack - player.defense);
+            player.health -= enemyDamage;
+            document.getElementById('playerIcon').classList.add('hit-animation');
+            logBattle(`${currentEnemy.name} hits for ${enemyDamage} damage!`);
+
+            // Reset animations
+            setTimeout(() => {
+                document.getElementById('enemyIcon').classList.remove('attack-animation');
+                document.getElementById('playerIcon').classList.remove('hit-animation');
+            }, 300);
+
+            updateHealthBars();
+
+            if(currentEnemy.health <= 0) endBattle(true);
+            else if(player.health <= 0) endBattle(false);
+        }
+
+        function endBattle(victory) {
+            clearInterval(battleInterval);
+            if(victory) {
+                player.wins++;
+                player.xp += 25;
+                player.coins += 10;
+                logBattle('Victory! +25 XP +10 Gold');
+                
+                if(player.xp >= 100) {
+                    player.level++;
+                    player.attack += 5;
+                    player.maxHealth += 20;
+                    player.xp = 0;
+                    logBattle('Level Up! +5 Attack +20 Health');
+                }
+                
+                document.getElementById('continueBtn').classList.remove('hidden');
+            } else {
+                logBattle('Defeat...');
+                player.wins = 0;
+            }
+            
+            updateStats();
+            saveGame();
+        }
+
+        function upgrade(stat) {
+            const cost = 50;
+            if(player.coins >= cost) {
+                player.coins -= cost;
+                if(stat === 'attack') player.attack += 5;
+                if(stat === 'health') player.maxHealth += 20;
+                updateStats();
+                saveGame();
+                hideSmithy();
+            }
+        }
+
+        function updateHealthBars() {
+            const playerPercent = Math.max(0, (player.health / player.maxHealth) * 100;
+            const enemyPercent = Math.max(0, (currentEnemy.health / currentEnemy.maxHealth) * 100;
+            
+            document.getElementById('playerHealth').style.width = `${playerPercent}%`;
+            document.getElementById('enemyHealth').style.width = `${enemyPercent}%`;
+        }
+
+        function updateStats() {
+            document.getElementById('level').textContent = player.level;
+            document.getElementById('xp').textContent = player.xp;
+            document.getElementById('coins').textContent = player.coins;
+            document.getElementById('attack').textContent = player.attack;
+            document.getElementById('defense').textContent = player.defense;
+            document.getElementById('maxHealth').textContent = player.maxHealth;
+        }
+
+        function logBattle(text) {
+            const log = document.getElementById('battleLog');
+            const entry = document.createElement('div');
+            entry.textContent = text;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function showSmithy() {
+            document.getElementById('smithyModal').classList.remove('hidden');
+            document.getElementById('modalBackdrop').classList.remove('hidden');
+        }
+
+        function hideSmithy() {
+            document.getElementById('smithyModal').classList.add('hidden');
+            document.getElementById('modalBackdrop').classList.add('hidden');
+        }
+
+        function returnToMenu() {
+            document.getElementById('mainMenu').classList.remove('hidden');
+            document.getElementById('arena').classList.add('hidden');
+            clearInterval(battleInterval);
+        }
+
+        function saveGame() {
+            localStorage.setItem('medievalClashSave', JSON.stringify(player));
+        }
+
+        function loadGame() {
+            const saved = localStorage.getItem('medievalClashSave');
+            if(saved) player = JSON.parse(saved);
+            updateStats();
+        }
+
+        // Initialize game
+        window.onload = loadGame;
     </script>
 </body>
 </html>
