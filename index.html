@@ -1,105 +1,135 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Medieval Clash</title>
+    <title>Средневековая Арена</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
     <style>
         :root {
-            --wood-1: #6B4423;
-            --wood-2: #4A2B0F;
-            --metal-1: #808080;
-            --metal-2: #D4AF37;
-            --red-1: #8B0000;
-            --text-light: #FFE4C4;
+            --dark-wood: #5E3C23;
+            --light-wood: #8B5E3C;
+            --metal: #C0C0C0;
+            --blood: #8B0000;
+            --parchment: #F5E7D4;
+            --gold: #D4AF37;
         }
 
         body {
             margin: 0;
-            background: var(--wood-2);
-            color: var(--text-light);
+            background: url('data:image/png;base64,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') fixed;
+            color: #333;
             font-family: 'MedievalSharp', cursive;
             text-align: center;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background-image: 
-                linear-gradient(rgba(0,0,0,0.5), 
-                url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAM1BMVEWNjY2Pj4+SkpKQkJCUlJSRkZGTk5OSkpKRkZGTk5OSkpKRkZGUlJSSkpKRkZGTk5OSkpJ0dXhZAAAAEHRSTlMAECAwQFBgcICPn6+/z9/vkqJP8wAAAY1JREFUWMPtl9sSgyAMRGkUBfz/X24VtNp2Z9ruvNCT6QkPh0BCVJ3Yl2Hw1wU8Hv/4gH3fTdO0bRvHcZ7nZVnWdV3XdX+UQghCiGVZtm3btu04juM4juO4ruu6ruv6E1JKKaWcc0oppZRzzjnnnHPOOeecc36FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmuttdZaa6211lprrbXWWn+FlFJrrbXWWmsf8A1+BQ8T5UJjBwAAAABJRU5ErkJggg==');
         }
 
         #mainMenu, #arena {
-            padding: 2rem;
+            padding: 20px;
             max-width: 800px;
-            margin: 2rem auto;
-            background: var(--wood-1);
-            border: 3px solid var(--metal-2);
+            margin: 20px auto;
+            background: var(--parchment);
+            border: 15px solid transparent;
+            border-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABwCAMAAABLx7s1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTQ1IDc5LjE2MzQ5OSwgMjAxOC8wOC8xMy0xNjo0MDoyMiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTkgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OUY2QkY0MDVBMDg4MTFFQTg0MUY5QjY5ODQ3QkE1RUIiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OUY2QkY0MDZBMDg4MTFFQTg0MUY5QjY5ODQ3QkE1RUIiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo5RjZCRjQwM0EwODgxMUVBODQxRjlCNjk4NDdCQTVFQiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo5RjZCRjQwNEEwODgxMUVBODQxRjlCNjk4NDdCQTVFQiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PjO8V/QAAABgUExURdLS0tDQ0M/Pz87Ozs3NzczMzMvLy8rKysnJycjIyMfHx8bGxsXFxcTExMPDw8LCwsHBwcDAwL+/v76+vr29vby8vLu7u7q6urm5ubi4uLe3t7a2trW1tbS0tLOzs7KysrGxsbCwsK+vr66urq2traysrKurq6qqqqmpqaioqKenp6ampqWlpaSkpKOjo6KioqGhoaCgoJ+fn56enp2dnZycnJubm5qampmZmZiYmJeXl5aWlpWVlZSUlJOTk5KSkpGRkZCQkI+Pj46Ojo2NjYyMjIuLi4qKiomJiYiIiIeHh4aGhoWFhYSEhIODg4KCgoGBgYCAgH9/f35+fn19fXx8fHt7e3p6enl5eXh4eHd3d3Z2dnV1dXR0dHNzc3JycnFxcXBwcG9vb25ubm1tbWxsbGtra2pqamlpaWhoaGdnZ2ZmZmVlZWRkZGNjY2JiYmFhYWBgYF9fX15eXl1dXVxcXFtbW1paWllZWVhYWFdXV1ZWVlVVVVRUVFNTU1JSUlFRUVBQUE9PT05OTk1NTUxMTEtLS0pKSklJSUhISEdHR0ZGRkVFRURERENDQ0JCQkFBQUBAQD8/Pz4+Pj09PTw8PDs7Ozo6Ojk5OTg4ODc3NzY2NjU1NTQ0NDMzMzIyMjExMTAwMC8vLy4uLi0tLSwsLCsrKyoqKikpKSgoKCcnJyYmJiUlJSQkJCMjIyIiIiEhISAgIB8fHx4eHh0dHRwcHBsbGxoaGhkZGRgYGBcXFxYWFhUVFRQUFBMTExISEhERERAQEA8PDw4ODg0NDQwMDAsLCwoKCgkJCQgICAcHBwYGBgUFBQQEBAMDAwICAgEBAQAAAP///5tXQ1IAAAASdFJFTkQAQ0NEP0RFRkdISUpLTE1OT1BRUlNUVVZXWFlaW1xdXl9gYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXp7fH1+f4CBgoOEhYaHiImKi4yNjo+QkZKTlJWWl5iZmpucnZ6foKGio6SlpqeoqaqrrK2ur7CxsrO0tba3uLm6u7y9vr/AwcLDxMXGx8jJysvMzc7P0NHS09TV1tfY2drb3N3e3+Dh4uPk5ebn6Onq6+zt7u/w8fLz9PX29/j5+vv8/f7/3+Q5JQAAAOtJREFUeNrs2kEOgjAQheG2QAUX4MKF9/9YFy5M3JhYQ5vQ/5skkzTz5qVtO0MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGB3Y4yXpJRSSqk9q1prrbXW2nOq1lpKKYQQQgjhOVVKKaWUUgohhBBCeE6VUkop5ZxzzjnnnHMI4TlVSimllFJKKaWUUgohhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEII4Qv+AgwA0P5QY8gTbQ8AAAAASUVORK5CYII=') 30 round;
             box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
 
         .button {
-            background: var(--metal-1);
-            border: 2px solid var(--metal-2);
-            color: var(--text-light);
-            padding: 1rem 2rem;
-            margin: 1rem;
+            background: linear-gradient(to bottom, var(--light-wood), var(--dark-wood));
+            border: 3px solid var(--gold);
+            color: white;
+            padding: 15px 30px;
+            margin: 15px;
             cursor: pointer;
-            font-size: 1.2rem;
+            font-size: 1.2em;
             text-transform: uppercase;
+            letter-spacing: 2px;
             transition: all 0.3s;
             position: relative;
             overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
         .button:hover {
-            background: var(--metal-2);
-            transform: scale(1.05);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        .button:active {
+            transform: translateY(1px);
         }
 
         .character {
             width: 150px;
             height: 150px;
-            margin: 2rem auto;
+            margin: 20px auto;
+            position: relative;
             background-size: contain;
             background-repeat: no-repeat;
+            background-position: center;
             filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
         }
 
+        #playerCharacter {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%235E3C23" d="M50 10L20 50l30 40 30-40z"/><circle fill="%23D4AF37" cx="50" cy="40" r="15"/><path fill="%238B5E3C" d="M45 45h10v30H45z"/></svg>');
+        }
+
+        #enemyCharacter {
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle fill="%238B0000" cx="50" cy="50" r="40"/><path fill="%23C0C0C0" d="M30 30l40 40M70 30L30 70"/></svg>');
+        }
+
+        .health-container {
+            width: 80%;
+            margin: 20px auto;
+            background: var(--dark-wood);
+            border: 3px solid var(--light-wood);
+            border-radius: 5px;
+            padding: 5px;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+        }
+
         .health-bar {
-            width: 100%;
             height: 30px;
-            background: var(--wood-2);
-            border: 2px solid var(--metal-2);
-            margin: 1rem 0;
+            background: linear-gradient(to right, var(--blood), darkred);
+            transition: width 0.5s;
             position: relative;
+            border-radius: 3px;
         }
 
-        .health-fill {
-            height: 100%;
-            background: var(--red-1);
-            transition: width 0.3s;
-            position: relative;
-        }
-
-        .health-fill::after {
+        .health-bar:after {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(transparent 50%, rgba(0,0,0,0.2) 50%);
+            background: linear-gradient(to bottom, transparent 50%, rgba(255,255,255,0.2) 50%);
+            border-radius: 3px;
+        }
+
+        .health-label {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px black;
         }
 
         #battleLog {
             height: 150px;
             overflow-y: auto;
-            background: rgba(0,0,0,0.7);
-            padding: 1rem;
-            margin: 1rem 0;
-            border: 2px solid var(--metal-2);
+            background: var(--parchment);
+            border: 5px solid var(--dark-wood);
+            margin: 20px 0;
+            padding: 15px;
             text-align: left;
+            font-size: 1.1em;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        .hidden {
+            display: none;
         }
 
         .modal {
@@ -107,11 +137,12 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: var(--wood-1);
-            padding: 2rem;
-            border: 3px solid var(--metal-2);
+            background: var(--parchment);
+            padding: 30px;
+            border: 15px solid transparent;
+            border-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABwCAMAAABLx7s1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTQ1IDc5LjE2MzQ5OSwgMjAxOC8wOC8xMy0xNjo0MDoyMiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTkgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OUY2QkY0MDVBMDg4MTFFQTg0MUY5QjY5ODQ3QkE1RUIiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OUY2QkY0MDZBMDg4MTFFQTg0MUY5QjY5ODQ3QkE1RUIiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo5RjZCRjQwM0EwODgxMUVBODQxRjlCNjk4NDdCQTVFQiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo5RjZCRjQwNEEwODgxMUVBODQxRjlCNjk4NDdCQTVFQiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PjO8V/QAAABgUExURdLS0tDQ0M/Pz87Ozs3NzczMzMvLy8rKysnJycjIyMfHx8bGxsXFxcTExMPDw8LCwsHBwcDAwL+/v76+vr29vby8vLu7u7q6urm5ubi4uLe3t7a2trW1tbS0tLOzs7KysrGxsbCwsK+vr66urq2traysrKurq6qqqqmpqaioqKenp6ampqWlpaSkpKOjo6KioqGhoaCgoJ+fn56enp2dnZycnJubm5qampmZmZiYmJeXl5aWlpWVlZSUlJOTk5KSkpGRkZCQkI+Pj46Ojo2NjYyMjIuLi4qKiomJiYiIiIeHh4aGhoWFhYSEhIODg4KCgoGBgYCAgH9/f35+fn19fXx8fHt7e3p6enl5eXh4eHd3d3Z2dnV1dXR0dHNzc3JycnFxcXBwcG9vb25ubm1tbWxsbGtra2pqamlpaWhoaGdnZ2ZmZmVlZWRkZGNjY2JiYmFhYWBgYF9fX15eXl1dXVxcXFtbW1paWllZWVhYWFdXV1ZWVlVVVVRUVFNTU1JSUlFRUVBQUE9PT05OTk1NTUxMTEtLS0pKSklJSUhISEdHR0ZGRkVFRURERENDQ0JCQkFBQUBAQD8/Pz4+Pj09PTw8PDs7Ozo6Ojk5OTg4ODc3NzY2NjU1NTQ0NDMzMzIyMjExMTAwMC8vLy4uLi0tLSwsLCsrKyoqKikpKSgoKCcnJyYmJiUlJSQkJCMjIyIiIiEhISAgIB8fHx4eHh0dHRwcHBsbGxoaGhkZGRgYGBcXFxYWFhUVFRQUFBMTExISEhERERAQEA8PDw4ODg0NDQwMDAsLCwoKCgkJCQgICAcHBwYGBgUFBQQEBAMDAwICAgEBAQAAAP///5tXQ1IAAAASdFJFTkQAQ0NEP0RFRkdISUpLTE1OT1BRUlNUVVZXWFlaW1xdXl9gYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXp7fH1+f4CBgoOEhYaHiImKi4yNjo+QkZKTlJWWl5iZmpucnZ6foKGio6SlpqeoqaqrrK2ur7CxsrO0tba3uLm6u7y9vr/AwcLDxMXGx8jJysvMzc7P0NHS09TV1tfY2drb3N3e3+Dh4uPk5ebn6Onq6+zt7u/w8fLz9PX29/j5+vv8/f7/3+Q5JQAAAOtJREFUeNrs2kEOgjAQheG2QAUX4MKF9/9YFy5M3JhYQ5vQ/5skkzTz5qVtO0MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGB3Y4yXpJRSSqk9q1prrbXW2nOq1lpKKYQQQgjhOVVKKaWUUgohhBBCeE6VUkop5ZxzzjnnnHMI4TlVSimllFJKKaWUUgohhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEII4Qv+AgwA0P5QY8gTbQ8AAAAASUVORK5CYII=') 30 round;
             z-index: 1000;
-            max-width: 500px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.7);
         }
 
         .modal-backdrop {
@@ -126,100 +157,176 @@
 
         .stats {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            padding: 1rem;
-            background: rgba(0,0,0,0.5);
-            border: 2px solid var(--metal-2);
-            margin: 1rem 0;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
         }
 
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: var(--light-wood);
+            color: white;
+            border: 2px solid var(--gold);
+        }
+
+        .stat-value {
+            font-weight: bold;
+            color: var(--gold);
+        }
+
+        /* Анимации боя */
         @keyframes attack {
             0% { transform: translateX(0); }
             50% { transform: translateX(50px); }
             100% { transform: translateX(0); }
         }
 
-        @keyframes hit {
+        @keyframes takeDamage {
             0% { transform: scale(1); }
             50% { transform: scale(1.1); }
             100% { transform: scale(1); }
         }
 
-        .attack-animation {
-            animation: attack 0.3s ease-in-out;
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            75% { transform: translateX(-10px); }
+            100% { transform: translateX(0); }
         }
 
-        .hit-animation {
-            animation: hit 0.3s ease-in-out;
+        .player-attack {
+            animation: attack 0.5s ease-out;
         }
 
-        .icon {
-            width: 32px;
-            height: 32px;
+        .enemy-attack {
+            animation: attack 0.5s ease-out reverse;
+        }
+
+        .take-damage {
+            animation: takeDamage 0.3s ease-out;
+        }
+
+        .critical-hit {
+            animation: shake 0.5s ease-out;
+        }
+
+        .victory {
+            animation: takeDamage 1s ease-out infinite;
+        }
+
+        /* Иконки улучшений */
+        .upgrade-icon {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
             vertical-align: middle;
-            margin-right: 0.5rem;
-        }
-
-        .hidden {
-            display: none;
         }
     </style>
 </head>
 <body>
     <div id="mainMenu">
-        <h1>⚔️ Medieval Clash 🛡️</h1>
+        <h1>Средневековая Арена</h1>
         <div class="stats">
-            <div>Level: <span id="level">1</span></div>
-            <div>XP: <span id="xp">0</span>/100</div>
-            <div>Gold: <span id="coins">0</span></div>
-            <div>Attack: <span id="attack">10</span></div>
-            <div>Defense: <span id="defense">0</span></div>
-            <div>Health: <span id="maxHealth">100</span></div>
+            <div class="stat">
+                <span>Уровень:</span>
+                <span class="stat-value" id="level">1</span>
+            </div>
+            <div class="stat">
+                <span>Опыт:</span>
+                <span class="stat-value" id="xp">0/100</span>
+            </div>
+            <div class="stat">
+                <span>Золото:</span>
+                <span class="stat-value" id="coins">0</span>
+            </div>
+            <div class="stat">
+                <span>Атака:</span>
+                <span class="stat-value" id="attack">10</span>
+            </div>
+            <div class="stat">
+                <span>Защита:</span>
+                <span class="stat-value" id="defense">0</span>
+            </div>
+            <div class="stat">
+                <span>Здоровье:</span>
+                <span class="stat-value" id="maxHealth">100</span>
+            </div>
         </div>
-        <button class="button" onclick="startGame()">Start Battle</button>
-        <button class="button" onclick="showSmithy()">Blacksmith</button>
+        <button class="button" onclick="startGame()">В бой</button>
+        <button class="button" onclick="showUpgrades()">Кузница</button>
     </div>
 
     <div id="arena" class="hidden">
         <div id="playerArea">
-            <div class="health-bar">
-                <div id="playerHealth" class="health-fill" style="width: 100%"></div>
+            <div class="health-container">
+                <div id="playerHealth" class="health-bar" style="width: 100%">
+                    <div class="health-label" id="playerHealthLabel">100/100</div>
+                </div>
             </div>
-            <div class="character" id="playerIcon" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEyIDJjLTMuOSAwLTcgMy4xLTcgN3MzLjEgNyA3IDcgNy0zLjEgNy03LTMuMS03LTctN3ptMCAyYzIuOCAwIDUgMi4yIDUgNXMtMi4yIDUtNSA1LTUtMi4yLTUtNSAyLjItNSA1LTV6Ii8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEyIDEwbC0yIDJoNHoiLz48L3N2Zz4=')"></div>
+            <div class="character" id="playerCharacter"></div>
         </div>
         
         <div id="enemyArea">
-            <div class="health-bar">
-                <div id="enemyHealth" class="health-fill" style="width: 100%"></div>
+            <div class="health-container">
+                <div id="enemyHealth" class="health-bar" style="width: 100%">
+                    <div class="health-label" id="enemyHealthLabel">100/100</div>
+                </div>
             </div>
-            <div class="character" id="enemyIcon" style="background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEyIDJjLTMuOSAwLTcgMy4xLTcgN3MzLjEgNyA3IDcgNy0zLjEgNy03LTMuMS03LTctN3ptMCAyYzIuOCAwIDUgMi4yIDUgNXMtMi4yIDUtNSA1LTUtMi4yLTUtNSAyLjItNSA1LTV6Ii8+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTEwIDEwaDR2NGgtNHoiLz48L3N2Zz4=')"></div>
+            <div class="character" id="enemyCharacter"></div>
         </div>
 
         <div id="battleLog"></div>
         <div>
-            <button class="button hidden" id="continueBtn" onclick="startGame()">Continue</button>
-            <button class="button" onclick="returnToMenu()">Retreat</button>
+            <button class="button hidden" id="continueButton" onclick="startGame()">Продолжить</button>
+            <button class="button" onclick="returnToMenu()">В таверну</button>
         </div>
     </div>
 
-    <div id="smithyModal" class="hidden modal">
-        <h2>⚒️ Blacksmith</h2>
-        <button class="button" onclick="upgrade('attack')">
-            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI0Q0QUYzNyIgZD0iTTE0LjggMmwtMyAzIDIuOCAyLjgtNS4xIDUuMS0xLjQtMS40LTIuOCAyLjggMS40IDEuNEwzIDE5Ljh2Mi4ybDQuNC00LjQgMS40IDEuNCAyLjgtMi44LTEuNC0xLjQgNS4xLTUuMSAyLjggMi44IDMtMy02LjgtNi44ek0xMS42IDE4LjJsLTEuNC0xLjQgMi44LTIuOCAxLjQgMS40LTIuOCAyLjh6Ii8+PC9zdmc+" class="icon">
-            Sharpen Sword (+5)
-            <div class="cost">50 Gold</div>
+    <div id="upgradeModal" class="hidden modal">
+        <h2>Кузница</h2>
+        <button class="button" onclick="upgradeStat('attack')">
+            <img class="upgrade-icon" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path fill='%23D4AF37' d='M10 50L50 10l40 40-40 40z'/><path fill='%23C0C0C0' d='M30 30l40 40M70 30L30 70'/></svg>">
+            Улучшить меч (+5 атаки)
+            <div class="cost">50 золота</div>
         </button>
-        <button class="button" onclick="upgrade('health')">
-            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI0Q0QUYzNyIgZD0iTTEyIDJjMy45IDAgNyAzLjEgNyA3IDAgMi40LTEuMiA0LjUtMyA1LjdWMjJINXYtNy4zQzYuMiAxMy41IDUgMTEuNCA1IDljMC0zLjkgMy4xLTcgNy03em0wIDJjLTIuOCAwLTUgMi4yLTUgNSAwIDEuOSAxLjEgMy42IDIuNyA0LjRsLjMuMlYyMGg0di02LjRsLjMtLjJjMS42LS44IDIuNy0yLjUgMi43LTQuNCAwLTIuOC0yLjItNS01LTV6Ii8+PC9zdmc+" class="icon">
-            Reinforce Armor (+20)
-            <div class="cost">50 Gold</div>
+        <button class="button" onclick="upgradeStat('health')">
+            <img class="upgrade-icon" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path fill='%23D4AF37' d='M50 10L10 50l40 40 40-40z'/><circle fill='%238B0000' cx='50' cy='50' r='20'/></svg>">
+            Улучшить доспех (+20 здоровья)
+            <div class="cost">50 золота</div>
         </button>
-        <button class="button" onclick="hideSmithy()">Exit</button>
+        <button class="button" onclick="hideUpgrades()">Выйти</button>
     </div>
     <div id="modalBackdrop" class="hidden modal-backdrop"></div>
 
     <script>
+        const ENEMY_TYPES = [
+            { 
+                name: "Оборотень", 
+                attack: 15, 
+                defense: 5, 
+                health: 100,
+                icon: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle fill='%238B5E3C' cx='50' cy='50' r='40'/><circle fill='%23F5E7D4' cx='35' cy='40' r='5'/><circle fill='%23F5E7D4' cx='65' cy='40' r='5'/><path fill='none' stroke='%238B0000' stroke-width='3' d='M40 65L60 65'/><path fill='%23D4AF37' d='M30 30l10-10 10 10M70 30l-10-10-10 10'/></svg>"
+            },
+            { 
+                name: "Вампир", 
+                attack: 20, 
+                defense: 2, 
+                health: 80,
+                icon: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle fill='%238B0000' cx='50' cy='50' r='40'/><circle fill='%23F5E7D4' cx='35' cy='40' r='5'/><circle fill='%23F5E7D4' cx='65' cy='40' r='5'/><path fill='none' stroke='%23F5E7D4' stroke-width='3' d='M40 65L60 65'/><path fill='%23D4AF37' d='M50 30l-5 15h10z'/></svg>"
+            },
+            { 
+                name: "Голем", 
+                attack: 25, 
+                defense: 8, 
+                health: 150,
+                icon: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23C0C0C0' x='20' y='20' width='60' height='60' rx='10'/><circle fill='%235E3C23' cx='35' cy='40' r='5'/><circle fill='%235E3C23' cx='65' cy='40' r='5'/><path fill='none' stroke='%235E3C23' stroke-width='3' d='M40 65L60 65'/></svg>"
+            }
+        ];
+
         let player = {
             level: 1,
             xp: 0,
@@ -234,108 +341,155 @@
         let currentEnemy = null;
         let battleInterval = null;
 
-        function createEnemy(isBoss = false) {
-            const baseHealth = isBoss ? 300 : 80 + player.wins * 20;
+        function loadGame() {
+            const saved = localStorage.getItem('arenaSave');
+            if(saved) {
+                player = JSON.parse(saved);
+                updateStatsDisplay();
+            }
+        }
+
+        function saveGame() {
+            localStorage.setItem('arenaSave', JSON.stringify(player));
+        }
+
+        function createEnemy() {
+            const type = ENEMY_TYPES[Math.floor(Math.random() * ENEMY_TYPES.length)];
+            const healthBonus = player.wins * 20;
+            const attackBonus = player.wins * 3;
+            
             return {
-                name: isBoss ? 'Dragon' : ['Orc', 'Troll', 'Goblin'][Math.floor(Math.random()*3)],
-                health: baseHealth,
-                maxHealth: baseHealth,
-                attack: 15 + player.wins * 3,
-                defense: 5 + player.wins
+                ...type,
+                maxHealth: type.health + healthBonus,
+                health: type.health + healthBonus,
+                attack: type.attack + attackBonus
             };
         }
 
         function startGame() {
             document.getElementById('mainMenu').classList.add('hidden');
             document.getElementById('arena').classList.remove('hidden');
-            document.getElementById('continueBtn').classList.add('hidden');
+            document.getElementById('continueButton').classList.add('hidden');
             
             player.health = player.maxHealth;
-            currentEnemy = createEnemy(player.wins >= 5);
+            currentEnemy = createEnemy();
             
-            if(player.wins >= 5) {
-                logBattle('DRAGON APPEARS!');
-                player.wins = 0;
-            }
-
+            // Установка иконки врага
+            document.getElementById('enemyCharacter').style.backgroundImage = `url('${currentEnemy.icon}')`;
+            
             updateHealthBars();
+            logBattle(`Перед вами ${currentEnemy.name}!`);
+            
             battleInterval = setInterval(fightRound, 1500);
         }
 
         function fightRound() {
-            // Player attack
-            const playerDamage = Math.max(0, player.attack - currentEnemy.defense);
-            currentEnemy.health -= playerDamage;
-            document.getElementById('enemyIcon').classList.add('attack-animation');
-            logBattle(`You hit for ${playerDamage} damage!`);
-
-            // Enemy attack
-            const enemyDamage = Math.max(0, currentEnemy.attack - player.defense);
-            player.health -= enemyDamage;
-            document.getElementById('playerIcon').classList.add('hit-animation');
-            logBattle(`${currentEnemy.name} hits for ${enemyDamage} damage!`);
-
-            // Reset animations
+            // Атака игрока
+            const critChance = Math.random() < 0.15;
+            const playerDamage = Math.max(1, player.attack - currentEnemy.defense) * (critChance ? 2 : 1);
+            
+            document.getElementById('playerCharacter').classList.add('player-attack');
             setTimeout(() => {
-                document.getElementById('enemyIcon').classList.remove('attack-animation');
-                document.getElementById('playerIcon').classList.remove('hit-animation');
+                document.getElementById('playerCharacter').classList.remove('player-attack');
+                document.getElementById('enemyCharacter').classList.add('take-damage');
+                if(critChance) document.getElementById('enemyCharacter').classList.add('critical-hit');
+                
+                currentEnemy.health -= playerDamage;
+                updateHealthBars();
+                
+                logBattle(`${critChance ? 'КРИТИЧЕСКИЙ УДАР! ' : ''}Вы нанесли ${playerDamage} урона!`);
+                
+                setTimeout(() => {
+                    document.getElementById('enemyCharacter').classList.remove('take-damage');
+                    if(critChance) document.getElementById('enemyCharacter').classList.remove('critical-hit');
+                    
+                    if(currentEnemy.health <= 0) {
+                        endBattle(true);
+                        return;
+                    }
+                    
+                    // Атака врага
+                    const enemyDamage = Math.max(1, currentEnemy.attack - player.defense);
+                    
+                    document.getElementById('enemyCharacter').classList.add('enemy-attack');
+                    setTimeout(() => {
+                        document.getElementById('enemyCharacter').classList.remove('enemy-attack');
+                        document.getElementById('playerCharacter').classList.add('take-damage');
+                        
+                        player.health -= enemyDamage;
+                        updateHealthBars();
+                        
+                        logBattle(`${currentEnemy.name} наносит вам ${enemyDamage} урона!`);
+                        
+                        setTimeout(() => {
+                            document.getElementById('playerCharacter').classList.remove('take-damage');
+                            
+                            if(player.health <= 0) {
+                                endBattle(false);
+                            }
+                        }, 300);
+                    }, 300);
+                }, 300);
             }, 300);
-
-            updateHealthBars();
-
-            if(currentEnemy.health <= 0) endBattle(true);
-            else if(player.health <= 0) endBattle(false);
         }
 
         function endBattle(victory) {
             clearInterval(battleInterval);
+            
             if(victory) {
                 player.wins++;
                 player.xp += 25;
                 player.coins += 10;
-                logBattle('Victory! +25 XP +10 Gold');
+                
+                document.getElementById('enemyCharacter').classList.add('victory');
+                logBattle(`<strong>Победа! +25 опыта +10 золота</strong>`);
                 
                 if(player.xp >= 100) {
                     player.level++;
                     player.attack += 5;
                     player.maxHealth += 20;
                     player.xp = 0;
-                    logBattle('Level Up! +5 Attack +20 Health');
+                    logBattle(`<strong>Уровень повышен! +5 атаки +20 здоровья</strong>`);
                 }
                 
-                document.getElementById('continueBtn').classList.remove('hidden');
+                document.getElementById('continueButton').classList.remove('hidden');
             } else {
-                logBattle('Defeat...');
+                logBattle(`<strong>Поражение... Вы теряете сознание.</strong>`);
                 player.wins = 0;
             }
             
-            updateStats();
+            updateStatsDisplay();
             saveGame();
         }
 
-        function upgrade(stat) {
-            const cost = 50;
-            if(player.coins >= cost) {
-                player.coins -= cost;
+        function upgradeStat(stat) {
+            const costs = { attack: 50, health: 50, defense: 75 };
+            if(player.coins >= costs[stat]) {
+                player.coins -= costs[stat];
                 if(stat === 'attack') player.attack += 5;
                 if(stat === 'health') player.maxHealth += 20;
-                updateStats();
+                if(stat === 'defense') player.defense += 3;
+                
+                updateStatsDisplay();
                 saveGame();
-                hideSmithy();
+                hideUpgrades();
             }
         }
 
         function updateHealthBars() {
-            const playerPercent = Math.max(0, (player.health / player.maxHealth) * 100;
-            const enemyPercent = Math.max(0, (currentEnemy.health / currentEnemy.maxHealth) * 100;
+            const playerPercent = Math.max(0, (player.health / player.maxHealth) * 100);
+            const enemyPercent = Math.max(0, (currentEnemy.health / currentEnemy.maxHealth) * 100);
             
             document.getElementById('playerHealth').style.width = `${playerPercent}%`;
             document.getElementById('enemyHealth').style.width = `${enemyPercent}%`;
+            
+            document.getElementById('playerHealthLabel').textContent = `${Math.round(player.health)}/${player.maxHealth}`;
+            document.getElementById('enemyHealthLabel').textContent = `${Math.round(currentEnemy.health)}/${currentEnemy.maxHealth}`;
         }
 
-        function updateStats() {
+        function updateStatsDisplay() {
             document.getElementById('level').textContent = player.level;
-            document.getElementById('xp').textContent = player.xp;
+            document.getElementById('xp').textContent = `${player.xp}/100`;
             document.getElementById('coins').textContent = player.coins;
             document.getElementById('attack').textContent = player.attack;
             document.getElementById('defense').textContent = player.defense;
@@ -344,39 +498,35 @@
 
         function logBattle(text) {
             const log = document.getElementById('battleLog');
-            const entry = document.createElement('div');
-            entry.textContent = text;
-            log.appendChild(entry);
+            const newEntry = document.createElement('div');
+            newEntry.innerHTML = text;
+            log.appendChild(newEntry);
             log.scrollTop = log.scrollHeight;
         }
 
-        function showSmithy() {
-            document.getElementById('smithyModal').classList.remove('hidden');
+        function showUpgrades() {
+            document.getElementById('upgradeModal').classList.remove('hidden');
             document.getElementById('modalBackdrop').classList.remove('hidden');
         }
 
-        function hideSmithy() {
-            document.getElementById('smithyModal').classList.add('hidden');
+        function hideUpgrades() {
+            document.getElementById('upgradeModal').classList.add('hidden');
             document.getElementById('modalBackdrop').classList.add('hidden');
         }
 
         function returnToMenu() {
             document.getElementById('mainMenu').classList.remove('hidden');
             document.getElementById('arena').classList.add('hidden');
+            document.getElementById('continueButton').classList.add('hidden');
+            
+            if(document.getElementById('enemyCharacter').classList.contains('victory')) {
+                document.getElementById('enemyCharacter').classList.remove('victory');
+            }
+            
             clearInterval(battleInterval);
         }
 
-        function saveGame() {
-            localStorage.setItem('medievalClashSave', JSON.stringify(player));
-        }
-
-        function loadGame() {
-            const saved = localStorage.getItem('medievalClashSave');
-            if(saved) player = JSON.parse(saved);
-            updateStats();
-        }
-
-        // Initialize game
+        // Инициализация игры
         window.onload = loadGame;
     </script>
 </body>
