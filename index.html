@@ -1,533 +1,1000 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>Средневековая Арена</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+    <title>Тапики</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --dark-wood: #5E3C23;
-            --light-wood: #8B5E3C;
-            --metal: #C0C0C0;
-            --blood: #8B0000;
-            --parchment: #F5E7D4;
-            --gold: #D4AF37;
+            --bg-dark: #0a0a12;
+            --bg-light: #1a1a2e;
+            --gold-primary: #c9a227;
+            --gold-secondary: #e4c14a;
+            --gold-accent: #f5d742;
+            --text-light: #f0e6d2;
+            --text-dark: #3a3a3a;
+            --health: #c43c3c;
+            --mana: #3c6ec4;
+            --stamina: #3cc43c;
+            --hunger: #b87333;
+            --border-dark: #000000;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Times New Roman', serif;
         }
 
         body {
-            margin: 0;
-            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXWBgYGHh4d5eXlzc3OLi4ubm5uVlZWPj4+NjY19fX2JiYl/f39ra2uRkZGZmZlpaWmXl5dvb29xcXGTk5NnZ2c8TV1mAAAAG3RSTlNAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEAvEOwtAAAFVklEQVR4XpWWB67c2BUFb3g557T/hRo9/WUMZHlgr4Bg8Z4qQgQJlHI4A8SzFVrapvmTF9O7dmYRFZ60YiBhJRCgh1FYhiLAmdvX0CzTOpNE77ME0Zty/nWWzchDtiqrmQDeuv3powQ5ta2eN0FY0InkqDD73lT9c9lEzwUNqgFHs9VQce3TVClFCQrSTfOiYkVJQBmpbq2L6iZavPnAPcoU0dSw0SUTqz/GtrGuXfbyyBniKykOWQWGqwwMA7QiYAxi+IlPdqo+hYHnUt5ZPfnsHJyNiDtnpJyayNBkF6cWoYGAMY92U2hXHF/C1M8uP/ZtYdiuj26UdAdQQSXQErwSOMzt/XWRWAz5GuSBIkwG1H3FabJ2OsUOUhGC6tK4EMtJO0ttC6IBD3kM0ve0tJwMdSfjZo+EEISaeTr9P3wYrGjXqyC1krcKdhMpxEnt5JetoulscpyzhXN5FRpuPHvbeQaKxFAEB6EN+cYN6xD7RYGpXpNndMmZgM5Dcs3YSNFDHUo2LGfZuukSWyUYirJAdYbF3MfqEKmjM+I2EfhA94iG3L7uKrR+GdWD73ydlIB+6hgref1QTlmgmbM3/LeX5GI1Ux1RWpgxpLuZ2+I+IjzZ8wqE4nilvQdkUdfhzI5QDWy+kw5Wgg2pGpeEVeCCA7b85BO3F9DzxB3cdqvBzWcmzbyMiqhzuYqtHRVG2y4x+KOlnyqla8AoWWpuBoYRxzXrfKuILl6SfiWCbjxoZJUaCBj1CjH7GIaDbc9kqBY3W/Rgjda1iqQcOJu2WW+76pZC9QG7M00dffe9hNnseupFL53r8F7YHSwJWUKP2q+k7RdsxyOB11n0xtOvnW4irMMFNV4H0uqwS5ExsmP9AxbDTc9JwgneAT5vTiUSm1E7BSflSt3bfa1tv8Di3R8n3Af7MNWzs49hmauE2wP+ttrq+AsWpFG2awvsuOqbipWHgtuvuaAE+A1Z/7gC9hesnr+7wqCwG8c5yAg3AL1fm8T9AZtp/bbJGwl1pNrE7RuOX7PeMRUERVaPpEs+yqeoSmuOlokqw49pgomjLeh7icHNlG19yjs6XXOMedYm5xH2YxpV2tc0Ro2jJfxC50ApuxGob7lMsxfTbeUv07TyYxpeLucEH1gNd4IKH2LAg5TdVhlCafZvpskfncCfx8pOhJzd76bJWeYFnFciwcYfubRc12Ip/ppIhA1/mSZ/RxjFDrJC5xifFjJpY2Xl5zXdguFqYyTR1zSp1Y9p+tktDYYSNflcxI0iyO4TPBdlRcpeqjK/piF5bklq77VSEaA+z8qmJTFzIWiitbnzR794USKBUaT0NTEsVjZqLaFVqJoPN9ODG70IPbfBHKK+/q/AWR0tJzYHRULOa4MP+W/HfGadZUbfw177G7j/OGbIs8TahLyynl4X4RginF793Oz+BU0saXtUHrVBFT/DnA3ctNPoGbs4hRIjTok8i+algT1lTHi4SxFvONKNrgQFAq2/gFnWMXgwffgYMJpiKYkmW3tTg3ZQ9Jq+f8XN+A5eeUKHWvJWJ2sgJ1Sop+wwhqFVijqWaJhwtD8MNlSBeWNNWTa5Z5kPZw5+LbVT99wqTdx29lMUH4OIG/D86ruKEauBjvH5xy6um/Sfj7ei6UUVk4AIl3MyD4MSSTOFgSwsH/QJWaQ5as7ZcmgBZkzjjU1UrQ74ci1gWBCSGHtuV1H2mhSnO3Wp/3fEV5a+4wz//6qy8JxjZsmxxy5+4w9CDNJY09T072iKG0EnOS0arEYgXqYnXcYHwjTtUNAcMelOd4xpkoqiTYICWFq0JSiPfPDQdnt+4/wuqcXY47QILbgAAAABJRU5ErkJggg==') fixed;
-            color: #333;
-            font-family: 'MedievalSharp', cursive;
-            text-align: center;
-        }
-
-        #mainMenu, #arena {
-            padding: 20px;
-            max-width: 800px;
-            margin: 20px auto;
-            background: var(--parchment);
-            border: 15px solid transparent;
-            border-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABwCAMAAABLx7s1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTQ1IDc5LjE2MzQ5OSwgMjAxOC8wOC8xMy0xNjo0MDoyMiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTkgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OUY2QkY0MDVBMDg4MTFFQTg0MUY5QjY5ODQ3QkE1RUIiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OUY2QkY0MDZBMDg4MTFFQTg0MUY5QjY5ODQ3QkE1RUIiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo5RjZCRjQwM0EwODgxMUVBODQxRjlCNjk4NDdCQTVFQiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo5RjZCRjQwNEEwODgxMUVBODQxRjlCNjk4NDdCQTVFQiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PjO8V/QAAABgUExURdLS0tDQ0M/Pz87Ozs3NzczMzMvLy8rKysnJycjIyMfHx8bGxsXFxcTExMPDw8LCwsHBwcDAwL+/v76+vr29vby8vLu7u7q6urm5ubi4uLe3t7a2trW1tbS0tLOzs7KysrGxsbCwsK+vr66urq2traysrKurq6qqqqmpqaioqKenp6ampqWlpaSkpKOjo6KioqGhoaCgoJ+fn56enp2dnZycnJubm5qampmZmZiYmJeXl5aWlpWVlZSUlJOTk5KSkpGRkZCQkI+Pj46Ojo2NjYyMjIuLi4qKiomJiYiIiIeHh4aGhoWFhYSEhIODg4KCgoGBgYCAgH9/f35+fn19fXx8fHt7e3p6enl5eXh4eHd3d3Z2dnV1dXR0dHNzc3JycnFxcXBwcG9vb25ubm1tbWxsbGtra2pqamlpaWhoaGdnZ2ZmZmVlZWRkZGNjY2JiYmFhYWBgYF9fX15eXl1dXVxcXFtbW1paWllZWVhYWFdXV1ZWVlVVVVRUVFNTU1JSUlFRUVBQUE9PT05OTk1NTUxMTEtLS0pKSklJSUhISEdHR0ZGRkVFRURERENDQ0JCQkFBQUBAQD8/Pz4+Pj09PTw8PDs7Ozo6Ojk5OTg4ODc3NzY2NjU1NTQ0NDMzMzIyMjExMTAwMC8vLy4uLi0tLSwsLCsrKyoqKikpKSgoKCcnJyYmJiUlJSQkJCMjIyIiIiEhISAgIB8fHx4eHh0dHRwcHBsbGxoaGhkZGRgYGBcXFxYWFhUVFRQUFBMTExISEhERERAQEA8PDw4ODg0NDQwMDAsLCwoKCgkJCQgICAcHBwYGBgUFBQQEBAMDAwICAgEBAQAAAP///5tXQ1IAAAASdFJFTkQAQ0NEP0RFRkdISUpLTE1OT1BRUlNUVVZXWFlaW1xdXl9gYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXp7fH1+f4CBgoOEhYaHiImKi4yNjo+QkZKTlJWWl5iZmpucnZ6foKGio6SlpqeoqaqrrK2ur7CxsrO0tba3uLm6u7y9vr/AwcLDxMXGx8jJysvMzc7P0NHS09TV1tfY2drb3N3e3+Dh4uPk5ebn6Onq6+zt7u/w8fLz9PX29/j5+vv8/f7/3+Q5JQAAAOtJREFUeNrs2kEOgjAQheG2QAUX4MKF9/9YFy5M3JhYQ5vQ/5skkzTz5qVtO0MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGB3Y4yXpJRSSqk9q1prrbXW2nOq1lpKKYQQQgjhOVVKKaWUUgohhBBCeE6VUkop5ZxzzjnnnHMI4TlVSimllFJKKaWUUgohhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEII4Qv+AgwA0P5QY8gTbQ8AAAAASUVORK5CYII=') 30 round;
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
-        }
-
-        .button {
-            background: linear-gradient(to bottom, var(--light-wood), var(--dark-wood));
-            border: 3px solid var(--gold);
-            color: white;
-            padding: 15px 30px;
-            margin: 15px;
-            cursor: pointer;
-            font-size: 1.2em;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            transition: all 0.3s;
-            position: relative;
+            background: url('https://images.uesp.net/thumb/7/7d/OB-menu-background.jpg/1920px-OB-menu-background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: var(--text-light);
+            height: 100vh;
             overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        .button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-        }
-
-        .button:active {
-            transform: translateY(1px);
-        }
-
-        .character {
-            width: 150px;
-            height: 150px;
-            margin: 20px auto;
             position: relative;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
         }
 
-        #playerCharacter {
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%235E3C23" d="M50 10L20 50l30 40 30-40z"/><circle fill="%23D4AF37" cx="50" cy="40" r="15"/><path fill="%238B5E3C" d="M45 45h10v30H45z"/></svg>');
-        }
-
-        #enemyCharacter {
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle fill="%238B0000" cx="50" cy="50" r="40"/><path fill="%23C0C0C0" d="M30 30l40 40M70 30L30 70"/></svg>');
-        }
-
-        .health-container {
-            width: 80%;
-            margin: 20px auto;
-            background: var(--dark-wood);
-            border: 3px solid var(--light-wood);
-            border-radius: 5px;
-            padding: 5px;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-        }
-
-        .health-bar {
-            height: 30px;
-            background: linear-gradient(to right, var(--blood), darkred);
-            transition: width 0.5s;
-            position: relative;
-            border-radius: 3px;
-        }
-
-        .health-bar:after {
+        body::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(to bottom, transparent 50%, rgba(255,255,255,0.2) 50%);
-            border-radius: 3px;
+            background: rgba(10, 10, 18, 0.85);
+            z-index: -1;
         }
 
-        .health-label {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: white;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px black;
+        .container {
+            max-width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
         }
 
-        #battleLog {
-            height: 150px;
-            overflow-y: auto;
-            background: var(--parchment);
-            border: 5px solid var(--dark-wood);
-            margin: 20px 0;
-            padding: 15px;
-            text-align: left;
-            font-size: 1.1em;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.3);
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background: linear-gradient(to right, rgba(10, 10, 18, 0.8), rgba(26, 26, 46, 0.8));
+            border-bottom: 2px solid var(--gold-primary);
+            margin-bottom: 10px;
         }
 
-        .hidden {
+        h1 {
+            font-size: 2.5rem;
+            color: var(--gold-accent);
+            text-shadow: 2px 2px 4px var(--border-dark);
+            letter-spacing: 2px;
+            font-weight: normal;
+            font-style: italic;
+        }
+
+        .pets-count {
+            background: rgba(26, 26, 46, 0.8);
+            color: var(--gold-accent);
+            padding: 8px 15px;
+            border: 1px solid var(--gold-primary);
+            border-radius: 5px;
+            font-size: 1.2rem;
+            box-shadow: 0 0 10px rgba(201, 162, 39, 0.3);
+        }
+
+        .screen {
             display: none;
+            flex: 1;
+            flex-direction: column;
         }
 
-        .modal {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: var(--parchment);
-            padding: 30px;
-            border: 15px solid transparent;
-            border-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABwCAMAAABLx7s1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyhpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTQ1IDc5LjE2MzQ5OSwgMjAxOC8wOC8xMy0xNjo0MDoyMiAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTkgKE1hY2ludG9zaCkiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6OUY2QkY0MDVBMDg4MTFFQTg0MUY5QjY5ODQ3QkE1RUIiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6OUY2QkY0MDZBMDg4MTFFQTg0MUY5QjY5ODQ3QkE1RUIiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDo5RjZCRjQwM0EwODgxMUVBODQxRjlCNjk4NDdCQTVFQiIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDo5RjZCRjQwNEEwODgxMUVBODQxRjlCNjk4NDdCQTVFQiIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/PjO8V/QAAABgUExURdLS0tDQ0M/Pz87Ozs3NzczMzMvLy8rKysnJycjIyMfHx8bGxsXFxcTExMPDw8LCwsHBwcDAwL+/v76+vr29vby8vLu7u7q6urm5ubi4uLe3t7a2trW1tbS0tLOzs7KysrGxsbCwsK+vr66urq2traysrKurq6qqqqmpqaioqKenp6ampqWlpaSkpKOjo6KioqGhoaCgoJ+fn56enp2dnZycnJubm5qampmZmZiYmJeXl5aWlpWVlZSUlJOTk5KSkpGRkZCQkI+Pj46Ojo2NjYyMjIuLi4qKiomJiYiIiIeHh4aGhoWFhYSEhIODg4KCgoGBgYCAgH9/f35+fn19fXx8fHt7e3p6enl5eXh4eHd3d3Z2dnV1dXR0dHNzc3JycnFxcXBwcG9vb25ubm1tbWxsbGtra2pqamlpaWhoaGdnZ2ZmZmVlZWRkZGNjY2JiYmFhYWBgYF9fX15eXl1dXVxcXFtbW1paWllZWVhYWFdXV1ZWVlVVVVRUVFNTU1JSUlFRUVBQUE9PT05OTk1NTUxMTEtLS0pKSklJSUhISEdHR0ZGRkVFRURERENDQ0JCQkFBQUBAQD8/Pz4+Pj09PTw8PDs7Ozo6Ojk5OTg4ODc3NzY2NjU1NTQ0NDMzMzIyMjExMTAwMC8vLy4uLi0tLSwsLCsrKyoqKikpKSgoKCcnJyYmJiUlJSQkJCMjIyIiIiEhISAgIB8fHx4eHh0dHRwcHBsbGxoaGhkZGRgYGBcXFxYWFhUVFRQUFBMTExISEhERERAQEA8PDw4ODg0NDQwMDAsLCwoKCgkJCQgICAcHBwYGBgUFBQQEBAMDAwICAgEBAQAAAP///5tXQ1IAAAASdFJFTkQAQ0NEP0RFRkdISUpLTE1OT1BRUlNUVVZXWFlaW1xdXl9gYWJjZGVmZ2hpamtsbW5vcHFyc3R1dnd4eXp7fH1+f4CBgoOEhYaHiImKi4yNjo+QkZKTlJWWl5iZmpucnZ6foKGio6SlpqeoqaqrrK2ur7CxsrO0tba3uLm6u7y9vr/AwcLDxMXGx8jJysvMzc7P0NHS09TV1tfY2drb3N3e3+Dh4uPk5ebn6Onq6+zt7u/w8fLz9PX29/j5+vv8/f7/3+Q5JQAAAOtJREFUeNrs2kEOgjAQheG2QAUX4MKF9/9YFy5M3JhYQ5vQ/5skkzTz5qVtO0MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGB3Y4yXpJRSSqk9q1prrbXW2nOq1lpKKYQQQgjhOVVKKaWUUgohhBBCeE6VUkop5ZxzzjnnnHMI4TlVSimllFJKKaWUUgohhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEIIIYQQQgghhBBCCCGEEEII4Qv+AgwA0P5QY8gTbQ8AAAAASUVORK5CYII=') 30 round;
-            z-index: 1000;
-            box-shadow: 0 0 30px rgba(0,0,0,0.7);
+        .screen.active {
+            display: flex;
         }
 
-        .modal-backdrop {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.7);
-            z-index: 999;
+        .pets-scroll-container {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            padding: 5px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--gold-primary) var(--bg-dark);
         }
 
-        .stats {
+        .pets-scroll-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .pets-scroll-container::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        .pets-scroll-container::-webkit-scrollbar-thumb {
+            background-color: var(--gold-primary);
+            border-radius: 4px;
+        }
+
+        .pets-container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin: 20px 0;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            padding: 5px;
+        }
+
+        .pet {
+            background: rgba(26, 26, 46, 0.7);
+            border: 2px solid var(--gold-primary);
+            border-radius: 5px;
+            padding: 10px;
+            position: relative;
+            transition: all 0.3s;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .pet.active {
+            border-color: var(--gold-accent);
+            box-shadow: 0 0 15px var(--gold-accent);
+            transform: translateY(-3px);
+        }
+
+        .pet-shape {
+            width: 100%;
+            height: 120px;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .bear-face {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .bear-ears {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: inherit;
+            top: -5px;
+        }
+
+        .ear-left {
+            left: 5px;
+        }
+
+        .ear-right {
+            right: 5px;
+        }
+
+        .bear-eyes {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            background-color: white;
+            border-radius: 50%;
+            top: 35px;
+        }
+
+        .eye-left {
+            left: 20px;
+        }
+
+        .eye-right {
+            right: 20px;
+        }
+
+        .pupil {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: black;
+            border-radius: 50%;
+            top: 5px;
+            left: 5px;
+        }
+
+        .highlight {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background-color: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+        }
+
+        .bear-nose {
+            position: absolute;
+            width: 15px;
+            height: 12px;
+            background-color: black;
+            border-radius: 50%;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .bear-mouth {
+            position: absolute;
+            width: 30px;
+            height: 12px;
+            border-bottom: 3px solid black;
+            border-radius: 0 0 50% 50%;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .pet-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .stat {
             display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .stat-header {
+            display: flex;
             justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        .stat-name {
+            display: flex;
             align-items: center;
-            padding: 10px;
-            background: var(--light-wood);
-            color: white;
-            border: 2px solid var(--gold);
+            gap: 5px;
+        }
+
+        .stat-icon {
+            font-size: 0.9rem;
         }
 
         .stat-value {
+            font-size: 0.9rem;
+        }
+
+        .stat-bar {
+            height: 12px;
+            background-color: var(--border-dark);
+            border: 1px solid var(--gold-primary);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-fill {
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            transition: width 0.5s ease;
+        }
+
+        .health .stat-fill {
+            background-color: var(--health);
+        }
+
+        .mana .stat-fill {
+            background-color: var(--mana);
+        }
+
+        .stamina .stat-fill {
+            background-color: var(--stamina);
+        }
+
+        .hunger .stat-fill {
+            background-color: var(--hunger);
+        }
+
+        .xp-bar {
+            height: 6px;
+            background-color: var(--border-dark);
+            border: 1px solid var(--gold-primary);
+            margin-top: 10px;
+            position: relative;
+        }
+
+        .xp-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--gold-primary), var(--gold-accent));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .pet-level {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: var(--gold-primary);
+            color: var(--text-dark);
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             font-weight: bold;
-            color: var(--gold);
+            border: 2px solid var(--gold-accent);
+            box-shadow: 0 0 5px var(--border-dark);
+            z-index: 1;
         }
 
-        /* Анимации боя */
-        @keyframes attack {
-            0% { transform: translateX(0); }
-            50% { transform: translateX(50px); }
-            100% { transform: translateX(0); }
+        .actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            padding: 10px;
+            background: rgba(26, 26, 46, 0.8);
+            border-top: 2px solid var(--gold-primary);
         }
 
-        @keyframes takeDamage {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+        button {
+            background: linear-gradient(to bottom, var(--gold-primary), var(--gold-secondary));
+            color: var(--text-dark);
+            border: none;
+            padding: 10px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 3px;
+            box-shadow: 0 2px 5px var(--border-dark);
+            transition: all 0.2s;
+            text-align: center;
         }
 
-        @keyframes shake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            50% { transform: translateX(10px); }
-            75% { transform: translateX(-10px); }
-            100% { transform: translateX(0); }
+        button:hover {
+            background: linear-gradient(to bottom, var(--gold-secondary), var(--gold-accent));
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px var(--border-dark);
         }
 
-        .player-attack {
-            animation: attack 0.5s ease-out;
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 3px var(--border-dark);
         }
 
-        .enemy-attack {
-            animation: attack 0.5s ease-out reverse;
+        button:disabled {
+            background: linear-gradient(to bottom, #555, #777);
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
-        .take-damage {
-            animation: takeDamage 0.3s ease-out;
+        .menu-button {
+            background: linear-gradient(to bottom, #3a3a3a, #555);
+            color: var(--text-light);
+            margin-top: 10px;
         }
 
-        .critical-hit {
-            animation: shake 0.5s ease-out;
+        .menu-button:hover {
+            background: linear-gradient(to bottom, #555, #777);
         }
 
-        .victory {
-            animation: takeDamage 1s ease-out infinite;
+        .log {
+            height: 120px;
+            overflow-y: auto;
+            padding: 10px;
+            background: rgba(10, 10, 18, 0.8);
+            border: 1px solid var(--gold-primary);
+            border-radius: 5px;
+            margin-bottom: 10px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--gold-primary) var(--bg-dark);
         }
 
-        /* Иконки улучшений */
-        .upgrade-icon {
-            width: 30px;
-            height: 30px;
-            margin-right: 10px;
-            vertical-align: middle;
+        .log::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .log::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        .log::-webkit-scrollbar-thumb {
+            background-color: var(--gold-primary);
+            border-radius: 4px;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            padding-bottom: 5px;
+            border-bottom: 1px dotted var(--gold-primary);
+            font-size: 0.9rem;
+            display: flex;
+            gap: 10px;
+        }
+
+        .log-time {
+            color: var(--gold-accent);
+            min-width: 50px;
+        }
+
+        .log-message {
+            flex: 1;
+        }
+
+        /* Меню */
+        .main-menu {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            gap: 20px;
+        }
+
+        .main-menu h2 {
+            font-size: 3rem;
+            color: var(--gold-accent);
+            text-shadow: 2px 2px 4px var(--border-dark);
+            letter-spacing: 3px;
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 80%;
+            max-width: 300px;
+        }
+
+        .menu-buttons button {
+            padding: 15px;
+            font-size: 1.2rem;
+        }
+
+        /* Инструкции */
+        .instructions {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .instructions-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .instructions h2 {
+            font-size: 2rem;
+            color: var(--gold-accent);
+            margin-bottom: 20px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .instructions ul {
+            margin-bottom: 20px;
+            padding-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .instructions-footer {
+            padding: 10px;
+            text-align: center;
+            border-top: 1px solid var(--gold-primary);
         }
     </style>
 </head>
 <body>
-    <div id="mainMenu">
-        <h1>Средневековая Арена</h1>
-        <div class="stats">
-            <div class="stat">
-                <span>Уровень:</span>
-                <span class="stat-value" id="level">1</span>
-            </div>
-            <div class="stat">
-                <span>Опыт:</span>
-                <span class="stat-value" id="xp">0/100</span>
-            </div>
-            <div class="stat">
-                <span>Золото:</span>
-                <span class="stat-value" id="coins">0</span>
-            </div>
-            <div class="stat">
-                <span>Атака:</span>
-                <span class="stat-value" id="attack">10</span>
-            </div>
-            <div class="stat">
-                <span>Защита:</span>
-                <span class="stat-value" id="defense">0</span>
-            </div>
-            <div class="stat">
-                <span>Здоровье:</span>
-                <span class="stat-value" id="maxHealth">100</span>
-            </div>
-        </div>
-        <button class="button" onclick="startGame()">В бой</button>
-        <button class="button" onclick="showUpgrades()">Кузница</button>
-    </div>
-
-    <div id="arena" class="hidden">
-        <div id="playerArea">
-            <div class="health-container">
-                <div id="playerHealth" class="health-bar" style="width: 100%">
-                    <div class="health-label" id="playerHealthLabel">100/100</div>
+    <div class="container">
+        <!-- Главное меню -->
+        <div id="main-menu" class="screen active">
+            <div class="main-menu">
+                <h2>ТАПИКИ</h2>
+                <div class="menu-buttons">
+                    <button onclick="showScreen('game-screen')">Продолжить</button>
+                    <button onclick="startNewGame()">Новая игра</button>
+                    <button onclick="showScreen('instructions-screen')">Инструкции</button>
                 </div>
             </div>
-            <div class="character" id="playerCharacter"></div>
         </div>
-        
-        <div id="enemyArea">
-            <div class="health-container">
-                <div id="enemyHealth" class="health-bar" style="width: 100%">
-                    <div class="health-label" id="enemyHealthLabel">100/100</div>
+
+        <!-- Экран игры -->
+        <div id="game-screen" class="screen">
+            <header>
+                <h1>ТАПИКИ</h1>
+                <div class="pets-count" id="pets-count">0</div>
+            </header>
+
+            <div class="log" id="game-log">
+                <!-- Лог событий -->
+            </div>
+
+            <div class="pets-scroll-container">
+                <div class="pets-container" id="pets-container">
+                    <!-- Питомцы будут здесь -->
                 </div>
             </div>
-            <div class="character" id="enemyCharacter"></div>
+
+            <div class="actions">
+                <button onclick="feedCurrentPet()">Покормить</button>
+                <button onclick="playWithCurrentPet()">Поиграть</button>
+                <button onclick="restCurrentPet()">Отдых</button>
+                <button onclick="trainCurrentPet()">Тренировка</button>
+            </div>
+
+            <button class="menu-button" onclick="showScreen('main-menu')">Меню</button>
         </div>
 
-        <div id="battleLog"></div>
-        <div>
-            <button class="button hidden" id="continueButton" onclick="startGame()">Продолжить</button>
-            <button class="button" onclick="returnToMenu()">В таверну</button>
+        <!-- Экран инструкций -->
+        <div id="instructions-screen" class="screen">
+            <div class="instructions-content">
+                <h2>Как играть</h2>
+                <p>Тапики - мистические существа, требующие вашего внимания!</p>
+                
+                <ul>
+                    <li><strong>Покормить</strong>: Восстанавливает здоровье (+30), тратит ману (-10)</li>
+                    <li><strong>Поиграть</strong>: Увеличивает выносливость (+25), тратит здоровье (-15) и ману (-20)</li>
+                    <li><strong>Отдых</strong>: Восстанавливает ману (+40), уменьшает выносливость (-10)</li>
+                    <li><strong>Тренировка</strong>: Дает опыт (+25), уменьшает все параметры (-30)</li>
+                </ul>
+
+                <p>Когда тапик достигает нового уровня (+3 от текущего), он автоматически эволюционирует и создает нового тапика!</p>
+                <p>Следите за четырьмя параметрами:</p>
+                <ul>
+                    <li><span style="color: var(--health)">Здоровье</span> - если упадет до 0, тапик умрет</li>
+                    <li><span style="color: var(--mana)">Мана</span> - необходима для магических действий</li>
+                    <li><span style="color: var(--stamina)">Выносливость</span> - влияет на активность</li>
+                    <li><span style="color: var(--hunger)">Голод</span> - постепенно уменьшает все параметры</li>
+                </ul>
+            </div>
+
+            <div class="instructions-footer">
+                <button class="menu-button" onclick="showScreen('main-menu')">Назад</button>
+            </div>
         </div>
     </div>
-
-    <div id="upgradeModal" class="hidden modal">
-        <h2>Кузница</h2>
-        <button class="button" onclick="upgradeStat('attack')">
-            <img class="upgrade-icon" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path fill='%23D4AF37' d='M10 50L50 10l40 40-40 40z'/><path fill='%23C0C0C0' d='M30 30l40 40M70 30L30 70'/></svg>">
-            Улучшить меч (+5 атаки)
-            <div class="cost">50 золота</div>
-        </button>
-        <button class="button" onclick="upgradeStat('health')">
-            <img class="upgrade-icon" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path fill='%23D4AF37' d='M50 10L10 50l40 40 40-40z'/><circle fill='%238B0000' cx='50' cy='50' r='20'/></svg>">
-            Улучшить доспех (+20 здоровья)
-            <div class="cost">50 золота</div>
-        </button>
-        <button class="button" onclick="hideUpgrades()">Выйти</button>
-    </div>
-    <div id="modalBackdrop" class="hidden modal-backdrop"></div>
 
     <script>
-        const ENEMY_TYPES = [
-            { 
-                name: "Оборотень", 
-                attack: 15, 
-                defense: 5, 
-                health: 100,
-                icon: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle fill='%238B5E3C' cx='50' cy='50' r='40'/><circle fill='%23F5E7D4' cx='35' cy='40' r='5'/><circle fill='%23F5E7D4' cx='65' cy='40' r='5'/><path fill='none' stroke='%238B0000' stroke-width='3' d='M40 65L60 65'/><path fill='%23D4AF37' d='M30 30l10-10 10 10M70 30l-10-10-10 10'/></svg>"
-            },
-            { 
-                name: "Вампир", 
-                attack: 20, 
-                defense: 2, 
-                health: 80,
-                icon: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle fill='%238B0000' cx='50' cy='50' r='40'/><circle fill='%23F5E7D4' cx='35' cy='40' r='5'/><circle fill='%23F5E7D4' cx='65' cy='40' r='5'/><path fill='none' stroke='%23F5E7D4' stroke-width='3' d='M40 65L60 65'/><path fill='%23D4AF37' d='M50 30l-5 15h10z'/></svg>"
-            },
-            { 
-                name: "Голем", 
-                attack: 25, 
-                defense: 8, 
-                health: 150,
-                icon: "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23C0C0C0' x='20' y='20' width='60' height='60' rx='10'/><circle fill='%235E3C23' cx='35' cy='40' r='5'/><circle fill='%235E3C23' cx='65' cy='40' r='5'/><path fill='none' stroke='%235E3C23' stroke-width='3' d='M40 65L60 65'/></svg>"
-            }
-        ];
-
-        let player = {
-            level: 1,
-            xp: 0,
-            coins: 0,
-            attack: 10,
-            defense: 0,
-            health: 100,
-            maxHealth: 100,
-            wins: 0
+        // Игровые данные
+        let gameState = {
+            pets: [],
+            currentPetIndex: 0,
+            lastUpdateTime: Date.now(),
+            log: []
         };
 
-        let currentEnemy = null;
-        let battleInterval = null;
+        // Цвета для тапиков
+        const petColors = [
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFBE0B', 
+            '#FB5607', '#8338EC', '#3A86FF', '#FF006E',
+            '#A5DD9B', '#F9C74F', '#90BE6D', '#577590'
+        ];
 
-        function loadGame() {
-            const saved = localStorage.getItem('arenaSave');
-            if(saved) {
-                player = JSON.parse(saved);
-                updateStatsDisplay();
+        // Инициализация игры
+        function initGame() {
+            // Проверяем, есть ли сохраненные данные
+            const savedGame = localStorage.getItem('tapiGameOblivion');
+            if (savedGame) {
+                gameState = JSON.parse(savedGame);
+                gameState.lastUpdateTime = Date.now();
+                updateStatsOverTime();
+            } else {
+                startNewGame();
             }
-        }
-
-        function saveGame() {
-            localStorage.setItem('arenaSave', JSON.stringify(player));
-        }
-
-        function createEnemy() {
-            const type = ENEMY_TYPES[Math.floor(Math.random() * ENEMY_TYPES.length)];
-            const healthBonus = player.wins * 20;
-            const attackBonus = player.wins * 3;
             
+            // Инициализация Telegram Web App
+            if (window.Telegram && Telegram.WebApp) {
+                Telegram.WebApp.ready();
+                Telegram.WebApp.expand();
+            }
+            
+            renderGame();
+        }
+
+        // Начать новую игру
+        function startNewGame() {
+            gameState = {
+                pets: [createNewPet()],
+                currentPetIndex: 0,
+                lastUpdateTime: Date.now(),
+                log: []
+            };
+            addLogMessage("Добро пожаловать в Тапики!");
+            addLogMessage("Первый тапик появился!");
+            saveGame();
+            showScreen('game-screen');
+            renderGame();
+        }
+
+        // Создать нового тапика
+        function createNewPet() {
             return {
-                ...type,
-                maxHealth: type.health + healthBonus,
-                health: type.health + healthBonus,
-                attack: type.attack + attackBonus
+                health: 80,
+                mana: 80,
+                stamina: 80,
+                hunger: 20,
+                level: 1,
+                xp: 0,
+                evolutionLevel: 4, // Первая эволюция на 4 уровне (1 + 3)
+                color: petColors[Math.floor(Math.random() * petColors.length)]
             };
         }
 
-        function startGame() {
-            document.getElementById('mainMenu').classList.add('hidden');
-            document.getElementById('arena').classList.remove('hidden');
-            document.getElementById('continueButton').classList.add('hidden');
-            
-            player.health = player.maxHealth;
-            currentEnemy = createEnemy();
-            
-            // Установка иконки врага
-            document.getElementById('enemyCharacter').style.backgroundImage = `url('${currentEnemy.icon}')`;
-            
-            updateHealthBars();
-            logBattle(`Перед вами ${currentEnemy.name}!`);
-            
-            battleInterval = setInterval(fightRound, 1500);
+        // Сохранить игру
+        function saveGame() {
+            localStorage.setItem('tapiGameOblivion', JSON.stringify(gameState));
         }
 
-        function fightRound() {
-            // Атака игрока
-            const critChance = Math.random() < 0.15;
-            const playerDamage = Math.max(1, player.attack - currentEnemy.defense) * (critChance ? 2 : 1);
+        // Показать экран
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
             
-            document.getElementById('playerCharacter').classList.add('player-attack');
-            setTimeout(() => {
-                document.getElementById('playerCharacter').classList.remove('player-attack');
-                document.getElementById('enemyCharacter').classList.add('take-damage');
-                if(critChance) document.getElementById('enemyCharacter').classList.add('critical-hit');
-                
-                currentEnemy.health -= playerDamage;
-                updateHealthBars();
-                
-                logBattle(`${critChance ? 'КРИТИЧЕСКИЙ УДАР! ' : ''}Вы нанесли ${playerDamage} урона!`);
-                
-                setTimeout(() => {
-                    document.getElementById('enemyCharacter').classList.remove('take-damage');
-                    if(critChance) document.getElementById('enemyCharacter').classList.remove('critical-hit');
+            if (screenId === 'game-screen') {
+                renderGame();
+            }
+        }
+
+        // Добавить сообщение в лог
+        function addLogMessage(message) {
+            const now = new Date();
+            const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+            
+            gameState.log.push({
+                time: timeString,
+                message: message
+            });
+            
+            if (gameState.log.length > 50) {
+                gameState.log.shift();
+            }
+        }
+
+        // Обновить статистику с течением времени
+        function updateStatsOverTime() {
+            const now = Date.now();
+            const timePassed = now - gameState.lastUpdateTime;
+            const minutesPassed = timePassed / (1000 * 60);
+            
+            if (minutesPassed > 0) {
+                gameState.pets.forEach(pet => {
+                    // Увеличиваем голод со временем
+                    const hungerIncrease = Math.min(5 * minutesPassed, 20);
+                    pet.hunger = Math.min(100, pet.hunger + hungerIncrease);
                     
-                    if(currentEnemy.health <= 0) {
-                        endBattle(true);
-                        return;
+                    // Голод влияет на другие параметры
+                    const hungerEffect = pet.hunger / 100;
+                    const decayRate = 2 * minutesPassed * hungerEffect;
+                    
+                    pet.health = Math.max(0, pet.health - decayRate);
+                    pet.mana = Math.max(0, pet.mana - decayRate * 0.8);
+                    pet.stamina = Math.max(0, pet.stamina - decayRate * 0.6);
+                    
+                    // Проверяем, не умер ли тапик
+                    if (pet.health <= 0) {
+                        addLogMessage(`Тапик умер от истощения!`);
+                        // Удаляем умершего тапика
+                        gameState.pets = gameState.pets.filter(p => p !== pet);
+                        if (gameState.pets.length === 0) {
+                            addLogMessage("Все тапики умерли! Начинаем новую игру.");
+                            startNewGame();
+                            return;
+                        }
+                        if (gameState.currentPetIndex >= gameState.pets.length) {
+                            gameState.currentPetIndex = 0;
+                        }
                     }
-                    
-                    // Атака врага
-                    const enemyDamage = Math.max(1, currentEnemy.attack - player.defense);
-                    
-                    document.getElementById('enemyCharacter').classList.add('enemy-attack');
-                    setTimeout(() => {
-                        document.getElementById('enemyCharacter').classList.remove('enemy-attack');
-                        document.getElementById('playerCharacter').classList.add('take-damage');
-                        
-                        player.health -= enemyDamage;
-                        updateHealthBars();
-                        
-                        logBattle(`${currentEnemy.name} наносит вам ${enemyDamage} урона!`);
-                        
-                        setTimeout(() => {
-                            document.getElementById('playerCharacter').classList.remove('take-damage');
-                            
-                            if(player.health <= 0) {
-                                endBattle(false);
-                            }
-                        }, 300);
-                    }, 300);
-                }, 300);
-            }, 300);
+                });
+                
+                gameState.lastUpdateTime = now;
+                saveGame();
+            }
         }
 
-        function endBattle(victory) {
-            clearInterval(battleInterval);
+        // Отрисовать игру
+        function renderGame() {
+            updateStatsOverTime();
             
-            if(victory) {
-                player.wins++;
-                player.xp += 25;
-                player.coins += 10;
-                
-                document.getElementById('enemyCharacter').classList.add('victory');
-                logBattle(`<strong>Победа! +25 опыта +10 золота</strong>`);
-                
-                if(player.xp >= 100) {
-                    player.level++;
-                    player.attack += 5;
-                    player.maxHealth += 20;
-                    player.xp = 0;
-                    logBattle(`<strong>Уровень повышен! +5 атаки +20 здоровья</strong>`);
-                }
-                
-                document.getElementById('continueButton').classList.remove('hidden');
-            } else {
-                logBattle(`<strong>Поражение... Вы теряете сознание.</strong>`);
-                player.wins = 0;
+            if (gameState.pets.length === 0) {
+                startNewGame();
+                return;
             }
             
-            updateStatsDisplay();
+            // Обновляем счетчик тапиков
+            document.getElementById('pets-count').textContent = gameState.pets.length;
+            
+            // Отрисовываем всех тапиков
+            const petsContainer = document.getElementById('pets-container');
+            petsContainer.innerHTML = '';
+            
+            gameState.pets.forEach((pet, index) => {
+                const petElement = document.createElement('div');
+                petElement.className = `pet ${index === gameState.currentPetIndex ? 'active' : ''}`;
+                petElement.onclick = () => {
+                    gameState.currentPetIndex = index;
+                    renderGame();
+                };
+                
+                // Уровень
+                const levelElement = document.createElement('div');
+                levelElement.className = 'pet-level';
+                levelElement.textContent = pet.level;
+                
+                // Медвежонок
+                const petShape = document.createElement('div');
+                petShape.className = 'pet-shape';
+                
+                const bearFace = document.createElement('div');
+                bearFace.className = 'bear-face';
+                bearFace.style.backgroundColor = pet.color;
+                
+                // Уши
+                const earLeft = document.createElement('div');
+                earLeft.className = 'bear-ears ear-left';
+                earLeft.style.backgroundColor = pet.color;
+                
+                const earRight = document.createElement('div');
+                earRight.className = 'bear-ears ear-right';
+                earRight.style.backgroundColor = pet.color;
+                
+                // Глаза
+                const eyeLeft = document.createElement('div');
+                eyeLeft.className = 'bear-eyes eye-left';
+                const pupilLeft = document.createElement('div');
+                pupilLeft.className = 'pupil';
+                const highlightLeft = document.createElement('div');
+                highlightLeft.className = 'highlight';
+                eyeLeft.appendChild(pupilLeft);
+                eyeLeft.appendChild(highlightLeft);
+                
+                const eyeRight = document.createElement('div');
+                eyeRight.className = 'bear-eyes eye-right';
+                const pupilRight = document.createElement('div');
+                pupilRight.className = 'pupil';
+                const highlightRight = document.createElement('div');
+                highlightRight.className = 'highlight';
+                eyeRight.appendChild(pupilRight);
+                eyeRight.appendChild(highlightRight);
+                
+                // Нос
+                const nose = document.createElement('div');
+                nose.className = 'bear-nose';
+                
+                // Рот
+                const mouth = document.createElement('div');
+                mouth.className = 'bear-mouth';
+                
+                // Собираем мордочку
+                bearFace.appendChild(earLeft);
+                bearFace.appendChild(earRight);
+                bearFace.appendChild(eyeLeft);
+                bearFace.appendChild(eyeRight);
+                bearFace.appendChild(nose);
+                bearFace.appendChild(mouth);
+                petShape.appendChild(bearFace);
+                
+                // Статистика
+                const statsElement = document.createElement('div');
+                statsElement.className = 'pet-stats';
+                
+                // Здоровье
+                const healthStat = createStatElement('health', pet.health, '❤️');
+                
+                // Мана
+                const manaStat = createStatElement('mana', pet.mana, '🔮');
+                
+                // Выносливость
+                const staminaStat = createStatElement('stamina', pet.stamina, '⚡');
+                
+                // Голод
+                const hungerStat = createStatElement('hunger', pet.hunger, '🍗');
+                
+                // XP
+                const xpNeeded = getXpNeeded(pet.level);
+                const xpPercentage = (pet.xp / xpNeeded) * 100;
+                const xpBar = document.createElement('div');
+                xpBar.className = 'xp-bar';
+                const xpFill = document.createElement('div');
+                xpFill.className = 'xp-fill';
+                xpFill.style.width = `${xpPercentage}%`;
+                xpBar.appendChild(xpFill);
+                
+                statsElement.appendChild(healthStat);
+                statsElement.appendChild(manaStat);
+                statsElement.appendChild(staminaStat);
+                statsElement.appendChild(hungerStat);
+                statsElement.appendChild(xpBar);
+                
+                // Собираем тапика
+                petElement.appendChild(levelElement);
+                petElement.appendChild(petShape);
+                petElement.appendChild(statsElement);
+                
+                petsContainer.appendChild(petElement);
+            });
+            
+            // Лог
+            const logElement = document.getElementById('game-log');
+            logElement.innerHTML = '';
+            gameState.log.slice().reverse().forEach(entry => {
+                const logEntry = document.createElement('div');
+                logEntry.className = 'log-entry';
+                
+                const timeElement = document.createElement('div');
+                timeElement.className = 'log-time';
+                timeElement.textContent = entry.time;
+                
+                const messageElement = document.createElement('div');
+                messageElement.className = 'log-message';
+                messageElement.textContent = entry.message;
+                
+                logEntry.appendChild(timeElement);
+                logEntry.appendChild(messageElement);
+                logElement.appendChild(logEntry);
+            });
+            
             saveGame();
         }
 
-        function upgradeStat(stat) {
-            const costs = { attack: 50, health: 50, defense: 75 };
-            if(player.coins >= costs[stat]) {
-                player.coins -= costs[stat];
-                if(stat === 'attack') player.attack += 5;
-                if(stat === 'health') player.maxHealth += 20;
-                if(stat === 'defense') player.defense += 3;
+        // Создать элемент статистики
+        function createStatElement(type, value, icon) {
+            const statElement = document.createElement('div');
+            statElement.className = 'stat';
+            
+            const statHeader = document.createElement('div');
+            statHeader.className = 'stat-header';
+            
+            const statName = document.createElement('div');
+            statName.className = 'stat-name';
+            
+            const iconElement = document.createElement('span');
+            iconElement.className = 'stat-icon';
+            iconElement.textContent = icon;
+            
+            const nameElement = document.createElement('span');
+            nameElement.textContent = type === 'health' ? 'Здоровье' : 
+                                     type === 'mana' ? 'Мана' : 
+                                     type === 'stamina' ? 'Вынос.' : 'Голод';
+            
+            statName.appendChild(iconElement);
+            statName.appendChild(nameElement);
+            
+            const valueElement = document.createElement('div');
+            valueElement.className = 'stat-value';
+            valueElement.textContent = Math.round(value);
+            
+            statHeader.appendChild(statName);
+            statHeader.appendChild(valueElement);
+            
+            const barElement = document.createElement('div');
+            barElement.className = 'stat-bar';
+            
+            const fillElement = document.createElement('div');
+            fillElement.className = `stat-fill ${type}`;
+            fillElement.style.width = `${value}%`;
+            
+            barElement.appendChild(fillElement);
+            
+            statElement.appendChild(statHeader);
+            statElement.appendChild(barElement);
+            
+            return statElement;
+        }
+
+        // Покормить текущего тапика
+        function feedCurrentPet() {
+            const pet = gameState.pets[gameState.currentPetIndex];
+            
+            if (pet.mana < 10) {
+                addLogMessage(`У тапика недостаточно маны для еды!`);
+                return;
+            }
+            
+            pet.health = Math.min(100, pet.health + 30);
+            pet.mana = Math.max(0, pet.mana - 10);
+            pet.hunger = Math.max(0, pet.hunger - 15);
+            addXp(pet, 5);
+            
+            addLogMessage(`Тапик покормлен! Здоровье +30`);
+            renderGame();
+        }
+
+        // Поиграть с текущим тапиком
+        function playWithCurrentPet() {
+            const pet = gameState.pets[gameState.currentPetIndex];
+            
+            if (pet.health < 15 || pet.mana < 20) {
+                addLogMessage(`Тапик слишком слаб для игр!`);
+                return;
+            }
+            
+            pet.stamina = Math.min(100, pet.stamina + 25);
+            pet.health = Math.max(0, pet.health - 15);
+            pet.mana = Math.max(0, pet.mana - 20);
+            addXp(pet, 8);
+            
+            addLogMessage(`Вы поиграли с тапиком! Выносливость +25`);
+            renderGame();
+        }
+
+        // Отдых текущего тапика
+        function restCurrentPet() {
+            const pet = gameState.pets[gameState.currentPetIndex];
+            
+            pet.mana = Math.min(100, pet.mana + 40);
+            pet.stamina = Math.max(0, pet.stamina - 10);
+            addXp(pet, 3);
+            
+            addLogMessage(`Тапик отдохнул! Мана +40`);
+            renderGame();
+        }
+
+        // Тренировка текущего тапика
+        function trainCurrentPet() {
+            const pet = gameState.pets[gameState.currentPetIndex];
+            
+            if (pet.health < 30 || pet.mana < 30 || pet.stamina < 30) {
+                addLogMessage(`Тапик не готов к тренировке!`);
+                return;
+            }
+            
+            pet.health = Math.max(0, pet.health - 30);
+            pet.mana = Math.max(0, pet.mana - 30);
+            pet.stamina = Math.max(0, pet.stamina - 30);
+            addXp(pet, 25);
+            
+            addLogMessage(`Тапик потренировался! Опыт +25`);
+            renderGame();
+        }
+
+        // Добавить опыт тапику
+        function addXp(pet, amount) {
+            pet.xp += amount;
+            const xpNeeded = getXpNeeded(pet.level);
+            
+            if (pet.xp >= xpNeeded) {
+                pet.xp -= xpNeeded;
+                pet.level++;
+                addLogMessage(`Тапик достиг уровня ${pet.level}!`);
                 
-                updateStatsDisplay();
-                saveGame();
-                hideUpgrades();
+                // Проверяем эволюцию
+                if (pet.level >= pet.evolutionLevel) {
+                    pet.evolutionLevel = pet.level + 3;
+                    
+                    // При эволюции создаем нового тапика (но не более 12)
+                    if (gameState.pets.length < 12) {
+                        const newPet = createNewPet();
+                        newPet.level = 1;
+                        newPet.evolutionLevel = 4;
+                        gameState.pets.push(newPet);
+                        addLogMessage(`Тапик эволюционировал и создал нового тапика!`);
+                    } else {
+                        addLogMessage(`Тапик эволюционировал!`);
+                    }
+                }
             }
         }
 
-        function updateHealthBars() {
-            const playerPercent = Math.max(0, (player.health / player.maxHealth) * 100);
-            const enemyPercent = Math.max(0, (currentEnemy.health / currentEnemy.maxHealth) * 100);
-            
-            document.getElementById('playerHealth').style.width = `${playerPercent}%`;
-            document.getElementById('enemyHealth').style.width = `${enemyPercent}%`;
-            
-            document.getElementById('playerHealthLabel').textContent = `${Math.round(player.health)}/${player.maxHealth}`;
-            document.getElementById('enemyHealthLabel').textContent = `${Math.round(currentEnemy.health)}/${currentEnemy.maxHealth}`;
+        // Получить необходимое количество XP для уровня
+        function getXpNeeded(level) {
+            return level * 100;
         }
 
-        function updateStatsDisplay() {
-            document.getElementById('level').textContent = player.level;
-            document.getElementById('xp').textContent = `${player.xp}/100`;
-            document.getElementById('coins').textContent = player.coins;
-            document.getElementById('attack').textContent = player.attack;
-            document.getElementById('defense').textContent = player.defense;
-            document.getElementById('maxHealth').textContent = player.maxHealth;
-        }
-
-        function logBattle(text) {
-            const log = document.getElementById('battleLog');
-            const newEntry = document.createElement('div');
-            newEntry.innerHTML = text;
-            log.appendChild(newEntry);
-            log.scrollTop = log.scrollHeight;
-        }
-
-        function showUpgrades() {
-            document.getElementById('upgradeModal').classList.remove('hidden');
-            document.getElementById('modalBackdrop').classList.remove('hidden');
-        }
-
-        function hideUpgrades() {
-            document.getElementById('upgradeModal').classList.add('hidden');
-            document.getElementById('modalBackdrop').classList.add('hidden');
-        }
-
-        function returnToMenu() {
-            document.getElementById('mainMenu').classList.remove('hidden');
-            document.getElementById('arena').classList.add('hidden');
-            document.getElementById('continueButton').classList.add('hidden');
-            
-            if(document.getElementById('enemyCharacter').classList.contains('victory')) {
-                document.getElementById('enemyCharacter').classList.remove('victory');
-            }
-            
-            clearInterval(battleInterval);
-        }
-
-        // Инициализация игры
-        window.onload = loadGame;
+        // Инициализация игры при загрузке
+        window.onload = initGame;
     </script>
 </body>
 </html>
