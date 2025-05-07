@@ -3,26 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Classic Sopwith</title>
+    <title>Sopwith Classic</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             overflow: hidden;
             background-color: #222;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            touch-action: none;
             font-family: 'Courier New', monospace;
         }
-        #gameCanvas {
-            background-color: #87CEEB;
+        canvas {
             display: block;
-            touch-action: none;
+            background-color: #87CEEB;
         }
         #startScreen, #gameOverScreen {
             position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             display: flex;
@@ -50,30 +48,22 @@
         button:hover {
             background-color: #45a049;
         }
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-        p {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
-        }
         #scoreDisplay {
             position: absolute;
             top: 10px;
             left: 10px;
             color: white;
-            font-size: 1.2rem;
+            font-size: 18px;
             background-color: rgba(0, 0, 0, 0.5);
             padding: 5px 10px;
             border-radius: 5px;
         }
         #healthDisplay {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 40px;
+            left: 10px;
             color: white;
-            font-size: 1.2rem;
+            font-size: 18px;
             background-color: rgba(0, 0, 0, 0.5);
             padding: 5px 10px;
             border-radius: 5px;
@@ -82,21 +72,19 @@
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
-    
     <div id="scoreDisplay">Score: 0</div>
     <div id="healthDisplay">Health: 100%</div>
     
     <div id="startScreen">
-        <h1>CLASSIC SOPWITH</h1>
-        <p>Fly your biplane and destroy enemy targets!</p>
-        <p>Controls: Arrow keys to move, Space to shoot</p>
-        <p>On mobile: Touch left/right to move, tap to shoot</p>
+        <h1>SOPWITH CLASSIC</h1>
+        <p>Use arrow keys to move, Space to shoot</p>
+        <p>On mobile: touch left/right to move, tap to shoot</p>
         <button id="startButton">START GAME</button>
     </div>
     
     <div id="gameOverScreen">
         <h1>GAME OVER</h1>
-        <p id="finalScore">Your score: 0</p>
+        <p id="finalScore">Score: 0</p>
         <button id="restartButton">PLAY AGAIN</button>
     </div>
 
@@ -104,76 +92,66 @@
         // Game constants
         const GRAVITY = 0.2;
         const THRUST = 0.3;
-        const TURN_RATE = 3;
+        const TURN_SPEED = 3;
         const BULLET_SPEED = 7;
-        const ENEMY_SPAWN_RATE = 150;
-        const BUILDING_SPAWN_RATE = 300;
-        const CLOUD_SPAWN_RATE = 200;
+        const ENEMY_SPAWN_RATE = 100; // frames
+        const BUILDING_WIDTH = 60;
+        const BUILDING_HEIGHT = 150;
+        const BUILDING_COUNT = 10;
+        const CLOUD_COUNT = 8;
         const PLANE_WIDTH = 30;
         const PLANE_HEIGHT = 20;
-        const BULLET_RADIUS = 3;
-        const ENEMY_WIDTH = 25;
-        const ENEMY_HEIGHT = 15;
-        const BUILDING_WIDTH = 60;
-        const BUILDING_HEIGHT_BASE = 30;
-        const CLOUD_WIDTH = 50;
-        const CLOUD_HEIGHT = 30;
-        const GROUND_HEIGHT = 30;
-        
+
         // Game variables
         let canvas, ctx;
-        let gameWidth, gameHeight;
-        let planeX, planeY, planeSpeedX, planeSpeedY, planeAngle;
+        let gameRunning = false;
+        let score = 0;
+        let playerHealth = 100;
+        let player = {
+            x: 100,
+            y: 200,
+            dx: 0,
+            dy: 0,
+            angle: 0,
+            cooldown: 0
+        };
         let bullets = [];
         let enemies = [];
         let buildings = [];
         let clouds = [];
-        let score = 0;
-        let health = 100;
-        let gameRunning = false;
-        let lastEnemySpawn = 0;
-        let lastBuildingSpawn = 0;
-        let lastCloudSpawn = 0;
         let keys = {};
         let touchStartX = 0;
-        let touchEndX = 0;
         let touchActive = false;
-        
+        let lastEnemySpawn = 0;
+        let animationId;
+        let gameWidth, gameHeight;
+        let isMobile = false;
+
         // Initialize game
         function init() {
             canvas = document.getElementById('gameCanvas');
             ctx = canvas.getContext('2d');
             
+            // Check if mobile
+            isMobile = /Mobi|Android/i.test(navigator.userAgent);
+            
+            // Set up event listeners
+            window.addEventListener('keydown', handleKeyDown);
+            window.addEventListener('keyup', handleKeyUp);
+            canvas.addEventListener('touchstart', handleTouchStart);
+            canvas.addEventListener('touchmove', handleTouchMove);
+            canvas.addEventListener('touchend', handleTouchEnd);
+            canvas.addEventListener('click', handleClick);
+            
+            // Set up buttons
+            document.getElementById('startButton').addEventListener('click', startGame);
+            document.getElementById('restartButton').addEventListener('click', restartGame);
+            
+            // Initial resize
             resizeCanvas();
             window.addEventListener('resize', resizeCanvas);
-            
-            // Event listeners for keyboard
-            window.addEventListener('keydown', (e) => {
-                keys[e.key] = true;
-                // Prevent spacebar from scrolling page
-                if (e.key === ' ') {
-                    e.preventDefault();
-                }
-            });
-            
-            window.addEventListener('keyup', (e) => {
-                keys[e.key] = false;
-            });
-            
-            // Event listeners for touch controls
-            canvas.addEventListener('touchstart', handleTouchStart, false);
-            canvas.addEventListener('touchmove', handleTouchMove, false);
-            canvas.addEventListener('touchend', handleTouchEnd, false);
-            canvas.addEventListener('mousedown', handleMouseDown, false);
-            
-            // Button event listeners
-            document.getElementById('startButton').addEventListener('click', startGame);
-            document.getElementById('restartButton').addEventListener('click', startGame);
-            
-            // Start the game loop
-            requestAnimationFrame(gameLoop);
         }
-        
+
         // Resize canvas to fit window
         function resizeCanvas() {
             gameWidth = window.innerWidth;
@@ -181,429 +159,481 @@
             
             canvas.width = gameWidth;
             canvas.height = gameHeight;
+            
+            // Regenerate terrain if game is running
+            if (gameRunning) {
+                generateTerrain();
+            }
         }
-        
-        // Start a new game
+
+        // Start the game
         function startGame() {
-            // Reset game state
-            planeX = gameWidth / 4;
-            planeY = gameHeight / 2;
-            planeSpeedX = 0;
-            planeSpeedY = 0;
-            planeAngle = 0;
-            bullets = [];
-            enemies = [];
-            buildings = [];
-            clouds = [];
-            score = 0;
-            health = 100;
-            lastEnemySpawn = 0;
-            lastBuildingSpawn = 0;
-            lastCloudSpawn = 0;
-            
-            // Update displays
-            document.getElementById('scoreDisplay').textContent = `Score: ${score}`;
-            document.getElementById('healthDisplay').textContent = `Health: ${health}%`;
-            
-            // Hide start/game over screens
             document.getElementById('startScreen').style.display = 'none';
             document.getElementById('gameOverScreen').style.display = 'none';
             
+            // Reset game state
+            score = 0;
+            playerHealth = 100;
+            player = {
+                x: 100,
+                y: 200,
+                dx: 0,
+                dy: 0,
+                angle: 0,
+                cooldown: 0
+            };
+            bullets = [];
+            enemies = [];
+            
+            // Generate terrain
+            generateTerrain();
+            
+            // Start game loop
             gameRunning = true;
+            updateScoreDisplay();
+            updateHealthDisplay();
+            gameLoop();
         }
-        
-        // End the game
-        function endGame() {
-            gameRunning = false;
-            document.getElementById('finalScore').textContent = `Your score: ${score}`;
-            document.getElementById('gameOverScreen').style.display = 'flex';
+
+        // Restart the game
+        function restartGame() {
+            document.getElementById('gameOverScreen').style.display = 'none';
+            startGame();
         }
-        
-        // Touch control handlers
-        function handleTouchStart(e) {
-            e.preventDefault();
-            touchActive = true;
-            touchStartX = e.touches[0].clientX;
-        }
-        
-        function handleTouchMove(e) {
-            e.preventDefault();
-            if (touchActive) {
-                touchEndX = e.touches[0].clientX;
+
+        // Generate terrain (buildings and clouds)
+        function generateTerrain() {
+            buildings = [];
+            for (let i = 0; i < BUILDING_COUNT; i++) {
+                buildings.push({
+                    x: Math.random() * gameWidth * 2,
+                    y: gameHeight - BUILDING_HEIGHT + Math.random() * 30,
+                    width: BUILDING_WIDTH + Math.random() * 40,
+                    height: BUILDING_HEIGHT + Math.random() * 50
+                });
+            }
+            
+            clouds = [];
+            for (let i = 0; i < CLOUD_COUNT; i++) {
+                clouds.push({
+                    x: Math.random() * gameWidth * 2,
+                    y: Math.random() * (gameHeight / 2),
+                    width: 60 + Math.random() * 60,
+                    speed: 0.2 + Math.random() * 0.5
+                });
             }
         }
-        
-        function handleTouchEnd(e) {
-            e.preventDefault();
-            if (touchActive) {
-                // Shoot if it was a tap (small movement)
-                if (Math.abs(touchEndX - touchStartX) < 10) {
-                    shootBullet();
-                }
-                touchActive = false;
-            }
+
+        // Main game loop
+        function gameLoop() {
+            if (!gameRunning) return;
+            
+            update();
+            render();
+            
+            animationId = requestAnimationFrame(gameLoop);
         }
-        
-        function handleMouseDown(e) {
-            if (gameRunning) {
-                shootBullet();
-            }
-        }
-        
-        // Game loop
-        function gameLoop(timestamp) {
-            if (gameRunning) {
-                update(timestamp);
-            }
-            draw();
-            requestAnimationFrame(gameLoop);
-        }
-        
+
         // Update game state
-        function update(timestamp) {
-            // Update plane controls
-            if (keys['ArrowUp'] || touchActive && touchEndX < touchStartX - 20) {
-                planeSpeedY = -THRUST;
-                planeAngle = -15;
-            } else if (keys['ArrowDown'] || touchActive && touchEndX > touchStartX + 20) {
-                planeSpeedY = THRUST;
-                planeAngle = 15;
-            } else {
-                planeSpeedY = 0;
-                planeAngle = 0;
+        function update() {
+            // Update player
+            updatePlayer();
+            
+            // Update bullets
+            updateBullets();
+            
+            // Update enemies
+            updateEnemies();
+            
+            // Spawn new enemies
+            lastEnemySpawn++;
+            if (lastEnemySpawn > ENEMY_SPAWN_RATE) {
+                spawnEnemy();
+                lastEnemySpawn = 0;
+            }
+            
+            // Update clouds
+            updateClouds();
+        }
+
+        // Update player position and state
+        function updatePlayer() {
+            // Apply controls
+            if (keys.ArrowLeft || (touchActive && touchStartX < player.x - 50)) {
+                player.angle -= TURN_SPEED;
+            }
+            if (keys.ArrowRight || (touchActive && touchStartX > player.x + 50)) {
+                player.angle += TURN_SPEED;
+            }
+            if (keys.ArrowUp) {
+                player.dx += Math.sin(player.angle * Math.PI / 180) * THRUST;
+                player.dy -= Math.cos(player.angle * Math.PI / 180) * THRUST;
             }
             
             // Apply gravity
-            planeSpeedY += GRAVITY;
+            player.dy += GRAVITY;
             
-            // Update plane position
-            planeX += planeSpeedX;
-            planeY += planeSpeedY;
+            // Update position
+            player.x += player.dx;
+            player.y += player.dy;
             
-            // Keep plane in bounds
-            if (planeY < 0) {
-                planeY = 0;
-                planeSpeedY = 0;
+            // Cooldown for shooting
+            if (player.cooldown > 0) {
+                player.cooldown--;
             }
             
-            if (planeY > gameHeight - GROUND_HEIGHT - PLANE_HEIGHT / 2) {
-                planeY = gameHeight - GROUND_HEIGHT - PLANE_HEIGHT / 2;
-                planeSpeedY = 0;
-                health -= 5; // Crash damage
-                if (health <= 0) {
-                    health = 0;
-                    endGame();
+            // Screen wrapping
+            if (player.x < 0) player.x = gameWidth;
+            if (player.x > gameWidth) player.x = 0;
+            
+            // Check for collisions with buildings
+            for (const building of buildings) {
+                if (player.x > building.x && 
+                    player.x < building.x + building.width && 
+                    player.y > building.y) {
+                    playerHealth -= 5;
+                    updateHealthDisplay();
+                    player.y = building.y - 10;
+                    player.dy = -Math.abs(player.dy) * 0.5;
+                    
+                    if (playerHealth <= 0) {
+                        gameOver();
+                    }
                 }
-                document.getElementById('healthDisplay').textContent = `Health: ${health}%`;
             }
             
-            if (planeX < 0) {
-                planeX = 0;
-            }
-            
-            if (planeX > gameWidth) {
-                planeX = gameWidth;
-            }
-            
-            // Shoot with spacebar
-            if (keys[' '] && bullets.length < 3) {
-                shootBullet();
-                keys[' '] = false; // Prevent rapid firing
-            }
-            
-            // Update bullets
-            for (let i = bullets.length - 1; i >= 0; i--) {
-                bullets[i].x += bullets[i].speedX;
-                bullets[i].y += bullets[i].speedY;
+            // Check for collisions with ground
+            if (player.y > gameHeight - 20) {
+                playerHealth -= 10;
+                updateHealthDisplay();
+                player.y = gameHeight - 20;
+                player.dy = -Math.abs(player.dy) * 0.5;
                 
-                // Remove bullets that are off screen
-                if (bullets[i].x > gameWidth || bullets[i].x < 0 || 
-                    bullets[i].y > gameHeight || bullets[i].y < 0) {
+                if (playerHealth <= 0) {
+                    gameOver();
+                }
+            }
+            
+            // Check for collisions with top
+            if (player.y < 0) {
+                player.y = 0;
+                player.dy = 0;
+            }
+        }
+
+        // Update bullets
+        function updateBullets() {
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                const bullet = bullets[i];
+                
+                // Move bullet
+                bullet.x += bullet.dx;
+                bullet.y += bullet.dy;
+                
+                // Remove if off screen
+                if (bullet.x < 0 || bullet.x > gameWidth || 
+                    bullet.y < 0 || bullet.y > gameHeight) {
                     bullets.splice(i, 1);
                     continue;
                 }
                 
-                // Check bullet collisions with enemies
+                // Check collision with enemies
                 for (let j = enemies.length - 1; j >= 0; j--) {
-                    if (checkCollision(
-                        bullets[i].x, bullets[i].y, BULLET_RADIUS,
-                        enemies[j].x, enemies[j].y, ENEMY_WIDTH, ENEMY_HEIGHT
-                    )) {
+                    const enemy = enemies[j];
+                    if (checkCollision(bullet, enemy, 10)) {
                         // Hit enemy
                         enemies.splice(j, 1);
                         bullets.splice(i, 1);
                         score += 10;
-                        document.getElementById('scoreDisplay').textContent = `Score: ${score}`;
+                        updateScoreDisplay();
                         break;
                     }
-                }
-                
-                // Check bullet collisions with buildings
-                for (let j = buildings.length - 1; j >= 0; j--) {
-                    if (checkCollision(
-                        bullets[i].x, bullets[i].y, BULLET_RADIUS,
-                        buildings[j].x, buildings[j].y, BUILDING_WIDTH, buildings[j].height
-                    )) {
-                        // Hit building
-                        buildings[j].health -= 20;
-                        bullets.splice(i, 1);
-                        
-                        if (buildings[j].health <= 0) {
-                            buildings.splice(j, 1);
-                            score += 20;
-                            document.getElementById('scoreDisplay').textContent = `Score: ${score}`;
-                        }
-                        break;
-                    }
-                }
-            }
-            
-            // Spawn enemies
-            if (timestamp - lastEnemySpawn > ENEMY_SPAWN_RATE * (1000 + Math.random() * 1000)) {
-                spawnEnemy();
-                lastEnemySpawn = timestamp;
-            }
-            
-            // Spawn buildings
-            if (timestamp - lastBuildingSpawn > BUILDING_SPAWN_RATE * (1000 + Math.random() * 1000)) {
-                spawnBuilding();
-                lastBuildingSpawn = timestamp;
-            }
-            
-            // Spawn clouds
-            if (timestamp - lastCloudSpawn > CLOUD_SPAWN_RATE * (1000 + Math.random() * 1000)) {
-                spawnCloud();
-                lastCloudSpawn = timestamp;
-            }
-            
-            // Update enemies
-            for (let i = enemies.length - 1; i >= 0; i--) {
-                enemies[i].x -= enemies[i].speed;
-                
-                // Remove enemies that are off screen
-                if (enemies[i].x < -ENEMY_WIDTH) {
-                    enemies.splice(i, 1);
-                    continue;
-                }
-                
-                // Check enemy collisions with plane
-                if (checkCollision(
-                    planeX, planeY, PLANE_WIDTH / 2,
-                    enemies[i].x, enemies[i].y, ENEMY_WIDTH, ENEMY_HEIGHT
-                )) {
-                    // Collision with enemy
-                    enemies.splice(i, 1);
-                    health -= 15;
-                    if (health <= 0) {
-                        health = 0;
-                        endGame();
-                    }
-                    document.getElementById('healthDisplay').textContent = `Health: ${health}%`;
-                }
-            }
-            
-            // Update buildings
-            for (let i = buildings.length - 1; i >= 0; i--) {
-                // Check building collisions with plane
-                if (checkCollision(
-                    planeX, planeY, PLANE_WIDTH / 2,
-                    buildings[i].x, buildings[i].y, BUILDING_WIDTH, buildings[i].height
-                )) {
-                    // Collision with building
-                    health -= 25;
-                    if (health <= 0) {
-                        health = 0;
-                        endGame();
-                    }
-                    document.getElementById('healthDisplay').textContent = `Health: ${health}%`;
-                }
-            }
-            
-            // Update clouds
-            for (let i = clouds.length - 1; i >= 0; i--) {
-                clouds[i].x -= clouds[i].speed;
-                
-                // Remove clouds that are off screen
-                if (clouds[i].x < -CLOUD_WIDTH) {
-                    clouds.splice(i, 1);
                 }
             }
         }
-        
-        // Draw everything
-        function draw() {
+
+        // Update enemies
+        function updateEnemies() {
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                const enemy = enemies[i];
+                
+                // Simple AI: follow player
+                const angleToPlayer = Math.atan2(player.y - enemy.y, player.x - enemy.x);
+                enemy.dx = Math.cos(angleToPlayer) * 2;
+                enemy.dy = Math.sin(angleToPlayer) * 2;
+                
+                // Move enemy
+                enemy.x += enemy.dx;
+                enemy.y += enemy.dy;
+                enemy.angle = Math.atan2(enemy.dy, enemy.dx) * 180 / Math.PI;
+                
+                // Screen wrapping
+                if (enemy.x < 0) enemy.x = gameWidth;
+                if (enemy.x > gameWidth) enemy.x = 0;
+                
+                // Check collision with player
+                if (checkCollision(player, enemy, 20)) {
+                    playerHealth -= 15;
+                    updateHealthDisplay();
+                    enemies.splice(i, 1);
+                    
+                    if (playerHealth <= 0) {
+                        gameOver();
+                    }
+                }
+            }
+        }
+
+        // Update clouds
+        function updateClouds() {
+            for (const cloud of clouds) {
+                cloud.x -= cloud.speed;
+                if (cloud.x < -cloud.width) {
+                    cloud.x = gameWidth + cloud.width;
+                    cloud.y = Math.random() * (gameHeight / 2);
+                }
+            }
+        }
+
+        // Spawn a new enemy
+        function spawnEnemy() {
+            const side = Math.random() > 0.5 ? 1 : -1;
+            enemies.push({
+                x: player.x + (Math.random() * 300 + 200) * side,
+                y: Math.random() * gameHeight / 2,
+                dx: 0,
+                dy: 0,
+                angle: 0
+            });
+        }
+
+        // Fire a bullet from player
+        function fireBullet() {
+            if (player.cooldown > 0) return;
+            
+            const angleRad = player.angle * Math.PI / 180;
+            bullets.push({
+                x: player.x + Math.sin(angleRad) * 20,
+                y: player.y - Math.cos(angleRad) * 20,
+                dx: Math.sin(angleRad) * BULLET_SPEED + player.dx * 0.5,
+                dy: -Math.cos(angleRad) * BULLET_SPEED + player.dy * 0.5,
+                angle: player.angle
+            });
+            
+            player.cooldown = 15;
+        }
+
+        // Check collision between two objects
+        function checkCollision(obj1, obj2, radius) {
+            const dx = obj1.x - obj2.x;
+            const dy = obj1.y - obj2.y;
+            return Math.sqrt(dx * dx + dy * dy) < radius;
+        }
+
+        // Render the game
+        function render() {
             // Clear canvas
             ctx.clearRect(0, 0, gameWidth, gameHeight);
-            
-            if (!gameRunning) {
-                return;
-            }
             
             // Draw sky gradient
             const skyGradient = ctx.createLinearGradient(0, 0, 0, gameHeight);
             skyGradient.addColorStop(0, '#87CEEB');
             skyGradient.addColorStop(1, '#E0F7FF');
             ctx.fillStyle = skyGradient;
-            ctx.fillRect(0, 0, gameWidth, gameHeight - GROUND_HEIGHT);
-            
-            // Draw ground
-            ctx.fillStyle = '#5C4033';
-            ctx.fillRect(0, gameHeight - GROUND_HEIGHT, gameWidth, GROUND_HEIGHT);
+            ctx.fillRect(0, 0, gameWidth, gameHeight);
             
             // Draw clouds
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-            for (const cloud of clouds) {
-                // Draw cloud as 3 circles
-                ctx.beginPath();
-                ctx.arc(cloud.x + 15, cloud.y + 10, 15, 0, Math.PI * 2);
-                ctx.arc(cloud.x + 30, cloud.y + 15, 20, 0, Math.PI * 2);
-                ctx.arc(cloud.x + 45, cloud.y + 10, 15, 0, Math.PI * 2);
-                ctx.fill();
-            }
+            drawClouds();
             
             // Draw buildings
-            for (const building of buildings) {
-                // Building base
-                ctx.fillStyle = '#555';
-                ctx.fillRect(building.x, building.y, BUILDING_WIDTH, building.height);
-                
-                // Windows
-                ctx.fillStyle = '#FFD700';
-                const windowWidth = 8;
-                const windowHeight = 10;
-                const windowMargin = 5;
-                const windowsPerRow = Math.floor((BUILDING_WIDTH - windowMargin * 2) / (windowWidth + windowMargin));
-                
-                for (let row = 0; row < Math.floor(building.height / (windowHeight + windowMargin * 2)); row++) {
-                    for (let col = 0; col < windowsPerRow; col++) {
-                        if (Math.random() > 0.3) { // Random windows
-                            ctx.fillRect(
-                                building.x + windowMargin + col * (windowWidth + windowMargin),
-                                building.y + windowMargin + row * (windowHeight + windowMargin),
-                                windowWidth, windowHeight
-                            );
-                        }
-                    }
-                }
-                
-                // Health bar
-                const healthBarWidth = BUILDING_WIDTH;
-                const healthBarHeight = 5;
-                ctx.fillStyle = 'red';
-                ctx.fillRect(building.x, building.y - healthBarHeight - 2, healthBarWidth, healthBarHeight);
-                ctx.fillStyle = 'green';
-                ctx.fillRect(building.x, building.y - healthBarHeight - 2, healthBarWidth * (building.health / 100), healthBarHeight);
-            }
+            drawBuildings();
+            
+            // Draw bullets
+            drawBullets();
             
             // Draw enemies
-            ctx.fillStyle = '#C00';
-            for (const enemy of enemies) {
-                // Enemy plane (simple triangle)
+            drawEnemies();
+            
+            // Draw player
+            drawPlayer();
+        }
+
+        // Draw player plane
+        function drawPlayer() {
+            ctx.save();
+            ctx.translate(player.x, player.y);
+            ctx.rotate(player.angle * Math.PI / 180);
+            
+            // Plane body
+            ctx.fillStyle = '#8B4513';
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-PLANE_WIDTH/2, PLANE_HEIGHT/2);
+            ctx.lineTo(PLANE_WIDTH/2, PLANE_HEIGHT/2);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Plane wings
+            ctx.fillStyle = '#A0522D';
+            ctx.fillRect(-PLANE_WIDTH, PLANE_HEIGHT/4, PLANE_WIDTH*2, PLANE_HEIGHT/4);
+            
+            // Propeller
+            ctx.fillStyle = '#333';
+            ctx.fillRect(-5, -10, 10, 10);
+            
+            ctx.restore();
+        }
+
+        // Draw bullets
+        function drawBullets() {
+            ctx.fillStyle = '#FF0';
+            for (const bullet of bullets) {
                 ctx.save();
-                ctx.translate(enemy.x + ENEMY_WIDTH / 2, enemy.y + ENEMY_HEIGHT / 2);
-                ctx.rotate(Math.PI); // Point left
+                ctx.translate(bullet.x, bullet.y);
+                ctx.rotate(bullet.angle * Math.PI / 180);
                 
                 ctx.beginPath();
-                ctx.moveTo(ENEMY_WIDTH / 2, 0);
-                ctx.lineTo(-ENEMY_WIDTH / 2, -ENEMY_HEIGHT / 2);
-                ctx.lineTo(-ENEMY_WIDTH / 2, ENEMY_HEIGHT / 2);
-                ctx.closePath();
+                ctx.rect(-2, -2, 4, 4);
                 ctx.fill();
                 
                 ctx.restore();
             }
-            
-            // Draw bullets
-            ctx.fillStyle = '#FF0';
-            for (const bullet of bullets) {
-                ctx.beginPath();
-                ctx.arc(bullet.x, bullet.y, BULLET_RADIUS, 0, Math.PI * 2);
-                ctx.fill();
-            }
-            
-            // Draw player plane
-            ctx.save();
-            ctx.translate(planeX, planeY);
-            ctx.rotate(planeAngle * Math.PI / 180);
-            
-            // Plane body (rectangle)
-            ctx.fillStyle = '#963';
-            ctx.fillRect(-PLANE_WIDTH / 2, -PLANE_HEIGHT / 2, PLANE_WIDTH, PLANE_HEIGHT);
-            
-            // Plane wings (cross)
-            ctx.strokeStyle = '#963';
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            // Horizontal wing
-            ctx.moveTo(-PLANE_WIDTH / 2, 0);
-            ctx.lineTo(PLANE_WIDTH / 2, 0);
-            // Vertical tail
-            ctx.moveTo(0, -PLANE_HEIGHT / 4);
-            ctx.lineTo(0, PLANE_HEIGHT / 2);
-            ctx.stroke();
-            
-            // Propeller
-            ctx.fillStyle = '#333';
-            ctx.fillRect(PLANE_WIDTH / 2 - 5, -3, 5, 6);
-            
-            ctx.restore();
         }
-        
-        // Shoot a bullet
-        function shootBullet() {
+
+        // Draw enemies
+        function drawEnemies() {
+            for (const enemy of enemies) {
+                ctx.save();
+                ctx.translate(enemy.x, enemy.y);
+                ctx.rotate(enemy.angle * Math.PI / 180);
+                
+                // Enemy plane body
+                ctx.fillStyle = '#800000';
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(-PLANE_WIDTH/2, PLANE_HEIGHT/2);
+                ctx.lineTo(PLANE_WIDTH/2, PLANE_HEIGHT/2);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Enemy plane wings
+                ctx.fillStyle = '#A52A2A';
+                ctx.fillRect(-PLANE_WIDTH, PLANE_HEIGHT/4, PLANE_WIDTH*2, PLANE_HEIGHT/4);
+                
+                // Propeller
+                ctx.fillStyle = '#333';
+                ctx.fillRect(-5, -10, 10, 10);
+                
+                ctx.restore();
+            }
+        }
+
+        // Draw buildings
+        function drawBuildings() {
+            ctx.fillStyle = '#555';
+            for (const building of buildings) {
+                // Only draw buildings near the player
+                if (Math.abs(building.x - player.x) < gameWidth + 100) {
+                    ctx.fillRect(building.x, building.y, building.width, building.height);
+                    
+                    // Windows
+                    ctx.fillStyle = '#FF0';
+                    const windowSize = 8;
+                    const windowSpacing = 12;
+                    const rows = Math.floor(building.height / windowSpacing) - 1;
+                    const cols = Math.floor(building.width / windowSpacing) - 1;
+                    
+                    for (let r = 0; r < rows; r++) {
+                        for (let c = 0; c < cols; c++) {
+                            if (Math.random() > 0.7) { // Random windows
+                                ctx.fillRect(
+                                    building.x + c * windowSpacing + (building.width - cols * windowSpacing)/2,
+                                    building.y + r * windowSpacing + 10,
+                                    windowSize,
+                                    windowSize
+                                );
+                            }
+                        }
+                    }
+                    ctx.fillStyle = '#555';
+                }
+            }
+        }
+
+        // Draw clouds
+        function drawClouds() {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            for (const cloud of clouds) {
+                // Only draw clouds near the player
+                if (Math.abs(cloud.x - player.x) < gameWidth + 100) {
+                    ctx.beginPath();
+                    ctx.arc(cloud.x, cloud.y, cloud.width/3, 0, Math.PI * 2);
+                    ctx.arc(cloud.x + cloud.width/4, cloud.y - cloud.width/6, cloud.width/4, 0, Math.PI * 2);
+                    ctx.arc(cloud.x + cloud.width/3, cloud.y, cloud.width/3, 0, Math.PI * 2);
+                    ctx.arc(cloud.x - cloud.width/4, cloud.y + cloud.width/6, cloud.width/4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+
+        // Update score display
+        function updateScoreDisplay() {
+            document.getElementById('scoreDisplay').textContent = `Score: ${score}`;
+        }
+
+        // Update health display
+        function updateHealthDisplay() {
+            document.getElementById('healthDisplay').textContent = `Health: ${Math.max(0, playerHealth)}%`;
+        }
+
+        // Game over
+        function gameOver() {
+            gameRunning = false;
+            cancelAnimationFrame(animationId);
+            
+            document.getElementById('finalScore').textContent = `Score: ${score}`;
+            document.getElementById('gameOverScreen').style.display = 'flex';
+        }
+
+        // Event handlers
+        function handleKeyDown(e) {
+            keys[e.key] = true;
+            
+            if (e.key === ' ' && gameRunning) {
+                fireBullet();
+                e.preventDefault();
+            }
+        }
+
+        function handleKeyUp(e) {
+            keys[e.key] = false;
+        }
+
+        function handleTouchStart(e) {
             if (!gameRunning) return;
             
-            bullets.push({
-                x: planeX + PLANE_WIDTH / 2 * Math.cos(planeAngle * Math.PI / 180),
-                y: planeY + PLANE_WIDTH / 2 * Math.sin(planeAngle * Math.PI / 180),
-                speedX: BULLET_SPEED,
-                speedY: planeSpeedY * 0.5
-            });
+            touchStartX = e.touches[0].clientX;
+            touchActive = true;
         }
-        
-        // Spawn an enemy
-        function spawnEnemy() {
-            enemies.push({
-                x: gameWidth,
-                y: Math.random() * (gameHeight - GROUND_HEIGHT - ENEMY_HEIGHT),
-                speed: 2 + Math.random() * 2
-            });
-        }
-        
-        // Spawn a building
-        function spawnBuilding() {
-            const height = BUILDING_HEIGHT_BASE + Math.random() * 100;
-            buildings.push({
-                x: gameWidth,
-                y: gameHeight - GROUND_HEIGHT - height,
-                height: height,
-                health: 100
-            });
-        }
-        
-        // Spawn a cloud
-        function spawnCloud() {
-            clouds.push({
-                x: gameWidth,
-                y: Math.random() * (gameHeight - GROUND_HEIGHT - 100),
-                speed: 0.5 + Math.random()
-            });
-        }
-        
-        // Check collision between two objects
-        function checkCollision(x1, y1, radius1, x2, y2, width2, height2) {
-            // Circle (bullet) vs rectangle (enemy/building) collision
-            const closestX = Math.max(x2, Math.min(x1, x2 + width2));
-            const closestY = Math.max(y2, Math.min(y1, y2 + height2));
+
+        function handleTouchMove(e) {
+            if (!gameRunning) return;
             
-            const distanceX = x1 - closestX;
-            const distanceY = y1 - closestY;
-            
-            return (distanceX * distanceX + distanceY * distanceY) < (radius1 * radius1);
+            touchStartX = e.touches[0].clientX;
         }
-        
-        // Start the game when the page loads
-        window.onload = init;
+
+        function handleTouchEnd() {
+            touchActive = false;
+        }
+
+        function handleClick(e) {
+            if (gameRunning && isMobile) {
+                fireBullet();
+            }
+        }
+
+        // Initialize game when loaded
+        window.addEventListener('load', init);
     </script>
 </body>
 </html>
