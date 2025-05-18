@@ -1,337 +1,764 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Sopwith</title>
+    <title>Тапики</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         body {
-            background-color: #000;
-            color: #0f0;
-            font-family: monospace;
+            font-family: 'Georgia', serif;
             margin: 0;
             padding: 0;
+            background-color: #f0e6d2;
+            color: #3a3226;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path fill="%23d4c9a8" d="M50 0c27.6 0 50 22.4 50 50s-22.4 50-50 50S0 77.6 0 50 22.4 0 50 0zm0 10c-22.1 0-40 17.9-40 40s17.9 40 40 40 40-17.9 40-40-17.9-40-40-40zm0 10c16.6 0 30 13.4 30 30S66.6 80 50 80 20 66.6 20 50 33.4 20 50 20z"/></svg>');
+            background-size: 30px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #8b5a2b;
+            color: #f0e6d2;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 3px solid #5d3a1a;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .pets-count {
+            background-color: #5d3a1a;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+        }
+
+        .menu {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-
-        #game-container {
-            text-align: center;
-        }
-
-        #game-screen {
-            background-color: #000;
-            color: #0f0;
-            font-size: 14px;
-            line-height: 14px;
-            width: 60ch;
-            height: 30em;
-            overflow: hidden;
-            border: 1px solid #0f0;
-            white-space: pre;
-            margin: 0 auto;
-        }
-
-        #controls {
-            margin-top: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
         }
 
         button {
-            background-color: #000;
-            color: #0f0;
-            border: 1px solid #0f0;
-            padding: 10px;
-            margin: 2px;
-            font-size: 16px;
-            min-width: 50px;
+            background-color: #8b5a2b;
+            color: #f0e6d2;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-family: 'Georgia', serif;
+            transition: all 0.3s;
+            border: 2px solid #5d3a1a;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        @media (max-width: 600px) {
-            #game-screen {
-                font-size: 12px;
-                line-height: 12px;
-                width: 40ch;
-                height: 20em;
+        button:hover {
+            background-color: #a07040;
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Game screen */
+        .game-screen {
+            background-color: #f8f1e0;
+            border-radius: 10px;
+            padding: 15px;
+            border: 3px solid #8b5a2b;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .pets-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .pet-card {
+            background-color: #f0e6d2;
+            border-radius: 10px;
+            padding: 15px;
+            width: 120px;
+            text-align: center;
+            border: 2px solid #8b5a2b;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .pet-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .pet {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 10px;
+            position: relative;
+        }
+
+        .pet-body {
+            width: 60px;
+            height: 60px;
+            background-color: currentColor;
+            border-radius: 50%;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .pet-ear {
+            width: 20px;
+            height: 20px;
+            background-color: currentColor;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+        }
+
+        .pet-ear.left {
+            left: 5px;
+        }
+
+        .pet-ear.right {
+            right: 5px;
+        }
+
+        .pet-face {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            top: 20px;
+            left: 20px;
+        }
+
+        .pet-eye {
+            width: 8px;
+            height: 8px;
+            background-color: #3a3226;
+            border-radius: 50%;
+            position: absolute;
+            top: 15px;
+        }
+
+        .pet-eye.left {
+            left: 8px;
+        }
+
+        .pet-eye.right {
+            right: 8px;
+        }
+
+        .pet-nose {
+            width: 10px;
+            height: 8px;
+            background-color: #3a3226;
+            border-radius: 50%;
+            position: absolute;
+            top: 25px;
+            left: 15px;
+        }
+
+        .pet-mouth {
+            width: 16px;
+            height: 8px;
+            border-bottom: 2px solid #3a3226;
+            border-radius: 0 0 50% 50%;
+            position: absolute;
+            top: 30px;
+            left: 12px;
+        }
+
+        .pet-level {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: #8b5a2b;
+            color: #f0e6d2;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            border: 2px solid #5d3a1a;
+        }
+
+        .pet-stats {
+            margin-top: 10px;
+        }
+
+        .stat-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+
+        .stat-icon {
+            width: 16px;
+            height: 16px;
+            margin-right: 5px;
+        }
+
+        .stat-progress {
+            flex-grow: 1;
+            height: 8px;
+            background-color: #d4c9a8;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .stat-progress-fill {
+            height: 100%;
+            border-radius: 4px;
+        }
+
+        .hunger .stat-progress-fill {
+            background-color: #e67e22;
+        }
+
+        .energy .stat-progress-fill {
+            background-color: #3498db;
+        }
+
+        .happiness .stat-progress-fill {
+            background-color: #e74c3c;
+        }
+
+        .experience .stat-progress-fill {
+            background-color: #2ecc71;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            padding: 0;
+        }
+
+        .feed-btn {
+            background-color: #e67e22;
+        }
+
+        .rest-btn {
+            background-color: #3498db;
+        }
+
+        .play-btn {
+            background-color: #e74c3c;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
             }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .evolution-animation {
+            animation: pulse 0.5s ease-in-out 3;
+        }
+
+        /* Main menu */
+        .main-menu {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .main-menu h1 {
+            font-size: 36px;
+            color: #5d3a1a;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .main-menu p {
+            font-size: 18px;
+            color: #3a3226;
+            margin-bottom: 30px;
+        }
+
+        /* How to play */
+        .how-to-play {
+            background-color: #f8f1e0;
+            border-radius: 10px;
+            padding: 20px;
+            border: 3px solid #8b5a2b;
+            margin-top: 20px;
+        }
+
+        .how-to-play h2 {
+            margin-top: 0;
+            color: #5d3a1a;
+        }
+
+        .how-to-play ul {
+            text-align: left;
+            padding-left: 20px;
+        }
+
+        .how-to-play li {
+            margin-bottom: 10px;
+        }
+
+        .back-btn {
+            margin-top: 20px;
+            background-color: #5d3a1a;
         }
     </style>
 </head>
 <body>
-    <div id="game-container">
-        <pre id="game-screen"></pre>
-        <div id="controls">
-            <button onclick="handleKey('left')">⬅️</button>
-            <button onclick="handleKey('right')">➡️</button>
-            <button onclick="handleKey('up')">⬆️</button>
-            <button onclick="handleKey('down')">⬇️</button>
-            <button onclick="handleKey('space')">💣</button>
+    <div class="container">
+        <!-- Main Menu -->
+        <div id="main-menu" class="main-menu">
+            <h1>Тапики</h1>
+            <p>Выращивайте мишек-тапиков в средневековом стиле!</p>
+            <div class="menu">
+                <button id="new-game-btn">Новая игра</button>
+                <button id="continue-game-btn" disabled>Продолжить</button>
+                <button id="how-to-play-btn">Как играть?</button>
+            </div>
+        </div>
+
+        <!-- How to Play -->
+        <div id="how-to-play" class="how-to-play hidden">
+            <h2>Как играть</h2>
+            <ul>
+                <li>Ухаживайте за своими мишками-тапиками, чтобы они росли и развивались</li>
+                <li>Кормите их, давайте отдыхать и играйте с ними</li>
+                <li>Когда мишка наберет достаточно опыта, она автоматически эволюционирует</li>
+                <li>Каждые 3 уровня мишка эволюционирует в новую форму</li>
+                <li>Игра автоматически сохраняется</li>
+            </ul>
+            <button id="back-from-help" class="back-btn">Назад</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="game-screen" class="hidden">
+            <div class="header">
+                <h1>Тапики</h1>
+                <div class="pets-count">Мишек: <span id="pets-count">0</span></div>
+            </div>
+
+            <div class="game-screen">
+                <div id="pets-container" class="pets-container"></div>
+
+                <div class="actions">
+                    <button class="action-btn feed-btn" id="feed-btn">🍎</button>
+                    <button class="action-btn rest-btn" id="rest-btn">🛏️</button>
+                    <button class="action-btn play-btn" id="play-btn">🎲</button>
+                </div>
+            </div>
+
+            <button id="back-to-menu" class="back-btn">В меню</button>
         </div>
     </div>
-    <script>
-        // Игровые параметры
-        const GAME_WIDTH = 60;
-        const GAME_HEIGHT = 30;
-        const GROUND_HEIGHT = 5;
-        const MIN_FLIGHT_HEIGHT = 3; // Минимальная высота полета
-        const ENEMY_SPAWN_RATE = 0.02; // 2% шанс появления врага на каждом кадре
-        const BULLET_COOLDOWN = 20; // кадры между выстрелами
-        const INITIAL_LIVES = 3;
-        const FPS = 60;
 
-        // Игровые объекты
-        let player = {
-            x: 10,
-            y: GAME_HEIGHT - GROUND_HEIGHT - 3,
-            alive: true,
-            lives: INITIAL_LIVES,
-            score: 0,
-            bulletCooldown: 0
+    <script>
+        // Game constants
+        const MAX_STAT = 100;
+        const MAX_EXPERIENCE = 100;
+        const EVOLUTION_LEVEL_INTERVAL = 3;
+        
+        // Stat change rates (per second)
+        const HUNGER_RATE = 0.5;
+        const ENERGY_RATE = 0.3;
+        const HAPPINESS_RATE = 0.4;
+        
+        // Action effects
+        const FEED_AMOUNT = 30;
+        const REST_AMOUNT = 40;
+        const PLAY_AMOUNT = 25;
+        
+        // Experience gain rate (when all stats are good)
+        const EXPERIENCE_RATE = 0.2;
+        
+        // Colors for different evolution stages
+        const PET_COLORS = [
+            '#8b5a2b', // Brown (stage 1)
+            '#5d3a1a', // Dark brown (stage 2)
+            '#a07040', // Light brown (stage 3)
+            '#3a3226', // Dark (stage 4)
+            '#d4a76a', // Golden (stage 5)
+        ];
+
+        // Game state
+        let gameState = {
+            pets: [],
+            lastUpdate: Date.now(),
+            gameStarted: false,
+            selectedPetIndex: 0
         };
 
-        let enemies = [];
-        let bullets = [];
-        let terrain = [];
+        // DOM elements
+        const mainMenu = document.getElementById('main-menu');
+        const howToPlay = document.getElementById('how-to-play');
+        const gameScreen = document.getElementById('game-screen');
+        const petsContainer = document.getElementById('pets-container');
+        const petsCount = document.getElementById('pets-count');
+        
+        // Buttons
+        const newGameBtn = document.getElementById('new-game-btn');
+        const continueGameBtn = document.getElementById('continue-game-btn');
+        const howToPlayBtn = document.getElementById('how-to-play-btn');
+        const backFromHelpBtn = document.getElementById('back-from-help');
+        const backToMenuBtn = document.getElementById('back-to-menu');
+        const feedBtn = document.getElementById('feed-btn');
+        const restBtn = document.getElementById('rest-btn');
+        const playBtn = document.getElementById('play-btn');
 
-        // Инициализация террейна
-        function initTerrain() {
-            terrain = new Array(GAME_WIDTH);
-            // Создаем плавный ландшафт
-            let currentHeight = GAME_HEIGHT - GROUND_HEIGHT;
-            for (let i = 0; i < GAME_WIDTH; i++) {
-                // Случайно меняем высоту
-                currentHeight += Math.random() > 0.5 ? 1 : -1;
-                // Ограничиваем изменения
-                currentHeight = Math.max(GAME_HEIGHT - GROUND_HEIGHT - 2, 
-                                       Math.min(GAME_HEIGHT - GROUND_HEIGHT + 2, currentHeight));
-                terrain[i] = Math.floor(currentHeight);
-            }
-        }
+        // Initialize Telegram Web App
+        let tg = window.Telegram.WebApp;
 
-        // Создание врага
-        function spawnEnemy() {
-            if (Math.random() < ENEMY_SPAWN_RATE) {
-                // Убедимся, что враг не появляется прямо над игроком
-                let spawnX = GAME_WIDTH - 1;
-                let spawnY = Math.floor(Math.random() * (GAME_HEIGHT - GROUND_HEIGHT - MIN_FLIGHT_HEIGHT - 2)) + MIN_FLIGHT_HEIGHT;
-                
-                // Проверяем расстояние от игрока
-                if (Math.abs(spawnX - player.x) > 5) { // Не ближе 5 клеток к игроку
-                    enemies.push({
-                        x: spawnX,
-                        y: spawnY,
-                        speed: 0.5 + Math.random() * 0.5
-                    });
-                }
-            }
-        }
+        // Event listeners
+        newGameBtn.addEventListener('click', startNewGame);
+        continueGameBtn.addEventListener('click', continueGame);
+        howToPlayBtn.addEventListener('click', showHowToPlay);
+        backFromHelpBtn.addEventListener('click', showMainMenu);
+        backToMenuBtn.addEventListener('click', () => {
+            saveGame();
+            showMainMenu();
+        });
+        
+        feedBtn.addEventListener('click', () => performAction('feed'));
+        restBtn.addEventListener('click', () => performAction('rest'));
+        playBtn.addEventListener('click', () => performAction('play'));
 
-        // Обновление состояния игры
-        function update() {
-            // Обновление перезарядки снарядов
-            if (player.bulletCooldown > 0) {
-                player.bulletCooldown--;
-            }
-
-            // Движение снарядов
-            for (let i = 0; i < bullets.length; i++) {
-                bullets[i].x += bullets[i].direction;
-                if (bullets[i].x < 0 || bullets[i].x >= GAME_WIDTH) {
-                    bullets.splice(i, 1);
-                    i--;
-                    continue;
-                }
-                
-                // Проверка попадания во врагов
-                for (let j = 0; j < enemies.length; j++) {
-                    if (Math.abs(bullets[i].x - enemies[j].x) < 1 && 
-                        Math.abs(bullets[i].y - enemies[j].y) < 1) {
-                        // Враг уничтожен
-                        enemies.splice(j, 1);
-                        player.score++;
-                        bullets.splice(i, 1);
-                        i--;
-                        break;
-                    }
-                }
-            }
-
-            // Движение врагов
-            for (let i = 0; i < enemies.length; i++) {
-                enemies[i].x -= enemies[i].speed;
-                if (enemies[i].x < 0) {
-                    enemies.splice(i, 1);
-                    i--;
-                    continue;
-                }
-                
-                // Проверка столкновения с игроком
-                if (Math.abs(enemies[i].x - player.x) < 1 && 
-                    Math.abs(enemies[i].y - player.y) < 1) {
-                    // Игрок потеряет жизнь
-                    player.lives--;
-                    if (player.lives <= 0) {
-                        player.alive = false;
-                    } else {
-                        // Сброс позиции игрока
-                        player.x = 10;
-                        player.y = GAME_HEIGHT - GROUND_HEIGHT - 3;
-                    }
-                    enemies.splice(i, 1);
-                    break;
-                }
-            }
-
-            // Генерация новых врагов
-            spawnEnemy();
-        }
-
-        // Отрисовка игры
-        function draw() {
-            let screen = '';
+        // Load game on startup
+        window.addEventListener('DOMContentLoaded', () => {
+            loadGame();
             
-            for (let y = 0; y < GAME_HEIGHT; y++) {
-                for (let x = 0; x < GAME_WIDTH; x++) {
-                    // Отрисовка террейна
-                    if (y >= terrain[x]) {
-                        screen += '#';
-                        continue;
-                    }
-                    
-                    // Отрисовка игрока
-                    if (x === player.x && y === player.y) {
-                        screen += 'A';
-                        continue;
-                    }
-                    
-                    // Отрисовка врагов
-                    let enemyHere = enemies.find(e => Math.floor(e.x) === x && Math.floor(e.y) === y);
-                    if (enemyHere) {
-                        screen += 'E';
-                        continue;
-                    }
-                    
-                    // Отрисовка снарядов
-                    let bulletHere = bullets.find(b => Math.floor(b.x) === x && Math.floor(b.y) === y);
-                    if (bulletHere) {
-                        screen += '*';
-                        continue;
-                    }
-                    
-                    screen += ' ';
-                }
-                screen += '\n';
+            if (gameState.gameStarted && gameState.pets.length > 0) {
+                continueGameBtn.disabled = false;
             }
             
-            // Информация об очках и жизнях
-            screen += `\nScore: ${player.score} | Lives: ${player.lives}`;
-            
-            // Если игрок мертв
-            if (!player.alive) {
-                screen += '\n\nGame Over! Press R to restart';
-            }
-            
-            document.getElementById('game-screen').textContent = screen;
-        }
-
-        // Обработка нажатий клавиш
-        function handleKey(key) {
-            if (!player.alive && key !== 'r') return;
-            
-            switch (key) {
-                case 'left':
-                    if (player.x > 0) player.x--;
-                    break;
-                case 'right':
-                    if (player.x < GAME_WIDTH - 1) player.x++;
-                    break;
-                case 'up':
-                    if (player.y > MIN_FLIGHT_HEIGHT) player.y--;
-                    break;
-                case 'down':
-                    if (player.y < GAME_HEIGHT - GROUND_HEIGHT - 1) player.y++;
-                    break;
-                case 'space':
-                    if (player.bulletCooldown === 0 && player.alive) {
-                        bullets.push({
-                            x: player.x + 1,
-                            y: player.y,
-                            direction: 1
-                        });
-                        player.bulletCooldown = BULLET_COOLDOWN;
-                    }
-                    break;
-                case 'r':
-                    if (!player.alive) {
-                        // Сброс игры
-                        player = {
-                            x: 10,
-                            y: GAME_HEIGHT - GROUND_HEIGHT - 3,
-                            alive: true,
-                            lives: INITIAL_LIVES,
-                            score: 0,
-                            bulletCooldown: 0
-                        };
-                        enemies = [];
-                        bullets = [];
-                        initTerrain();
-                    }
-                    break;
-            }
-        }
-
-        // Игровой цикл
-        function gameLoop() {
-            if (player.alive) {
-                update();
-            }
-            draw();
-            setTimeout(() => {
-                requestAnimationFrame(gameLoop);
-            }, 1000 / FPS);
-        }
-
-        // Инициализация игры
-        function init() {
-            initTerrain();
-            gameLoop();
-        }
-
-        // Обработка клавиатуры
-        document.addEventListener('keydown', (e) => {
-            switch (e.key) {
-                case 'ArrowLeft':
-                case 'a':
-                    handleKey('left');
-                    break;
-                case 'ArrowRight':
-                case 'd':
-                    handleKey('right');
-                    break;
-                case 'ArrowUp':
-                case 'w':
-                    handleKey('up');
-                    break;
-                case 'ArrowDown':
-                case 's':
-                    handleKey('down');
-                    break;
-                case ' ':
-                    handleKey('space');
-                    break;
-                case 'r':
-                    handleKey('r');
-                    break;
-            }
+            // Initialize Telegram Web App
+            tg.expand();
+            tg.MainButton.hide();
         });
 
-        // Запуск игры
-        init();
+        // Game functions
+        function startNewGame() {
+            gameState = {
+                pets: [createNewPet()],
+                lastUpdate: Date.now(),
+                gameStarted: true,
+                selectedPetIndex: 0
+            };
+            
+            saveGame();
+            updateGame();
+            renderPets();
+            showGameScreen();
+            startGameLoop();
+        }
+
+        function continueGame() {
+            if (gameState.pets.length === 0) {
+                gameState.pets.push(createNewPet());
+            }
+            
+            updateGame();
+            renderPets();
+            showGameScreen();
+            startGameLoop();
+        }
+
+        function createNewPet() {
+            return {
+                hunger: MAX_STAT * 0.7,
+                energy: MAX_STAT * 0.7,
+                happiness: MAX_STAT * 0.7,
+                experience: 0,
+                level: 1,
+                evolutionStage: 0,
+                lastFed: Date.now(),
+                lastRested: Date.now(),
+                lastPlayed: Date.now(),
+                createdAt: Date.now()
+            };
+        }
+
+        function updateGame() {
+            const now = Date.now();
+            const timePassed = (now - gameState.lastUpdate) / 1000; // in seconds
+            gameState.lastUpdate = now;
+
+            // Update all pets
+            for (let pet of gameState.pets) {
+                // Decrease stats over time
+                pet.hunger = Math.max(0, pet.hunger - HUNGER_RATE * timePassed);
+                pet.energy = Math.max(0, pet.energy - ENERGY_RATE * timePassed);
+                pet.happiness = Math.max(0, pet.happiness - HAPPINESS_RATE * timePassed);
+
+                // Increase experience if stats are good
+                if (pet.hunger > 30 && pet.energy > 20 && pet.happiness > 25) {
+                    pet.experience = Math.min(MAX_EXPERIENCE, pet.experience + EXPERIENCE_RATE * timePassed);
+                }
+
+                // Check for level up
+                if (pet.experience >= MAX_EXPERIENCE) {
+                    pet.experience = 0;
+                    pet.level += 1;
+                    
+                    // Check for evolution
+                    const newStage = Math.floor((pet.level - 1) / EVOLUTION_LEVEL_INTERVAL);
+                    if (newStage > pet.evolutionStage && newStage < PET_COLORS.length) {
+                        pet.evolutionStage = newStage;
+                        triggerEvolutionAnimation();
+                    }
+                }
+            }
+
+            // Remove dead pets (if all stats are zero)
+            gameState.pets = gameState.pets.filter(pet => 
+                pet.hunger > 0 || pet.energy > 0 || pet.happiness > 0
+            );
+
+            // If all pets died, show message
+            if (gameState.pets.length === 0 && gameState.gameStarted) {
+                alert('Все ваши тапики погибли! Игра начнётся заново.');
+                showMainMenu();
+                gameState.gameStarted = false;
+                saveGame();
+                return;
+            }
+
+            // If selected pet was removed, select first pet
+            if (gameState.selectedPetIndex >= gameState.pets.length) {
+                gameState.selectedPetIndex = Math.max(0, gameState.pets.length - 1);
+            }
+
+            saveGame();
+        }
+
+        function performAction(action) {
+            if (gameState.pets.length === 0) return;
+
+            const pet = gameState.pets[gameState.selectedPetIndex];
+            
+            switch (action) {
+                case 'feed':
+                    pet.hunger = Math.min(MAX_STAT, pet.hunger + FEED_AMOUNT);
+                    pet.lastFed = Date.now();
+                    break;
+                case 'rest':
+                    pet.energy = Math.min(MAX_STAT, pet.energy + REST_AMOUNT);
+                    pet.lastRested = Date.now();
+                    break;
+                case 'play':
+                    pet.happiness = Math.min(MAX_STAT, pet.happiness + PLAY_AMOUNT);
+                    pet.lastPlayed = Date.now();
+                    break;
+            }
+
+            saveGame();
+            updateGame();
+            renderPets();
+        }
+
+        function triggerEvolutionAnimation() {
+            const petElements = document.querySelectorAll('.pet');
+            if (petElements.length > gameState.selectedPetIndex) {
+                petElements[gameState.selectedPetIndex].classList.add('evolution-animation');
+                setTimeout(() => {
+                    petElements[gameState.selectedPetIndex].classList.remove('evolution-animation');
+                }, 1500);
+            }
+        }
+
+        function renderPets() {
+            petsContainer.innerHTML('');
+            
+            if (gameState.pets.length === 0) {
+                petsCount.textContent = '0';
+                return;
+            }
+
+            petsCount.textContent = gameState.pets.length;
+
+            // Render all pets
+            gameState.pets.forEach((pet, index) => {
+                const petElement = document.createElement('div');
+                petElement.className = 'pet-card';
+                petElement.style.color = PET_COLORS[pet.evolutionStage % PET_COLORS.length];
+                
+                if (index === gameState.selectedPetIndex) {
+                    petElement.style.borderColor = '#e74c3c';
+                    petElement.style.boxShadow = '0 0 10px rgba(231, 76, 60, 0.5)';
+                }
+
+                petElement.innerHTML = `
+                    <div class="pet">
+                        <div class="pet-ear left"></div>
+                        <div class="pet-ear right"></div>
+                        <div class="pet-body"></div>
+                        <div class="pet-face">
+                            <div class="pet-eye left"></div>
+                            <div class="pet-eye right"></div>
+                            <div class="pet-nose"></div>
+                            <div class="pet-mouth"></div>
+                        </div>
+                    </div>
+                    <div class="pet-level">${pet.level}</div>
+                    <div class="pet-stats">
+                        <div class="stat-bar hunger">
+                            <span class="stat-icon">🍎</span>
+                            <div class="stat-progress">
+                                <div class="stat-progress-fill" style="width: ${(pet.hunger / MAX_STAT) * 100}%"></div>
+                            </div>
+                        </div>
+                        <div class="stat-bar energy">
+                            <span class="stat-icon">🛏️</span>
+                            <div class="stat-progress">
+                                <div class="stat-progress-fill" style="width: ${(pet.energy / MAX_STAT) * 100}%"></div>
+                            </div>
+                        </div>
+                        <div class="stat-bar happiness">
+                            <span class="stat-icon">🎲</span>
+                            <div class="stat-progress">
+                                <div class="stat-progress-fill" style="width: ${(pet.happiness / MAX_STAT) * 100}%"></div>
+                            </div>
+                        </div>
+                        <div class="stat-bar experience">
+                            <span class="stat-icon">⭐</span>
+                            <div class="stat-progress">
+                                <div class="stat-progress-fill" style="width: ${(pet.experience / MAX_EXPERIENCE) * 100}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                petElement.addEventListener('click', () => {
+                    gameState.selectedPetIndex = index;
+                    renderPets();
+                });
+
+                petsContainer.appendChild(petElement);
+            });
+
+            // Update action buttons state
+            if (gameState.pets.length > 0) {
+                const pet = gameState.pets[gameState.selectedPetIndex];
+                feedBtn.disabled = pet.hunger >= MAX_STAT;
+                restBtn.disabled = pet.energy >= MAX_STAT;
+                playBtn.disabled = pet.happiness >= MAX_STAT;
+            }
+        }
+
+        function startGameLoop() {
+            // Stop previous loop if exists
+            if (window.gameLoop) {
+                clearInterval(window.gameLoop);
+            }
+
+            // Start new game loop (update every 3 seconds)
+            window.gameLoop = setInterval(() => {
+                updateGame();
+                renderPets();
+            }, 3000);
+        }
+
+        // UI navigation
+        function showMainMenu() {
+            mainMenu.classList.remove('hidden');
+            howToPlay.classList.add('hidden');
+            gameScreen.classList.add('hidden');
+            
+            // Stop game loop when in menu
+            if (window.gameLoop) {
+                clearInterval(window.gameLoop);
+            }
+        }
+
+        function showHowToPlay() {
+            mainMenu.classList.add('hidden');
+            howToPlay.classList.remove('hidden');
+        }
+
+        function showGameScreen() {
+            mainMenu.classList.add('hidden');
+            howToPlay.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+        }
+
+        // Save/load game
+        function saveGame() {
+            localStorage.setItem('tapikiGame', JSON.stringify(gameState));
+        }
+
+        function loadGame() {
+            const savedGame = localStorage.getItem('tapikiGame');
+            if (savedGame) {
+                try {
+                    const parsed = JSON.parse(savedGame);
+                    if (parsed.pets && Array.isArray(parsed.pets)) {
+                        gameState = parsed;
+                        continueGameBtn.disabled = false;
+                    }
+                } catch (e) {
+                    console.error('Error loading game:', e);
+                }
+            }
+        }
     </script>
 </body>
 </html>
