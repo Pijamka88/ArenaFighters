@@ -3,412 +3,533 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Полицейская погоня</title>
+    <title>Побег от полиции</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f0f0f0;
             margin: 0;
-            padding: 10px;
+            padding: 0;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
             touch-action: manipulation;
         }
+        
         #game-container {
-            max-width: 400px;
-            margin: 0 auto;
-            background-color: #fff;
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        #game-board {
-            display: grid;
-            grid-template-columns: repeat(10, 1fr);
-            grid-template-rows: repeat(10, 1fr);
-            gap: 1px;
-            background-color: #333;
-            width: 100%;
-            aspect-ratio: 1/1;
-            margin: 10px 0;
-        }
-        .cell {
-            background-color: #fff;
             position: relative;
+            width: 300px;
+            height: 300px;
+            background-color: #333;
+            margin-bottom: 20px;
         }
+        
+        #game-map {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+        
         .road {
-            background-color: #aaa;
+            position: absolute;
+            background-color: #555;
         }
+        
+        .road-horizontal {
+            height: 20px;
+            width: 100%;
+        }
+        
+        .road-vertical {
+            width: 20px;
+            height: 100%;
+        }
+        
         .intersection {
-            background-color: #888;
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #777;
+            z-index: 2;
         }
-        .player {
-            background-color: #00f;
+        
+        .traffic-light {
+            position: absolute;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
-            width: 80%;
-            height: 80%;
-            margin: 10%;
+            z-index: 3;
         }
+        
+        .traffic-light-red {
+            background-color: red;
+        }
+        
+        .traffic-light-green {
+            background-color: green;
+        }
+        
+        .building {
+            position: absolute;
+            background-color: #444;
+            z-index: 1;
+        }
+        
+        .car {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 2px;
+            z-index: 4;
+            transition: all 0.3s ease;
+        }
+        
+        #player {
+            background-color: #00f;
+        }
+        
         .police {
             background-color: #f00;
-            border-radius: 50%;
-            width: 80%;
-            height: 80%;
-            margin: 10%;
         }
+        
         #controls {
-            margin: 15px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
         }
+        
+        #direction-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 5px;
+        }
+        
         button {
             padding: 10px 15px;
-            margin: 5px;
             font-size: 16px;
-            border: none;
-            border-radius: 5px;
             background-color: #4CAF50;
             color: white;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
+            min-width: 80px;
         }
+        
         button:disabled {
             background-color: #cccccc;
+            cursor: not-allowed;
         }
+        
         #timer {
             font-size: 18px;
             font-weight: bold;
-            margin: 10px 0;
+            margin-bottom: 10px;
         }
-        #message {
-            font-size: 18px;
-            font-weight: bold;
-            color: #d32f2f;
-            min-height: 27px;
+        
+        #game-over {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            display: none;
+        }
+        
+        #game-over h2 {
+            margin-bottom: 20px;
+        }
+        
+        #restart-btn {
+            background-color: #4CAF50;
         }
     </style>
 </head>
 <body>
+    <h1>Побег от полиции</h1>
+    <div id="timer">Ходов: 0</div>
     <div id="game-container">
-        <h1>Полицейская погоня</h1>
-        <div id="timer">Ходов: 0</div>
-        <div id="message"></div>
-        <div id="game-board"></div>
-        <div id="controls">
-            <button id="btn-up">↑</button><br>
-            <button id="btn-left">←</button>
-            <button id="btn-right">→</button><br>
-            <button id="btn-down">↓</button>
+        <div id="game-map"></div>
+        <div id="game-over">
+            <h2 id="game-over-text">Игра окончена!</h2>
+            <p id="score-text">Вы продержались: 0 ходов</p>
+            <button id="restart-btn">Играть снова</button>
         </div>
-        <button id="btn-restart">Новая игра</button>
+    </div>
+    <div id="controls">
+        <div id="direction-buttons">
+            <button id="left-btn" disabled>← Влево</button>
+            <button id="straight-btn" disabled>Прямо</button>
+            <button id="right-btn" disabled>→ Вправо</button>
+        </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Константы игры
-            const BOARD_SIZE = 10;
-            const DIRECTIONS = {
-                UP: 'up',
-                DOWN: 'down',
-                LEFT: 'left',
-                RIGHT: 'right'
-            };
-            
-            // Состояние игры
-            let gameState = {
-                board: [],
-                player: { x: 0, y: 0, direction: DIRECTIONS.RIGHT },
+        // Игровые константы
+        const MAP_SIZE = 300;
+        const ROAD_WIDTH = 20;
+        const INTERSECTION_SIZE = 20;
+        const CAR_SIZE = 16;
+        
+        // Состояние игры
+        let gameState = {
+            player: { x: 0, y: 0, direction: 'right' },
+            police: [
+                { x: 0, y: 0, direction: 'right' },
+                { x: 0, y: 0, direction: 'down' }
+            ],
+            turn: 0,
+            gameOver: false,
+            atIntersection: false,
+            currentIntersection: null,
+            trafficLights: {}
+        };
+        
+        // DOM элементы
+        const gameMap = document.getElementById('game-map');
+        const playerCar = document.createElement('div');
+        const policeCars = [
+            document.createElement('div'),
+            document.createElement('div')
+        ];
+        const leftBtn = document.getElementById('left-btn');
+        const straightBtn = document.getElementById('straight-btn');
+        const rightBtn = document.getElementById('right-btn');
+        const timerElement = document.getElementById('timer');
+        const gameOverScreen = document.getElementById('game-over');
+        const gameOverText = document.getElementById('game-over-text');
+        const scoreText = document.getElementById('score-text');
+        const restartBtn = document.getElementById('restart-btn');
+        
+        // Инициализация игры
+        function initGame() {
+            gameState = {
+                player: { x: 30, y: MAP_SIZE - 30, direction: 'up' },
                 police: [
-                    { x: 9, y: 9, direction: DIRECTIONS.LEFT },
-                    { x: 9, y: 0, direction: DIRECTIONS.DOWN }
+                    { x: MAP_SIZE - 30, y: 30, direction: 'left' },
+                    { x: 30, y: 30, direction: 'down' }
                 ],
-                turns: 0,
+                turn: 0,
                 gameOver: false,
-                atIntersection: false
+                atIntersection: false,
+                currentIntersection: null,
+                trafficLights: {}
             };
             
-            // Элементы DOM
-            const gameBoard = document.getElementById('game-board');
-            const btnUp = document.getElementById('btn-up');
-            const btnDown = document.getElementById('btn-down');
-            const btnLeft = document.getElementById('btn-left');
-            const btnRight = document.getElementById('btn-right');
-            const btnRestart = document.getElementById('btn-restart');
-            const timerDisplay = document.getElementById('timer');
-            const messageDisplay = document.getElementById('message');
+            // Очищаем карту
+            gameMap.innerHTML = '';
             
-            // Инициализация игры
-            function initGame() {
-                gameState = {
-                    board: [],
-                    player: { x: 0, y: 0, direction: DIRECTIONS.RIGHT },
-                    police: [
-                        { x: 9, y: 9, direction: DIRECTIONS.LEFT },
-                        { x: 9, y: 0, direction: DIRECTIONS.DOWN }
-                    ],
-                    turns: 0,
-                    gameOver: false,
-                    atIntersection: false
-                };
-                
-                // Создаем игровое поле
-                gameBoard.innerHTML = '';
-                gameBoard.style.gridTemplateColumns = `repeat(${BOARD_SIZE}, 1fr)`;
-                gameBoard.style.gridTemplateRows = `repeat(${BOARD_SIZE}, 1fr)`;
-                
-                // Генерируем дороги (простые горизонтальные и вертикальные дороги)
-                for (let y = 0; y < BOARD_SIZE; y++) {
-                    gameState.board[y] = [];
-                    for (let x = 0; x < BOARD_SIZE; x++) {
-                        const cell = document.createElement('div');
-                        cell.className = 'cell';
-                        cell.id = `cell-${x}-${y}`;
-                        
-                        // Вертикальные дороги (нечетные столбцы)
-                        if (x % 2 === 1) {
-                            cell.classList.add('road');
-                        }
-                        
-                        // Горизонтальные дороги (нечетные строки)
-                        if (y % 2 === 1) {
-                            cell.classList.add('road');
-                        }
-                        
-                        // Перекрестки (пересечение дорог)
-                        if (x % 2 === 1 && y % 2 === 1) {
-                            cell.classList.add('intersection');
-                        }
-                        
-                        gameBoard.appendChild(cell);
-                        gameState.board[y][x] = cell;
-                    }
+            // Создаем дороги и здания
+            createMap();
+            
+            // Создаем машины
+            playerCar.id = 'player';
+            playerCar.className = 'car';
+            gameMap.appendChild(playerCar);
+            
+            for (let i = 0; i < policeCars.length; i++) {
+                policeCars[i].className = 'car police';
+                gameMap.appendChild(policeCars[i]);
+            }
+            
+            // Обновляем отображение
+            updateGame();
+            
+            // Сбрасываем UI
+            timerElement.textContent = 'Ходов: 0';
+            gameOverScreen.style.display = 'none';
+            disableDirectionButtons();
+        }
+        
+        // Создаем карту города
+        function createMap() {
+            // Горизонтальные дороги
+            for (let y = 50; y < MAP_SIZE; y += 50) {
+                const road = document.createElement('div');
+                road.className = 'road road-horizontal';
+                road.style.top = `${y - ROAD_WIDTH/2}px`;
+                gameMap.appendChild(road);
+            }
+            
+            // Вертикальные дороги
+            for (let x = 50; x < MAP_SIZE; x += 50) {
+                const road = document.createElement('div');
+                road.className = 'road road-vertical';
+                road.style.left = `${x - ROAD_WIDTH/2}px`;
+                gameMap.appendChild(road);
+            }
+            
+            // Перекрестки
+            for (let x = 50; x < MAP_SIZE; x += 50) {
+                for (let y = 50; y < MAP_SIZE; y += 50) {
+                    const intersection = document.createElement('div');
+                    intersection.className = 'intersection';
+                    intersection.style.left = `${x - INTERSECTION_SIZE/2}px`;
+                    intersection.style.top = `${y - INTERSECTION_SIZE/2}px`;
+                    gameMap.appendChild(intersection);
+                    
+                    // Светофоры (случайно выбираем цвет)
+                    const light = document.createElement('div');
+                    light.className = `traffic-light traffic-light-${Math.random() > 0.5 ? 'red' : 'green'}`;
+                    light.style.left = `${x - 3}px`;
+                    light.style.top = `${y - 3}px`;
+                    gameMap.appendChild(light);
+                    
+                    // Сохраняем состояние светофора
+                    gameState.trafficLights[`${x},${y}`] = light.classList.contains('traffic-light-red') ? 'red' : 'green';
                 }
-                
-                updateDisplay();
-                messageDisplay.textContent = '';
-                enableMovementControls();
             }
             
-            // Обновление отображения
-            function updateDisplay() {
-                // Очищаем все ячейки от машин
-                for (let y = 0; y < BOARD_SIZE; y++) {
-                    for (let x = 0; x < BOARD_SIZE; x++) {
-                        const cell = gameState.board[y][x];
-                        cell.innerHTML = '';
-                    }
-                }
+            // Здания
+            const buildingPositions = [
+                { left: 10, top: 10, width: 30, height: 30 },
+                { left: 70, top: 10, width: 30, height: 30 },
+                { left: 130, top: 10, width: 30, height: 30 },
+                { left: 190, top: 10, width: 30, height: 30 },
+                { left: 250, top: 10, width: 30, height: 30 },
                 
-                // Отображаем игрока
-                const playerCell = gameState.board[gameState.player.y][gameState.player.x];
-                const playerElement = document.createElement('div');
-                playerElement.className = 'player';
-                playerCell.appendChild(playerElement);
+                { left: 10, top: 70, width: 30, height: 30 },
+                { left: 250, top: 70, width: 30, height: 30 },
                 
-                // Отображаем полицейских
-                gameState.police.forEach((police, index) => {
-                    const policeCell = gameState.board[police.y][police.x];
-                    const policeElement = document.createElement('div');
-                    policeElement.className = 'police';
-                    policeCell.appendChild(policeElement);
-                });
+                { left: 10, top: 130, width: 30, height: 30 },
+                { left: 250, top: 130, width: 30, height: 30 },
                 
-                // Обновляем таймер
-                timerDisplay.textContent = `Ходов: ${gameState.turns}`;
+                { left: 10, top: 190, width: 30, height: 30 },
+                { left: 250, top: 190, width: 30, height: 30 },
+                
+                { left: 10, top: 250, width: 30, height: 30 },
+                { left: 70, top: 250, width: 30, height: 30 },
+                { left: 130, top: 250, width: 30, height: 30 },
+                { left: 190, top: 250, width: 30, height: 30 },
+                { left: 250, top: 250, width: 30, height: 30 }
+            ];
+            
+            for (const pos of buildingPositions) {
+                const building = document.createElement('div');
+                building.className = 'building';
+                building.style.left = `${pos.left}px`;
+                building.style.top = `${pos.top}px`;
+                building.style.width = `${pos.width}px`;
+                building.style.height = `${pos.height}px`;
+                gameMap.appendChild(building);
+            }
+        }
+        
+        // Обновляем отображение игры
+        function updateGame() {
+            // Обновляем позицию игрока
+            playerCar.style.left = `${gameState.player.x - CAR_SIZE/2}px`;
+            playerCar.style.top = `${gameState.player.y - CAR_SIZE/2}px`;
+            
+            // Обновляем позиции полиции
+            for (let i = 0; i < gameState.police.length; i++) {
+                policeCars[i].style.left = `${gameState.police[i].x - CAR_SIZE/2}px`;
+                policeCars[i].style.top = `${gameState.police[i].y - CAR_SIZE/2}px`;
             }
             
-            // Проверка, является ли клетка дорогой
-            function isRoad(x, y) {
-                if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE) return false;
-                return gameState.board[y][x].classList.contains('road') || 
-                       gameState.board[y][x].classList.contains('intersection');
-            }
+            // Проверяем, находится ли игрок на перекрестке
+            checkIntersection();
             
-            // Проверка, является ли клетка перекрестком
-            function isIntersection(x, y) {
-                if (x < 0 || x >= BOARD_SIZE || y < 0 || y >= BOARD_SIZE) return false;
-                return gameState.board[y][x].classList.contains('intersection');
-            }
+            // Проверяем условия окончания игры
+            checkGameOver();
+        }
+        
+        // Проверяем, находится ли игрок на перекрестке
+        function checkIntersection() {
+            gameState.atIntersection = false;
+            gameState.currentIntersection = null;
             
-            // Движение игрока
-            function movePlayer(direction) {
-                if (gameState.gameOver) return;
-                
-                let newX = gameState.player.x;
-                let newY = gameState.player.y;
-                
-                // Если игрок на перекрестке, он может выбрать направление
-                if (gameState.atIntersection) {
-                    gameState.player.direction = direction;
-                    gameState.atIntersection = false;
-                } else {
-                    // Проверяем, достиг ли игрок перекрестка
-                    if (isIntersection(gameState.player.x, gameState.player.y)) {
+            // Проверяем все перекрестки
+            for (let x = 50; x < MAP_SIZE; x += 50) {
+                for (let y = 50; y < MAP_SIZE; y += 50) {
+                    // Если игрок рядом с центром перекрестка
+                    if (Math.abs(gameState.player.x - x) < 5 && Math.abs(gameState.player.y - y) < 5) {
                         gameState.atIntersection = true;
-                        disableMovementControls();
-                        messageDisplay.textContent = 'Выберите направление на перекрестке';
+                        gameState.currentIntersection = { x, y };
+                        enableDirectionButtons();
                         return;
                     }
                 }
-                
-                // Двигаем игрока в текущем направлении
-                switch (gameState.player.direction) {
-                    case DIRECTIONS.UP:
-                        newY--;
-                        break;
-                    case DIRECTIONS.DOWN:
-                        newY++;
-                        break;
-                    case DIRECTIONS.LEFT:
-                        newX--;
-                        break;
-                    case DIRECTIONS.RIGHT:
-                        newX++;
-                        break;
-                }
-                
-                // Проверяем, можно ли двигаться в этом направлении
-                if (isRoad(newX, newY)) {
-                    gameState.player.x = newX;
-                    gameState.player.y = newY;
-                    gameState.turns++;
-                    
-                    // Проверяем столкновение с полицией
-                    checkCollision();
-                    
-                    // Если игра не закончилась, двигаем полицейских
-                    if (!gameState.gameOver) {
-                        movePolice();
-                        checkCollision();
-                    }
-                    
-                    updateDisplay();
-                }
             }
             
-            // Движение полицейских (простой ИИ)
-            function movePolice() {
-                gameState.police.forEach(police => {
-                    // Полицейский пытается сократить расстояние до игрока
-                    const dx = gameState.player.x - police.x;
-                    const dy = gameState.player.y - police.y;
-                    
-                    // Выбираем направление, которое приближает к игроку
-                    let possibleDirections = [];
-                    
-                    if (Math.abs(dx) > Math.abs(dy)) {
-                        // Двигаемся по горизонтали
-                        possibleDirections.push(dx > 0 ? DIRECTIONS.RIGHT : DIRECTIONS.LEFT);
-                        possibleDirections.push(dy > 0 ? DIRECTIONS.DOWN : DIRECTIONS.UP);
-                    } else {
-                        // Двигаемся по вертикали
-                        possibleDirections.push(dy > 0 ? DIRECTIONS.DOWN : DIRECTIONS.UP);
-                        possibleDirections.push(dx > 0 ? DIRECTIONS.RIGHT : DIRECTIONS.LEFT);
-                    }
-                    
-                    // Пробуем двигаться в выбранных направлениях
-                    let moved = false;
-                    for (const dir of possibleDirections) {
-                        let newX = police.x;
-                        let newY = police.y;
-                        
-                        switch (dir) {
-                            case DIRECTIONS.UP:
-                                newY--;
+            disableDirectionButtons();
+        }
+        
+        // Включаем кнопки выбора направления
+        function enableDirectionButtons() {
+            leftBtn.disabled = false;
+            straightBtn.disabled = false;
+            rightBtn.disabled = false;
+        }
+        
+        // Отключаем кнопки выбора направления
+        function disableDirectionButtons() {
+            leftBtn.disabled = true;
+            straightBtn.disabled = true;
+            rightBtn.disabled = true;
+        }
+        
+        // Двигаем игрока в выбранном направлении
+        function movePlayer(directionChange) {
+            if (gameState.gameOver || !gameState.atIntersection) return;
+            
+            // Изменяем направление игрока
+            const directions = ['up', 'right', 'down', 'left'];
+            let currentIndex = directions.indexOf(gameState.player.direction);
+            
+            if (directionChange === 'left') {
+                currentIndex = (currentIndex - 1 + 4) % 4;
+            } else if (directionChange === 'right') {
+                currentIndex = (currentIndex + 1) % 4;
+            }
+            // Для 'straight' направление не меняем
+            
+            gameState.player.direction = directions[currentIndex];
+            
+            // Двигаем игрока вперед до следующего перекрестка
+            moveCarToNextIntersection(gameState.player);
+            
+            // Увеличиваем счетчик ходов
+            gameState.turn++;
+            timerElement.textContent = `Ходов: ${gameState.turn}`;
+            
+            // Двигаем полицию
+            movePolice();
+            
+            // Обновляем отображение
+            updateGame();
+        }
+        
+        // Двигаем машину до следующего перекрестка
+        function moveCarToNextIntersection(car) {
+            const step = 50; // Расстояние между перекрестками
+            
+            switch (car.direction) {
+                case 'up':
+                    car.y -= step;
+                    break;
+                case 'right':
+                    car.x += step;
+                    break;
+                case 'down':
+                    car.y += step;
+                    break;
+                case 'left':
+                    car.x -= step;
+                    break;
+            }
+            
+            // Проверяем границы карты
+            if (car.x < 0) car.x = 0;
+            if (car.x > MAP_SIZE) car.x = MAP_SIZE;
+            if (car.y < 0) car.y = 0;
+            if (car.y > MAP_SIZE) car.y = MAP_SIZE;
+        }
+        
+        // Двигаем полицейские машины
+        function movePolice() {
+            for (let i = 0; i < gameState.police.length; i++) {
+                const police = gameState.police[i];
+                
+                // Простой ИИ для полиции
+                // 1. Если полиция на перекрестке, выбираем направление
+                let onIntersection = false;
+                for (let x = 50; x < MAP_SIZE; x += 50) {
+                    for (let y = 50; y < MAP_SIZE; y += 50) {
+                        if (Math.abs(police.x - x) < 5 && Math.abs(police.y - y) < 5) {
+                            onIntersection = true;
+                            
+                            // Выбираем направление, которое приближает к игроку
+                            const dx = gameState.player.x - police.x;
+                            const dy = gameState.player.y - police.y;
+                            
+                            // Проверяем светофор
+                            const lightState = gameState.trafficLights[`${x},${y}`];
+                            
+                            if (lightState === 'red' && Math.random() > 0.3) {
+                                // С вероятностью 70% останавливаемся на красный
                                 break;
-                            case DIRECTIONS.DOWN:
-                                newY++;
-                                break;
-                            case DIRECTIONS.LEFT:
-                                newX--;
-                                break;
-                            case DIRECTIONS.RIGHT:
-                                newX++;
-                                break;
-                        }
-                        
-                        if (isRoad(newX, newY)) {
-                            police.x = newX;
-                            police.y = newY;
-                            police.direction = dir;
-                            moved = true;
+                            }
+                            
+                            if (Math.abs(dx) > Math.abs(dy)) {
+                                police.direction = dx > 0 ? 'right' : 'left';
+                            } else {
+                                police.direction = dy > 0 ? 'down' : 'up';
+                            }
+                            
+                            // Иногда выбираем случайное направление (чтобы не было слишком предсказуемо)
+                            if (Math.random() < 0.2) {
+                                const directions = ['up', 'right', 'down', 'left'];
+                                police.direction = directions[Math.floor(Math.random() * 4)];
+                            }
+                            
                             break;
                         }
                     }
-                    
-                    // Если не удалось двигаться в предпочтительном направлении, пробуем другие
-                    if (!moved) {
-                        const allDirections = [DIRECTIONS.UP, DIRECTIONS.DOWN, DIRECTIONS.LEFT, DIRECTIONS.RIGHT];
-                        for (const dir of allDirections) {
-                            let newX = police.x;
-                            let newY = police.y;
-                            
-                            switch (dir) {
-                                case DIRECTIONS.UP:
-                                    newY--;
-                                    break;
-                                case DIRECTIONS.DOWN:
-                                    newY++;
-                                    break;
-                                case DIRECTIONS.LEFT:
-                                    newX--;
-                                    break;
-                                case DIRECTIONS.RIGHT:
-                                    newX++;
-                                    break;
-                            }
-                            
-                            if (isRoad(newX, newY)) {
-                                police.x = newX;
-                                police.y = newY;
-                                police.direction = dir;
-                                break;
-                            }
-                        }
-                    }
-                });
+                    if (onIntersection) break;
+                }
+                
+                // Двигаем полицию вперед
+                moveCarToNextIntersection(police);
             }
-            
-            // Проверка столкновения с полицией
-            function checkCollision() {
-                for (const police of gameState.police) {
-                    if (police.x === gameState.player.x && police.y === gameState.player.y) {
-                        gameState.gameOver = true;
-                        messageDisplay.textContent = `Игра окончена! Вас поймали через ${gameState.turns} ходов.`;
-                        disableMovementControls();
-                        return;
-                    }
+        }
+        
+        // Проверяем условия окончания игры
+        function checkGameOver() {
+            // Проверяем столкновение с полицией
+            for (const police of gameState.police) {
+                if (Math.abs(gameState.player.x - police.x) < 10 && Math.abs(gameState.player.y - police.y) < 10) {
+                    endGame(false);
+                    return;
                 }
             }
             
-            // Включение кнопок управления
-            function enableMovementControls() {
-                btnUp.disabled = false;
-                btnDown.disabled = false;
-                btnLeft.disabled = false;
-                btnRight.disabled = false;
+            // Проверяем выход за границы карты
+            if (gameState.player.x <= 0 || gameState.player.x >= MAP_SIZE || 
+                gameState.player.y <= 0 || gameState.player.y >= MAP_SIZE) {
+                endGame(false);
+                return;
+            }
+        }
+        
+        // Завершаем игру
+        function endGame(success) {
+            gameState.gameOver = true;
+            
+            if (success) {
+                gameOverText.textContent = 'Победа!';
+            } else {
+                gameOverText.textContent = 'Вас поймали!';
             }
             
-            // Отключение кнопок управления
-            function disableMovementControls() {
-                btnUp.disabled = true;
-                btnDown.disabled = true;
-                btnLeft.disabled = true;
-                btnRight.disabled = true;
-            }
-            
-            // Обработчики событий
-            btnUp.addEventListener('click', () => movePlayer(DIRECTIONS.UP));
-            btnDown.addEventListener('click', () => movePlayer(DIRECTIONS.DOWN));
-            btnLeft.addEventListener('click', () => movePlayer(DIRECTIONS.LEFT));
-            btnRight.addEventListener('click', () => movePlayer(DIRECTIONS.RIGHT));
-            btnRestart.addEventListener('click', initGame);
-            
-            // Инициализация игры при загрузке
-            initGame();
-            
-            // Обработка событий Telegram Web App
-            if (window.Telegram && window.Telegram.WebApp) {
-                Telegram.WebApp.expand();
-                Telegram.WebApp.enableClosingConfirmation();
-            }
-        });
+            scoreText.textContent = `Вы продержались: ${gameState.turn} ходов`;
+            gameOverScreen.style.display = 'flex';
+        }
+        
+        // Обработчики событий
+        leftBtn.addEventListener('click', () => movePlayer('left'));
+        straightBtn.addEventListener('click', () => movePlayer('straight'));
+        rightBtn.addEventListener('click', () => movePlayer('right'));
+        restartBtn.addEventListener('click', initGame);
+        
+        // Инициализируем игру при загрузке
+        window.addEventListener('load', initGame);
+        
+        // Для Telegram Web Apps
+        if (window.Telegram && window.Telegram.WebApp) {
+            Telegram.WebApp.expand();
+            Telegram.WebApp.enableClosingConfirmation();
+        }
     </script>
 </body>
 </html>
