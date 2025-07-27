@@ -12,12 +12,13 @@
             box-sizing: border-box;
             touch-action: none;
             user-select: none;
+            image-rendering: pixelated;
         }
         
         body {
             overflow: hidden;
             background: #0a0a14;
-            font-family: 'Old English Text MT', 'Times New Roman', serif;
+            font-family: 'Press Start 2P', cursive;
             color: #e0e0e0;
             height: 100vh;
             display: flex;
@@ -50,29 +51,29 @@
         
         .status-bar {
             position: absolute;
-            top: 15px;
-            left: 15px;
+            top: 10px;
+            left: 10px;
             background: rgba(0, 0, 0, 0.7);
-            padding: 12px 18px;
-            border-radius: 12px;
-            font-size: 18px;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
             border: 2px solid #5a3a20;
             display: flex;
-            gap: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            gap: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
         
         .status-item {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 5px;
         }
         
         .health-bar {
-            width: 120px;
-            height: 18px;
+            width: 80px;
+            height: 10px;
             background: #3a1a0a;
-            border-radius: 4px;
+            border-radius: 3px;
             overflow: hidden;
             border: 1px solid #5a3a20;
         }
@@ -84,129 +85,87 @@
             transition: width 0.3s;
         }
         
-        .compass {
+        .distance-bar {
             position: absolute;
-            top: 15px;
-            right: 15px;
+            top: 10px;
+            right: 10px;
             background: rgba(0, 0, 0, 0.7);
-            border-radius: 50%;
-            width: 80px;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
             border: 2px solid #5a3a20;
-            font-size: 32px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-            color: #d0a040;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
         }
         
-        .message {
-            position: absolute;
-            bottom: 180px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            padding: 15px 25px;
-            border-radius: 10px;
-            font-size: 20px;
-            max-width: 85%;
-            text-align: center;
-            opacity: 0;
-            transition: opacity 0.3s;
-            border: 2px solid #d0a040;
-            color: #f0d080;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
-            pointer-events: none;
-        }
-        
-        .choice-panel {
+        .controls {
             position: absolute;
             bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            padding: 15px;
-            border-radius: 15px;
-            border: 2px solid #5a3a20;
-            display: none;
-            flex-direction: column;
-            gap: 12px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
             pointer-events: auto;
         }
         
-        .choice-title {
-            font-size: 22px;
-            text-align: center;
-            color: #d0a040;
-            margin-bottom: 8px;
-            text-shadow: 1px 1px 2px #000;
-        }
-        
-        .choice-btn {
-            background: linear-gradient(to bottom, #5a3a20, #3a1a0a);
-            color: #f0d080;
-            border: none;
-            padding: 15px;
-            font-size: 20px;
-            border-radius: 8px;
+        .control-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 3px solid #5a3a20;
+            color: white;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            font-family: 'Old English Text MT', serif;
-            text-align: center;
-            border: 1px solid #7a5a30;
-            transition: all 0.2s;
+            transition: all 0.1s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
         }
         
-        .choice-btn:hover {
-            background: linear-gradient(to bottom, #7a5a30, #5a3a20);
-            transform: translateY(-2px);
-        }
-        
-        .choice-btn:active {
-            transform: translateY(1px);
+        .control-btn:active {
+            background: rgba(50, 50, 50, 0.7);
+            transform: scale(0.95);
         }
         
         .combat-panel {
             position: absolute;
-            bottom: 20px;
+            bottom: 100px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.8);
             padding: 15px;
-            border-radius: 15px;
-            border: 2px solid #a00;
+            border-radius: 10px;
+            border: 3px solid #a00;
             display: none;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             width: 90%;
-            max-width: 500px;
+            max-width: 400px;
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
             pointer-events: auto;
         }
         
         .combat-title {
-            font-size: 22px;
+            font-size: 14px;
             text-align: center;
             color: #f00;
             margin-bottom: 8px;
-            text-shadow: 1px 1px 2px #000;
+            text-shadow: 2px 2px 0 #000;
         }
         
         .combat-btn {
             background: linear-gradient(to bottom, #a00, #600);
             color: #fff;
             border: none;
-            padding: 15px;
-            font-size: 20px;
-            border-radius: 8px;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 5px;
             cursor: pointer;
-            font-family: 'Old English Text MT', serif;
             text-align: center;
-            border: 1px solid #f00;
+            border: 2px solid #f00;
             transition: all 0.2s;
+            text-shadow: 1px 1px 0 #000;
         }
         
         .combat-btn:hover {
@@ -215,9 +174,9 @@
         
         .enemy-health {
             width: 100%;
-            height: 20px;
+            height: 10px;
             background: #3a1a0a;
-            border-radius: 4px;
+            border-radius: 3px;
             overflow: hidden;
             border: 1px solid #5a3a20;
             margin-bottom: 10px;
@@ -236,7 +195,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('https://i.imgur.com/JYQ3q3a.jpg') no-repeat center center;
+            background: #000 url('castle-bg.png') no-repeat center center;
             background-size: cover;
             display: flex;
             flex-direction: column;
@@ -248,134 +207,90 @@
         }
         
         .title {
-            font-size: 52px;
+            font-size: 24px;
             font-weight: bold;
-            text-shadow: 0 0 15px rgba(255, 200, 0, 0.8), 3px 3px 5px #000;
-            margin-bottom: 30px;
-            letter-spacing: 6px;
-            font-family: 'Old English Text MT', serif;
+            text-shadow: 3px 3px 0 #000;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
             color: #d0a040;
         }
         
         .subtitle {
-            font-size: 26px;
-            margin-bottom: 50px;
+            font-size: 12px;
+            margin-bottom: 30px;
             color: #b0a060;
             max-width: 80%;
             line-height: 1.5;
-            text-shadow: 2px 2px 4px #000;
+            text-shadow: 2px 2px 0 #000;
         }
         
         .start-btn {
             background: linear-gradient(to bottom, #b09040, #705020);
             color: #fff;
             border: none;
-            padding: 20px 50px;
-            font-size: 26px;
-            border-radius: 35px;
+            padding: 15px 30px;
+            font-size: 14px;
+            border-radius: 5px;
             cursor: pointer;
             font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
-            transition: all 0.3s;
-            margin-top: 30px;
-            font-family: 'Old English Text MT', serif;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            transition: all 0.2s;
+            margin-top: 20px;
             border: 2px solid #d0a040;
+            text-shadow: 1px 1px 0 #000;
         }
         
         .start-btn:hover {
             transform: scale(1.05);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.6);
             background: linear-gradient(to bottom, #d0b050, #907030);
         }
         
-        .loading {
+        .message {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000 url('https://i.imgur.com/JYQ3q3a.jpg') no-repeat center center;
-            background-size: cover;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 30;
-            flex-direction: column;
-        }
-        
-        .loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-        }
-        
-        .loading-content {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            color: #d0a040;
-            text-shadow: 2px 2px 4px #000;
-        }
-        
-        .loading-bar {
-            width: 80%;
-            max-width: 400px;
-            height: 25px;
-            background: #3a1a0a;
-            border-radius: 12px;
-            overflow: hidden;
-            margin-top: 30px;
-            border: 2px solid #5a3a20;
-        }
-        
-        .loading-fill {
-            height: 100%;
-            background: linear-gradient(to right, #b09040, #d0b050);
-            width: 0%;
-            transition: width 0.3s;
-        }
-        
-        .loading-text {
-            margin-top: 20px;
-            font-size: 20px;
-            color: #b0a060;
-        }
-        
-        .crosshair {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 30px;
-            height: 30px;
-            pointer-events: none;
-        }
-        
-        .crosshair::before, .crosshair::after {
-            content: '';
-            position: absolute;
-            background: rgba(255, 0, 0, 0.7);
-        }
-        
-        .crosshair::before {
-            width: 100%;
-            height: 3px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-        
-        .crosshair::after {
-            width: 3px;
-            height: 100%;
+            bottom: 180px;
             left: 50%;
             transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 12px;
+            max-width: 80%;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+            border: 2px solid #d0a040;
+            color: #f0d080;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+            pointer-events: none;
+            text-shadow: 1px 1px 0 #000;
+        }
+        
+        .castle-indicator {
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            font-size: 12px;
+            color: #fff;
+            text-shadow: 1px 1px 0 #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .castle-icon {
+            font-size: 24px;
+        }
+        
+        @font-face {
+            font-family: 'Press Start 2P';
+            src: url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="gameContainer">
@@ -390,22 +305,22 @@
                 </div>
                 <div class="status-item">
                     <span>⚔️</span>
-                    <span id="weapon">Меч</span>
-                </div>
-                <div class="status-item">
-                    <span>🛡️</span>
-                    <span id="armor">Кольчуга</span>
+                    <span id="weapon">10</span>
                 </div>
             </div>
-            <div class="compass" id="compass">N</div>
-            <div class="message" id="message">Вы видите развилку впереди</div>
-            <div class="crosshair"></div>
+            <div class="distance-bar">
+                <span id="distance">0m</span>
+            </div>
+            <div class="castle-indicator">
+                <div class="castle-icon">🏰</div>
+                <div id="castleDistance">1000m</div>
+            </div>
+            <div class="message" id="message">Добро пожаловать в Daggerfall Road!</div>
             
-            <div class="choice-panel" id="choicePanel">
-                <div class="choice-title">Куда направиться?</div>
-                <button class="choice-btn" id="goLeftBtn">↰ Налево</button>
-                <button class="choice-btn" id="goStraightBtn">↑ Прямо</button>
-                <button class="choice-btn" id="goRightBtn">↱ Направо</button>
+            <div class="controls">
+                <button class="control-btn" id="leftBtn">←</button>
+                <button class="control-btn" id="forwardBtn">↑</button>
+                <button class="control-btn" id="rightBtn">→</button>
             </div>
             
             <div class="combat-panel" id="combatPanel">
@@ -419,18 +334,8 @@
         </div>
         <div class="title-screen" id="titleScreen">
             <h1 class="title">DAGGERFALL ROAD</h1>
-            <p class="subtitle">Путешествие по дорогам Иллиака. Выбери свой путь, но будь готов к опасностям!</p>
-            <button class="start-btn" id="startBtn">В путь</button>
-        </div>
-        <div class="loading" id="loadingScreen">
-            <div class="loading-overlay"></div>
-            <div class="loading-content">
-                <div>ПОДГОТОВКА ПУТИ...</div>
-                <div class="loading-bar">
-                    <div class="loading-fill" id="loadingFill"></div>
-                </div>
-                <div class="loading-text" id="loadingText">Создание мира...</div>
-            </div>
+            <p class="subtitle">Доберитесь до замка, побеждая врагов на пути</p>
+            <button class="start-btn" id="startBtn">НАЧАТЬ</button>
         </div>
     </div>
 
@@ -444,14 +349,11 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const titleScreen = document.getElementById('titleScreen');
-        const loadingScreen = document.getElementById('loadingScreen');
-        const loadingFill = document.getElementById('loadingFill');
-        const loadingText = document.getElementById('loadingText');
         const startBtn = document.getElementById('startBtn');
         const messageEl = document.getElementById('message');
         const healthFill = document.getElementById('healthFill');
-        const compass = document.getElementById('compass');
-        const choicePanel = document.getElementById('choicePanel');
+        const distanceEl = document.getElementById('distance');
+        const castleDistanceEl = document.getElementById('castleDistance');
         const combatPanel = document.getElementById('combatPanel');
         const enemyHealthFill = document.getElementById('enemyHealthFill');
         const enemyNameEl = document.getElementById('enemyName');
@@ -471,62 +373,134 @@
             player: {
                 x: 0,
                 y: 0,
-                angle: 0,
                 health: 100,
                 maxHealth: 100,
-                weapon: 'Меч',
-                armor: 'Кольчуга',
                 damage: 10,
                 defense: 5,
-                speed: 0.05,
+                speed: 0,
+                maxSpeed: 2,
                 distance: 0,
-                path: []
-            },
-            currentRoad: {
-                length: 0,
-                hasFork: false,
-                forkDistance: 0,
-                hasEnemy: false,
-                enemyDistance: 0
+                totalDistance: 0,
+                castleDistance: 1000,
+                direction: 0, // -1 = left, 0 = center, 1 = right
+                isMoving: false
             },
             enemy: null,
+            roadSegments: [],
+            trees: [],
+            castle: {
+                x: 0,
+                y: 0,
+                size: 0,
+                parallax: 0
+            },
             textures: {
                 road: null,
-                forest: null,
+                tree: null,
+                castle: null,
                 sky: null
             },
-            fov: Math.PI / 3,
-            rayCount: 150,
             lastTime: 0,
-            isInCombat: false,
-            isAtFork: false
+            isInCombat: false
         };
         
-        // Процедурная генерация мира
-        function generateWorld() {
-            // Сброс состояния
-            gameState.player.distance = 0;
-            gameState.player.path = [];
-            gameState.currentRoad = generateRoadSegment();
+        // Создание текстур (заглушки)
+        function createTextures() {
+            // Текстура дороги (16x16 пикселей)
+            const road = document.createElement('canvas');
+            road.width = 16;
+            road.height = 16;
+            const roadCtx = road.getContext('2d');
+            roadCtx.fillStyle = '#5a4a3a';
+            roadCtx.fillRect(0, 0, 16, 16);
+            roadCtx.fillStyle = '#4a3a2a';
+            for (let i = 0; i < 16; i += 4) {
+                roadCtx.fillRect(i, 0, 2, 16);
+            }
+            gameState.textures.road = road;
+            
+            // Текстура дерева (16x32 пикселей)
+            const tree = document.createElement('canvas');
+            tree.width = 16;
+            tree.height = 32;
+            const treeCtx = tree.getContext('2d');
+            // Ствол
+            treeCtx.fillStyle = '#5a3a20';
+            treeCtx.fillRect(6, 16, 4, 16);
+            // Крона
+            treeCtx.fillStyle = '#1a3a1a';
+            treeCtx.beginPath();
+            treeCtx.moveTo(8, 0);
+            treeCtx.lineTo(16, 12);
+            treeCtx.lineTo(0, 12);
+            treeCtx.closePath();
+            treeCtx.fill();
+            treeCtx.fillRect(2, 8, 12, 8);
+            gameState.textures.tree = tree;
+            
+            // Текстура замка (32x32 пикселей)
+            const castle = document.createElement('canvas');
+            castle.width = 32;
+            castle.height = 32;
+            const castleCtx = castle.getContext('2d');
+            // Основание
+            castleCtx.fillStyle = '#555';
+            castleCtx.fillRect(4, 16, 24, 16);
+            // Башни
+            castleCtx.fillRect(0, 8, 8, 24);
+            castleCtx.fillRect(24, 8, 8, 24);
+            // Центральная башня
+            castleCtx.fillRect(12, 0, 8, 32);
+            // Окна
+            castleCtx.fillStyle = '#ff0';
+            castleCtx.fillRect(2, 12, 4, 4);
+            castleCtx.fillRect(26, 12, 4, 4);
+            castleCtx.fillRect(14, 8, 4, 4);
+            gameState.textures.castle = castle;
+            
+            // Текстура неба (16x16 пикселей)
+            const sky = document.createElement('canvas');
+            sky.width = 16;
+            sky.height = 16;
+            const skyCtx = sky.getContext('2d');
+            const gradient = skyCtx.createLinearGradient(0, 0, 0, 16);
+            gradient.addColorStop(0, '#304070');
+            gradient.addColorStop(1, '#102040');
+            skyCtx.fillStyle = gradient;
+            skyCtx.fillRect(0, 0, 16, 16);
+            gameState.textures.sky = sky;
         }
         
-        function generateRoadSegment() {
-            const length = Math.floor(Math.random() * 30) + 20; // Длина отрезка дороги
-            const hasFork = Math.random() > 0.7; // 30% chance of fork
-            const forkDistance = hasFork ? Math.floor(Math.random() * (length - 10)) + 5 : 0;
+        // Генерация мира
+        function generateWorld() {
+            gameState.player.distance = 0;
+            gameState.player.totalDistance = 0;
+            gameState.player.castleDistance = 1000;
+            gameState.player.health = gameState.player.maxHealth;
+            gameState.player.direction = 0;
+            gameState.roadSegments = [];
+            gameState.trees = [];
             
-            const hasEnemy = Math.random() > 0.5; // 50% chance of enemy
-            const enemyDistance = hasEnemy ? Math.floor(Math.random() * (length - 5)) + 3 : 0;
+            // Генерация деревьев
+            for (let i = 0; i < 50; i++) {
+                gameState.trees.push({
+                    x: Math.random() > 0.5 ? -2 - Math.random() * 3 : 2 + Math.random() * 3,
+                    y: -Math.random() * 100,
+                    size: 0.5 + Math.random() * 0.5,
+                    speed: 0.5 + Math.random() * 0.5
+                });
+            }
             
-            return {
-                length,
-                hasFork,
-                forkDistance,
-                hasEnemy,
-                enemyDistance
+            // Позиция замка
+            gameState.castle = {
+                x: 0,
+                y: -gameState.player.castleDistance,
+                size: 1,
+                parallax: 0
             };
         }
         
+        // Генерация врага
         function generateEnemy() {
             const enemies = [
                 { name: "Разбойник", health: 30, damage: 8, speed: 1.0 },
@@ -537,72 +511,6 @@
             ];
             
             return {...enemies[Math.floor(Math.random() * enemies.length)]};
-        }
-        
-        // Создание текстур
-        function createTextures() {
-            // Текстура дороги
-            const road = document.createElement('canvas');
-            const roadCtx = road.getContext('2d');
-            road.width = 256;
-            road.height = 256;
-            
-            roadCtx.fillStyle = '#5a4a3a';
-            roadCtx.fillRect(0, 0, 256, 256);
-            
-            // Добавляем детали дороги
-            roadCtx.fillStyle = '#4a3a2a';
-            for (let i = 0; i < 256; i += 32) {
-                roadCtx.fillRect(i, 0, 16, 256);
-            }
-            
-            // Текстура леса
-            const forest = document.createElement('canvas');
-            const forestCtx = forest.getContext('2d');
-            forest.width = 256;
-            forest.height = 256;
-            
-            forestCtx.fillStyle = '#1a3a1a';
-            forestCtx.fillRect(0, 0, 256, 256);
-            
-            // Добавляем деревья
-            forestCtx.fillStyle = '#0a2a0a';
-            for (let i = 0; i < 256; i += 32) {
-                for (let j = 0; j < 256; j += 32) {
-                    if (Math.random() > 0.3) {
-                        forestCtx.beginPath();
-                        forestCtx.arc(i + Math.random() * 32, j + Math.random() * 32, 4 + Math.random() * 8, 0, Math.PI * 2);
-                        forestCtx.fill();
-                    }
-                }
-            }
-            
-            // Текстура неба
-            const sky = document.createElement('canvas');
-            const skyCtx = sky.getContext('2d');
-            sky.width = 256;
-            sky.height = 256;
-            
-            const gradient = skyCtx.createLinearGradient(0, 0, 0, 256);
-            gradient.addColorStop(0, '#304070');
-            gradient.addColorStop(1, '#102040');
-            skyCtx.fillStyle = gradient;
-            skyCtx.fillRect(0, 0, 256, 256);
-            
-            // Добавляем облака
-            skyCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-            for (let i = 0; i < 10; i++) {
-                const x = Math.random() * 256;
-                const y = Math.random() * 100;
-                const size = 20 + Math.random() * 40;
-                skyCtx.beginPath();
-                skyCtx.arc(x, y, size, 0, Math.PI * 2);
-                skyCtx.fill();
-            }
-            
-            gameState.textures.road = road;
-            gameState.textures.forest = forest;
-            gameState.textures.sky = sky;
         }
         
         // Показ сообщения
@@ -628,15 +536,13 @@
             enemyHealthFill.style.width = `${percent}%`;
         }
         
-        // Обновление компаса
-        function updateCompass() {
-            const angle = gameState.player.angle;
-            const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
-            const index = Math.round(angle / (Math.PI / 4)) % 8;
-            compass.textContent = directions[(index + 8) % 8];
+        // Обновление дистанции
+        function updateDistance() {
+            distanceEl.textContent = `${Math.floor(gameState.player.totalDistance)}m`;
+            castleDistanceEl.textContent = `${Math.max(0, Math.floor(gameState.player.castleDistance - gameState.player.totalDistance))}m`;
         }
         
-        // Рендеринг дороги
+        // Рендеринг игры
         function render() {
             const width = canvas.width;
             const height = canvas.height;
@@ -644,117 +550,82 @@
             
             // Очистка экрана
             if (gameState.textures.sky) {
-                ctx.drawImage(gameState.textures.sky, 0, 0, width, height / 2);
+                ctx.fillStyle = ctx.createPattern(gameState.textures.sky, 'repeat');
+                ctx.fillRect(0, 0, width, height / 2);
             } else {
                 ctx.fillStyle = '#304070';
                 ctx.fillRect(0, 0, width, height / 2);
             }
             
-            // Рисуем пол (дорогу и обочину)
-            if (gameState.textures.road && gameState.textures.forest) {
-                // Дорога занимает центральную часть экрана
-                const roadWidth = width * 0.6;
-                const roadLeft = (width - roadWidth) / 2;
+            // Рисуем землю
+            ctx.fillStyle = '#1a3a1a';
+            ctx.fillRect(0, height / 2, width, height / 2);
+            
+            // Рисуем замок (параллакс эффект)
+            if (gameState.textures.castle && gameState.player.castleDistance - gameState.player.totalDistance < 500) {
+                const castleSize = Math.min(200, (500 - (gameState.player.castleDistance - gameState.player.totalDistance)) * 0.4);
+                const castleX = width / 2 - castleSize / 2 + gameState.castle.parallax * 50;
+                const castleY = height / 2 - castleSize;
                 
-                // Перспектива дороги
-                for (let y = height / 2; y < height; y++) {
-                    const depth = (y - height / 2) / (height / 2);
-                    const segmentWidth = roadWidth * (1 - depth * 0.8);
-                    const segmentLeft = (width - segmentWidth) / 2;
+                ctx.drawImage(
+                    gameState.textures.castle,
+                    castleX, castleY, castleSize, castleSize * 1.5
+                );
+            }
+            
+            // Рисуем деревья
+            if (gameState.textures.tree) {
+                gameState.trees.forEach(tree => {
+                    const treeX = width / 2 + tree.x * 50 - player.direction * 30;
+                    const treeY = height / 2 + tree.y - player.distance * tree.speed;
+                    const treeWidth = 50 * tree.size;
+                    const treeHeight = 100 * tree.size;
                     
-                    if (depth < 0.3) {
-                        // Ближняя часть - дорога
-                        const textureY = Math.floor((y - height / 2) / (height / 2) * 256) % 256;
+                    if (treeY < height) {
                         ctx.drawImage(
-                            gameState.textures.road,
-                            0, textureY, 256, 1,
-                            segmentLeft, y, segmentWidth, 1
-                        );
-                    } else {
-                        // Дальняя часть - лес
-                        const textureY = Math.floor((y - height / 2) / (height / 2) * 256) % 256;
-                        ctx.drawImage(
-                            gameState.textures.forest,
-                            0, textureY, 256, 1,
-                            0, y, width, 1
-                        );
-                        
-                        // Оставляем дорогу посередине
-                        ctx.drawImage(
-                            gameState.textures.road,
-                            0, textureY, 256, 1,
-                            segmentLeft, y, segmentWidth, 1
+                            gameState.textures.tree,
+                            treeX, treeY, treeWidth, treeHeight
                         );
                     }
-                }
-            } else {
-                // Простой рендеринг без текстур
-                ctx.fillStyle = '#202020';
-                ctx.fillRect(0, height / 2, width, height / 2);
+                    
+                    // Если дерево ушло за экран, перемещаем его в начало
+                    if (treeY > height) {
+                        tree.y = -50;
+                        tree.x = Math.random() > 0.5 ? -2 - Math.random() * 3 : 2 + Math.random() * 3;
+                    }
+                });
+            }
+            
+            // Рисуем дорогу
+            if (gameState.textures.road) {
+                const roadWidth = width * 0.4;
+                const roadLeft = width / 2 - roadWidth / 2 + player.direction * 30;
                 
-                // Дорога
-                const roadWidth = width * 0.6;
-                const roadLeft = (width - roadWidth) / 2;
-                ctx.fillStyle = '#5a4a3a';
+                ctx.fillStyle = ctx.createPattern(gameState.textures.road, 'repeat');
                 ctx.fillRect(roadLeft, height / 2, roadWidth, height / 2);
+                
+                // Бордюры дороги
+                ctx.fillStyle = '#5a3a20';
+                ctx.fillRect(roadLeft - 10, height / 2, 10, height / 2);
+                ctx.fillRect(roadLeft + roadWidth, height / 2, 10, height / 2);
             }
             
-            // Рисуем врага, если он есть и близко
-            if (gameState.currentRoad.hasEnemy && 
-                gameState.player.distance >= gameState.currentRoad.enemyDistance - 5 &&
-                gameState.player.distance <= gameState.currentRoad.enemyDistance) {
-                const distanceToEnemy = gameState.currentRoad.enemyDistance - gameState.player.distance;
+            // Рисуем врага, если он есть
+            if (gameState.isInCombat && gameState.enemy) {
+                const enemySize = 100;
+                const enemyX = width / 2 - enemySize / 2;
+                const enemyY = height / 2 - enemySize / 2;
                 
-                if (distanceToEnemy <= 3) {
-                    const enemySize = (1 - distanceToEnemy / 3) * height * 0.6;
-                    const enemyY = height / 2 - enemySize / 2;
-                    
-                    ctx.fillStyle = '#800';
-                    ctx.fillRect(width / 2 - enemySize / 4, enemyY, enemySize / 2, enemySize);
-                    
-                    // Голова
-                    ctx.fillStyle = '#a00';
-                    ctx.beginPath();
-                    ctx.arc(width / 2, enemyY + enemySize * 0.2, enemySize * 0.15, 0, Math.PI * 2);
-                    ctx.fill();
-                    
-                    // Оружие
-                    ctx.strokeStyle = '#333';
-                    ctx.lineWidth = enemySize * 0.05;
-                    ctx.beginPath();
-                    ctx.moveTo(width / 2 - enemySize * 0.3, enemyY + enemySize * 0.4);
-                    ctx.lineTo(width / 2 + enemySize * 0.3, enemyY + enemySize * 0.6);
-                    ctx.stroke();
-                    
-                    // Если враг очень близко, начинаем бой
-                    if (distanceToEnemy <= 0.5 && !gameState.isInCombat) {
-                        startCombat();
-                    }
-                }
-            }
-            
-            // Рисуем развилку, если она есть и близко
-            if (gameState.currentRoad.hasFork && 
-                gameState.player.distance >= gameState.currentRoad.forkDistance - 5 &&
-                gameState.player.distance <= gameState.currentRoad.forkDistance) {
-                const distanceToFork = gameState.currentRoad.forkDistance - gameState.player.distance;
+                ctx.fillStyle = '#800';
+                ctx.fillRect(enemyX, enemyY, enemySize, enemySize);
                 
-                if (distanceToFork <= 3) {
-                    const forkSize = (1 - distanceToFork / 3) * height * 0.4;
-                    
-                    // Рисуем развилку
-                    ctx.fillStyle = '#5a4a3a';
-                    ctx.beginPath();
-                    ctx.moveTo(width / 2 - forkSize / 2, height / 2 + forkSize);
-                    ctx.lineTo(width / 2, height / 2);
-                    ctx.lineTo(width / 2 + forkSize / 2, height / 2 + forkSize);
-                    ctx.fill();
-                    
-                    // Если подошли к развилке, показываем выбор
-                    if (distanceToFork <= 0.1 && !gameState.isAtFork && !gameState.isInCombat) {
-                        showForkChoice();
-                    }
-                }
+                // Голова
+                ctx.fillStyle = '#a00';
+                ctx.fillRect(enemyX + enemySize * 0.3, enemyY + enemySize * 0.2, enemySize * 0.4, enemySize * 0.3);
+                
+                // Оружие
+                ctx.fillStyle = '#333';
+                ctx.fillRect(enemyX + enemySize * 0.4, enemyY + enemySize * 0.5, enemySize * 0.2, enemySize * 0.4);
             }
         }
         
@@ -762,37 +633,44 @@
         function update(deltaTime) {
             const player = gameState.player;
             
-            if (!gameState.isInCombat && !gameState.isAtFork) {
-                // Движение вперед по дороге
+            if (!gameState.isInCombat) {
+                // Движение вперед
+                if (player.isMoving) {
+                    player.speed = Math.min(player.maxSpeed, player.speed + 0.05 * deltaTime);
+                } else {
+                    player.speed = Math.max(0, player.speed - 0.1 * deltaTime);
+                }
+                
                 player.distance += player.speed * deltaTime;
+                player.totalDistance += player.speed * deltaTime;
                 
-                // Проверка на конец текущего отрезка дороги
-                if (player.distance >= gameState.currentRoad.length) {
-                    player.distance = 0;
-                    gameState.currentRoad = generateRoadSegment();
-                    showMessage("Вы продолжаете путь...");
+                // Параллакс эффект для замка
+                gameState.castle.parallax = player.direction * 0.5;
+                
+                // Случайное появление врагов
+                if (Math.random() < 0.001 * deltaTime && player.totalDistance > 100) {
+                    startCombat();
                 }
                 
-                // Проверка на приближение к врагу
-                if (gameState.currentRoad.hasEnemy && 
-                    Math.abs(player.distance - gameState.currentRoad.enemyDistance) < 0.5) {
-                    showMessage(`Вы видите ${gameState.enemy.name.toLowerCase()} на дороге!`);
-                }
-                
-                // Проверка на приближение к развилке
-                if (gameState.currentRoad.hasFork && 
-                    Math.abs(player.distance - gameState.currentRoad.forkDistance) < 0.5) {
-                    showMessage("Вы подошли к развилке...");
+                // Проверка на достижение замка
+                if (player.totalDistance >= player.castleDistance) {
+                    showMessage("Вы достигли замка! Победа!", 5000);
+                    player.isMoving = false;
+                    player.speed = 0;
                 }
             }
             
             // Обновление UI
-            updateCompass();
+            updateDistance();
         }
         
         // Начало боя
         function startCombat() {
+            if (gameState.isInCombat) return;
+            
             gameState.isInCombat = true;
+            gameState.player.isMoving = false;
+            gameState.player.speed = 0;
             gameState.enemy = generateEnemy();
             gameState.enemy.maxHealth = gameState.enemy.health;
             
@@ -810,34 +688,11 @@
             
             if (playerWon) {
                 showMessage(`Вы победили ${gameState.enemy.name.toLowerCase()}!`, 2000);
-                gameState.currentRoad.hasEnemy = false;
             } else {
                 showMessage("Вы бежите от врага...", 2000);
                 // Отступаем немного назад
-                gameState.player.distance = Math.max(0, gameState.player.distance - 5);
+                gameState.player.totalDistance = Math.max(0, gameState.player.totalDistance - 50);
             }
-        }
-        
-        // Показ выбора на развилке
-        function showForkChoice() {
-            gameState.isAtFork = true;
-            choicePanel.style.display = 'flex';
-            showMessage("Куда вы хотите пойти?", 5000);
-        }
-        
-        // Выбор направления на развилке
-        function makeChoice(direction) {
-            gameState.isAtFork = false;
-            choicePanel.style.display = 'none';
-            
-            // Запоминаем выбор
-            gameState.player.path.push(direction);
-            
-            // Генерируем новый отрезок дороги
-            gameState.player.distance = 0;
-            gameState.currentRoad = generateRoadSegment();
-            
-            showMessage(`Вы идёте ${direction.toLowerCase()}...`, 2000);
         }
         
         // Атака врага
@@ -874,8 +729,6 @@
                     showMessage("Вы пали в бою...", 3000);
                     setTimeout(() => {
                         // Рестарт игры
-                        gameState.player.health = gameState.player.maxHealth;
-                        updateHealth();
                         generateWorld();
                         showMessage("Вы очнулись у начала пути...", 3000);
                     }, 3000);
@@ -898,10 +751,31 @@
         
         // Настройка управления
         function setupControls() {
-            // Кнопки выбора на развилке
-            document.getElementById('goLeftBtn').addEventListener('click', () => makeChoice('Налево'));
-            document.getElementById('goStraightBtn').addEventListener('click', () => makeChoice('Прямо'));
-            document.getElementById('goRightBtn').addEventListener('click', () => makeChoice('Направо'));
+            // Кнопки движения
+            document.getElementById('forwardBtn').addEventListener('touchstart', () => {
+                gameState.player.isMoving = true;
+            });
+            document.getElementById('forwardBtn').addEventListener('touchend', () => {
+                gameState.player.isMoving = false;
+            });
+            
+            document.getElementById('leftBtn').addEventListener('touchstart', () => {
+                gameState.player.direction = -1;
+            });
+            document.getElementById('leftBtn').addEventListener('touchend', () => {
+                if (gameState.player.direction === -1) {
+                    gameState.player.direction = 0;
+                }
+            });
+            
+            document.getElementById('rightBtn').addEventListener('touchstart', () => {
+                gameState.player.direction = 1;
+            });
+            document.getElementById('rightBtn').addEventListener('touchend', () => {
+                if (gameState.player.direction === 1) {
+                    gameState.player.direction = 0;
+                }
+            });
             
             // Кнопки боя
             document.getElementById('attackBtn').addEventListener('click', attackEnemy);
@@ -909,22 +783,33 @@
             
             // Управление с клавиатуры для десктопов
             document.addEventListener('keydown', (e) => {
-                if (gameState.isAtFork) {
-                    if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A' || e.key === 'ф' || e.key === 'Ф') {
-                        makeChoice('Налево');
-                    } else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W' || e.key === 'ц' || e.key === 'Ц') {
-                        makeChoice('Прямо');
-                    } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D' || e.key === 'в' || e.key === 'В') {
-                        makeChoice('Направо');
-                    }
+                if (e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp') {
+                    gameState.player.isMoving = true;
                 }
-                
+                if (e.key === 'a' || e.key === 'A' || e.key === 'ArrowLeft') {
+                    gameState.player.direction = -1;
+                }
+                if (e.key === 'd' || e.key === 'D' || e.key === 'ArrowRight') {
+                    gameState.player.direction = 1;
+                }
                 if (gameState.isInCombat) {
-                    if (e.key === ' ' || e.key === 'f' || e.key === 'F' || e.key === 'а' || e.key === 'А') {
+                    if (e.key === ' ' || e.key === 'f' || e.key === 'F') {
                         attackEnemy();
-                    } else if (e.key === 'Escape' || e.key === 'r' || e.key === 'R' || e.key === 'к' || e.key === 'К') {
+                    } else if (e.key === 'Escape' || e.key === 'r' || e.key === 'R') {
                         endCombat(false);
                     }
+                }
+            });
+            
+            document.addEventListener('keyup', (e) => {
+                if (e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp') {
+                    gameState.player.isMoving = false;
+                }
+                if ((e.key === 'a' || e.key === 'A' || e.key === 'ArrowLeft') && gameState.player.direction === -1) {
+                    gameState.player.direction = 0;
+                }
+                if ((e.key === 'd' || e.key === 'D' || e.key === 'ArrowRight') && gameState.player.direction === 1) {
+                    gameState.player.direction = 0;
                 }
             });
         }
@@ -934,38 +819,15 @@
             titleScreen.style.display = 'none';
             gameState.isRunning = true;
             gameState.lastTime = performance.now();
-            gameState.player.health = gameState.player.maxHealth;
-            updateHealth();
             generateWorld();
+            updateHealth();
+            updateDistance();
             gameLoop(performance.now());
-        }
-        
-        // Имитация загрузки
-        function simulateLoading() {
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += 2;
-                loadingFill.style.width = `${progress}%`;
-                
-                if (progress < 20) loadingText.textContent = "Создание дорог...";
-                else if (progress < 50) loadingText.textContent = "Размещение врагов...";
-                else if (progress < 80) loadingText.textContent = "Подготовка оружия...";
-                else loadingText.textContent = "Готово к путешествию...";
-                
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        loadingScreen.style.display = 'none';
-                        titleScreen.style.display = 'flex';
-                    }, 500);
-                }
-            }, 50);
         }
         
         // Инициализация
         function init() {
             createTextures();
-            simulateLoading();
             setupControls();
             
             startBtn.addEventListener('click', startGame);
