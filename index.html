@@ -285,6 +285,50 @@
             font-size: 24px;
         }
         
+        .fork-panel {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            border: 3px solid #5a3a20;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+            pointer-events: auto;
+        }
+        
+        .fork-title {
+            font-size: 14px;
+            text-align: center;
+            color: #d0a040;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 0 #000;
+        }
+        
+        .fork-btn {
+            background: linear-gradient(to bottom, #5a3a20, #3a1a0a);
+            color: #f0d080;
+            border: none;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            border: 2px solid #7a5a30;
+            transition: all 0.2s;
+            text-shadow: 1px 1px 0 #000;
+        }
+        
+        .fork-btn:hover {
+            background: linear-gradient(to bottom, #7a5a30, #5a3a20);
+        }
+        
         @font-face {
             font-family: 'Press Start 2P';
             src: url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
@@ -306,6 +350,10 @@
                 <div class="status-item">
                     <span>⚔️</span>
                     <span id="weapon">10</span>
+                </div>
+                <div class="status-item">
+                    <span>🏆</span>
+                    <span id="visits">0</span>
                 </div>
             </div>
             <div class="distance-bar">
@@ -331,10 +379,17 @@
                 <button class="combat-btn" id="attackBtn">⚔️ Атаковать</button>
                 <button class="combat-btn" id="fleeBtn">🏃‍♂️ Бежать</button>
             </div>
+            
+            <div class="fork-panel" id="forkPanel">
+                <div class="fork-title">Выберите путь:</div>
+                <button class="fork-btn" id="leftPathBtn">← Лесная тропа</button>
+                <button class="fork-btn" id="centerPathBtn">↑ Главная дорога</button>
+                <button class="fork-btn" id="rightPathBtn">→ Горный перевал</button>
+            </div>
         </div>
         <div class="title-screen" id="titleScreen">
             <h1 class="title">DAGGERFALL ROAD</h1>
-            <p class="subtitle">Доберитесь до замка, побеждая врагов на пути</p>
+            <p class="subtitle">Доберитесь до замка, выбирая путь на развилках</p>
             <button class="start-btn" id="startBtn">НАЧАТЬ</button>
         </div>
     </div>
@@ -357,6 +412,8 @@
         const combatPanel = document.getElementById('combatPanel');
         const enemyHealthFill = document.getElementById('enemyHealthFill');
         const enemyNameEl = document.getElementById('enemyName');
+        const forkPanel = document.getElementById('forkPanel');
+        const visitsEl = document.getElementById('visits');
         
         // Настройка размеров canvas
         function resizeCanvas() {
@@ -382,11 +439,13 @@
                 distance: 0,
                 totalDistance: 0,
                 castleDistance: 1000,
+                baseCastleDistance: 1000,
                 direction: 0, // -1 = left, 0 = center, 1 = right
-                isMoving: false
+                isMoving: false,
+                visits: 0,
+                forksPassed: 0
             },
             enemy: null,
-            roadSegments: [],
             trees: [],
             castle: {
                 x: 0,
@@ -398,44 +457,64 @@
                 road: null,
                 tree: null,
                 castle: null,
-                sky: null
+                sky: null,
+                stars: null,
+                moon: null
             },
             lastTime: 0,
-            isInCombat: false
+            isInCombat: false,
+            isAtFork: false,
+            nextForkDistance: 300
         };
         
-        // Создание текстур (заглушки)
+        // Создание текстур (пиксель-арт)
         function createTextures() {
             // Текстура дороги (16x16 пикселей)
             const road = document.createElement('canvas');
             road.width = 16;
             road.height = 16;
             const roadCtx = road.getContext('2d');
-            roadCtx.fillStyle = '#5a4a3a';
+            // Асфальт
+            roadCtx.fillStyle = '#3a3a3a';
             roadCtx.fillRect(0, 0, 16, 16);
-            roadCtx.fillStyle = '#4a3a2a';
-            for (let i = 0; i < 16; i += 4) {
-                roadCtx.fillRect(i, 0, 2, 16);
-            }
+            // Разметка
+            roadCtx.fillStyle = '#ffff00';
+            roadCtx.fillRect(0, 7, 16, 2);
             gameState.textures.road = road;
             
-            // Текстура дерева (16x32 пикселей)
+            // Текстура елки (16x32 пикселей)
             const tree = document.createElement('canvas');
             tree.width = 16;
             tree.height = 32;
             const treeCtx = tree.getContext('2d');
             // Ствол
             treeCtx.fillStyle = '#5a3a20';
-            treeCtx.fillRect(6, 16, 4, 16);
-            // Крона
-            treeCtx.fillStyle = '#1a3a1a';
+            treeCtx.fillRect(7, 20, 2, 12);
+            // Ярусы елки
+            treeCtx.fillStyle = '#1a5a1a';
+            // Нижний ярус
             treeCtx.beginPath();
-            treeCtx.moveTo(8, 0);
-            treeCtx.lineTo(16, 12);
-            treeCtx.lineTo(0, 12);
+            treeCtx.moveTo(8, 24);
+            treeCtx.lineTo(16, 16);
+            treeCtx.lineTo(0, 16);
             treeCtx.closePath();
             treeCtx.fill();
-            treeCtx.fillRect(2, 8, 12, 8);
+            // Средний ярус
+            treeCtx.beginPath();
+            treeCtx.moveTo(8, 16);
+            treeCtx.lineTo(14, 10);
+            treeCtx.lineTo(2, 10);
+            treeCtx.closePath();
+            treeCtx.fill();
+            // Верхний ярус
+            treeCtx.beginPath();
+            treeCtx.moveTo(8, 10);
+            treeCtx.lineTo(12, 6);
+            treeCtx.lineTo(4, 6);
+            treeCtx.closePath();
+            treeCtx.fill();
+            // Верхушка
+            treeCtx.fillRect(7, 4, 2, 2);
             gameState.textures.tree = tree;
             
             // Текстура замка (32x32 пикселей)
@@ -456,38 +535,89 @@
             castleCtx.fillRect(2, 12, 4, 4);
             castleCtx.fillRect(26, 12, 4, 4);
             castleCtx.fillRect(14, 8, 4, 4);
+            // Крыши
+            castleCtx.fillStyle = '#a00';
+            castleCtx.beginPath();
+            castleCtx.moveTo(0, 8);
+            castleCtx.lineTo(4, 4);
+            castleCtx.lineTo(8, 8);
+            castleCtx.closePath();
+            castleCtx.fill();
+            castleCtx.beginPath();
+            castleCtx.moveTo(24, 8);
+            castleCtx.lineTo(28, 4);
+            castleCtx.lineTo(32, 8);
+            castleCtx.closePath();
+            castleCtx.fill();
+            castleCtx.beginPath();
+            castleCtx.moveTo(12, 0);
+            castleCtx.lineTo(16, -4);
+            castleCtx.lineTo(20, 0);
+            castleCtx.closePath();
+            castleCtx.fill();
             gameState.textures.castle = castle;
             
-            // Текстура неба (16x16 пикселей)
+            // Текстура ночного неба (16x16 пикселей)
             const sky = document.createElement('canvas');
             sky.width = 16;
             sky.height = 16;
             const skyCtx = sky.getContext('2d');
-            const gradient = skyCtx.createLinearGradient(0, 0, 0, 16);
-            gradient.addColorStop(0, '#304070');
-            gradient.addColorStop(1, '#102040');
-            skyCtx.fillStyle = gradient;
+            skyCtx.fillStyle = '#102040';
             skyCtx.fillRect(0, 0, 16, 16);
             gameState.textures.sky = sky;
+            
+            // Текстура звезд (16x16 пикселей)
+            const stars = document.createElement('canvas');
+            stars.width = 16;
+            stars.height = 16;
+            const starsCtx = stars.getContext('2d');
+            starsCtx.fillStyle = '#102040';
+            starsCtx.fillRect(0, 0, 16, 16);
+            // Рисуем звезды
+            starsCtx.fillStyle = '#fff';
+            for (let i = 0; i < 20; i++) {
+                const x = Math.floor(Math.random() * 16);
+                const y = Math.floor(Math.random() * 16);
+                const size = Math.random() > 0.8 ? 2 : 1;
+                starsCtx.fillRect(x, y, size, size);
+            }
+            gameState.textures.stars = stars;
+            
+            // Текстура луны (8x8 пикселей)
+            const moon = document.createElement('canvas');
+            moon.width = 8;
+            moon.height = 8;
+            const moonCtx = moon.getContext('2d');
+            moonCtx.fillStyle = '#fff';
+            moonCtx.beginPath();
+            moonCtx.arc(4, 4, 3, 0, Math.PI * 2);
+            moonCtx.fill();
+            moonCtx.fillStyle = '#102040';
+            moonCtx.beginPath();
+            moonCtx.arc(5, 3, 2, 0, Math.PI * 2);
+            moonCtx.fill();
+            gameState.textures.moon = moon;
         }
         
         // Генерация мира
         function generateWorld() {
             gameState.player.distance = 0;
             gameState.player.totalDistance = 0;
-            gameState.player.castleDistance = 1000;
+            gameState.player.castleDistance = gameState.player.baseCastleDistance + gameState.player.visits * 200;
             gameState.player.health = gameState.player.maxHealth;
             gameState.player.direction = 0;
-            gameState.roadSegments = [];
+            gameState.player.forksPassed = 0;
             gameState.trees = [];
+            gameState.nextForkDistance = gameState.player.castleDistance / 3;
             
             // Генерация деревьев
-            for (let i = 0; i < 50; i++) {
+            for (let i = 0; i < 100; i++) {
                 gameState.trees.push({
                     x: Math.random() > 0.5 ? -2 - Math.random() * 3 : 2 + Math.random() * 3,
-                    y: -Math.random() * 100,
-                    size: 0.5 + Math.random() * 0.5,
-                    speed: 0.5 + Math.random() * 0.5
+                    y: -Math.random() * 200,
+                    size: 0.5 + Math.random() * 0.8,
+                    speed: 0.5 + Math.random() * 0.8,
+                    parallax: 0.2 + Math.random() * 0.3
                 });
             }
             
@@ -498,16 +628,21 @@
                 size: 1,
                 parallax: 0
             };
+            
+            updateVisits();
         }
         
         // Генерация врага
         function generateEnemy() {
+            const baseHealth = 30 + gameState.player.visits * 5;
+            const baseDamage = 8 + gameState.player.visits * 1;
+            
             const enemies = [
-                { name: "Разбойник", health: 30, damage: 8, speed: 1.0 },
-                { name: "Волк", health: 20, damage: 5, speed: 1.2 },
-                { name: "Гоблин", health: 25, damage: 7, speed: 1.1 },
-                { name: "Бандит", health: 35, damage: 9, speed: 0.9 },
-                { name: "Орк", health: 40, damage: 10, speed: 0.8 }
+                { name: "Разбойник", health: baseHealth, damage: baseDamage, speed: 1.0 },
+                { name: "Волк", health: baseHealth * 0.7, damage: baseDamage * 0.6, speed: 1.2 },
+                { name: "Гоблин", health: baseHealth * 0.8, damage: baseDamage * 0.8, speed: 1.1 },
+                { name: "Бандит", health: baseHealth * 1.2, damage: baseDamage * 1.1, speed: 0.9 },
+                { name: "Орк", health: baseHealth * 1.3, damage: baseDamage * 1.2, speed: 0.8 }
             ];
             
             return {...enemies[Math.floor(Math.random() * enemies.length)]};
@@ -542,23 +677,42 @@
             castleDistanceEl.textContent = `${Math.max(0, Math.floor(gameState.player.castleDistance - gameState.player.totalDistance))}m`;
         }
         
+        // Обновление счетчика посещений
+        function updateVisits() {
+            visitsEl.textContent = gameState.player.visits;
+        }
+        
         // Рендеринг игры
         function render() {
             const width = canvas.width;
             const height = canvas.height;
             const player = gameState.player;
             
-            // Очистка экрана
-            if (gameState.textures.sky) {
+            // Очистка экрана - ночное небо
+            if (gameState.textures.sky && gameState.textures.stars) {
+                // Звездное небо
                 ctx.fillStyle = ctx.createPattern(gameState.textures.sky, 'repeat');
                 ctx.fillRect(0, 0, width, height / 2);
+                
+                // Слой звезд
+                ctx.fillStyle = ctx.createPattern(gameState.textures.stars, 'repeat');
+                ctx.fillRect(0, 0, width, height / 2);
+                
+                // Луна
+                if (gameState.textures.moon) {
+                    const moonSize = 50;
+                    ctx.drawImage(
+                        gameState.textures.moon,
+                        width - 70, 30, moonSize, moonSize
+                    );
+                }
             } else {
-                ctx.fillStyle = '#304070';
+                ctx.fillStyle = '#102040';
                 ctx.fillRect(0, 0, width, height / 2);
             }
             
             // Рисуем землю
-            ctx.fillStyle = '#1a3a1a';
+            ctx.fillStyle = '#0a1a0a';
             ctx.fillRect(0, height / 2, width, height / 2);
             
             // Рисуем замок (параллакс эффект)
@@ -573,10 +727,10 @@
                 );
             }
             
-            // Рисуем деревья
+            // Рисуем деревья с параллакс-эффектом
             if (gameState.textures.tree) {
                 gameState.trees.forEach(tree => {
-                    const treeX = width / 2 + tree.x * 50 - player.direction * 30;
+                    const treeX = width / 2 + tree.x * 50 - player.direction * 30 * tree.parallax;
                     const treeY = height / 2 + tree.y - player.distance * tree.speed;
                     const treeWidth = 50 * tree.size;
                     const treeHeight = 100 * tree.size;
@@ -590,7 +744,7 @@
                     
                     // Если дерево ушло за экран, перемещаем его в начало
                     if (treeY > height) {
-                        tree.y = -50;
+                        tree.y = -100;
                         tree.x = Math.random() > 0.5 ? -2 - Math.random() * 3 : 2 + Math.random() * 3;
                     }
                 });
@@ -608,6 +762,42 @@
                 ctx.fillStyle = '#5a3a20';
                 ctx.fillRect(roadLeft - 10, height / 2, 10, height / 2);
                 ctx.fillRect(roadLeft + roadWidth, height / 2, 10, height / 2);
+            }
+            
+            // Рисуем развилку, если она близко
+            if (gameState.isAtFork) {
+                const forkSize = 100;
+                const forkX = width / 2 - forkSize / 2;
+                const forkY = height / 2 + 50;
+                
+                // Основание развилки
+                ctx.fillStyle = '#3a3a3a';
+                ctx.beginPath();
+                ctx.moveTo(forkX, forkY + forkSize);
+                ctx.lineTo(forkX + forkSize / 3, forkY);
+                ctx.lineTo(forkX + forkSize * 2/3, forkY);
+                ctx.lineTo(forkX + forkSize, forkY + forkSize);
+                ctx.closePath();
+                ctx.fill();
+                
+                // Разметка
+                ctx.fillStyle = '#ffff00';
+                // Левая дорога
+                ctx.beginPath();
+                ctx.moveTo(forkX + forkSize / 6, forkY + forkSize / 2);
+                ctx.lineTo(forkX, forkY + forkSize);
+                ctx.lineTo(forkX + forkSize / 6, forkY + forkSize);
+                ctx.closePath();
+                ctx.fill();
+                // Центральная дорога
+                ctx.fillRect(forkX + forkSize / 3, forkY + forkSize / 2, forkSize / 3, forkSize / 2);
+                // Правая дорога
+                ctx.beginPath();
+                ctx.moveTo(forkX + forkSize * 5/6, forkY + forkSize / 2);
+                ctx.lineTo(forkX + forkSize, forkY + forkSize);
+                ctx.lineTo(forkX + forkSize * 5/6, forkY + forkSize);
+                ctx.closePath();
+                ctx.fill();
             }
             
             // Рисуем врага, если он есть
@@ -633,7 +823,7 @@
         function update(deltaTime) {
             const player = gameState.player;
             
-            if (!gameState.isInCombat) {
+            if (!gameState.isInCombat && !gameState.isAtFork) {
                 // Движение вперед
                 if (player.isMoving) {
                     player.speed = Math.min(player.maxSpeed, player.speed + 0.05 * deltaTime);
@@ -647,21 +837,72 @@
                 // Параллакс эффект для замка
                 gameState.castle.parallax = player.direction * 0.5;
                 
-                // Случайное появление врагов
-                if (Math.random() < 0.001 * deltaTime && player.totalDistance > 100) {
+                // Проверка на развилку
+                if (player.totalDistance >= gameState.nextForkDistance && player.forksPassed < 3) {
+                    showFork();
+                    return;
+                }
+                
+                // Случайное появление врагов (чаще ближе к замку)
+                const enemyChance = 0.001 * deltaTime * (1 + player.totalDistance / player.castleDistance);
+                if (Math.random() < enemyChance && player.totalDistance > 100) {
                     startCombat();
+                    return;
                 }
                 
                 // Проверка на достижение замка
                 if (player.totalDistance >= player.castleDistance) {
-                    showMessage("Вы достигли замка! Победа!", 5000);
-                    player.isMoving = false;
-                    player.speed = 0;
+                    player.visits++;
+                    showMessage(`Вы достигли замка! Посещений: ${player.visits}`, 5000);
+                    generateWorld();
+                    showMessage("Новая дорога ждет вас...", 3000);
                 }
             }
             
             // Обновление UI
             updateDistance();
+        }
+        
+        // Показать развилку
+        function showFork() {
+            gameState.isAtFork = true;
+            gameState.player.isMoving = false;
+            gameState.player.speed = 0;
+            forkPanel.style.display = 'flex';
+            showMessage("Вы подошли к развилке...", 5000);
+        }
+        
+        // Выбор пути на развилке
+        function choosePath(direction) {
+            gameState.isAtFork = false;
+            forkPanel.style.display = 'none';
+            gameState.player.forksPassed++;
+            
+            let pathModifier = 0;
+            let pathName = "";
+            
+            switch(direction) {
+                case 'left':
+                    pathModifier = Math.random() * 0.4 - 0.3; // -30% to +10%
+                    pathName = "Лесная тропа";
+                    break;
+                case 'center':
+                    pathModifier = Math.random() * 0.2 - 0.1; // -10% to +10%
+                    pathName = "Главная дорога";
+                    break;
+                case 'right':
+                    pathModifier = Math.random() * 0.4; // 0% to +40%
+                    pathName = "Горный перевал";
+                    break;
+            }
+            
+            // Устанавливаем следующую развилку
+            if (gameState.player.forksPassed < 3) {
+                gameState.nextForkDistance = player.totalDistance + 
+                    (gameState.player.castleDistance - player.totalDistance) / (4 - gameState.player.forksPassed);
+            }
+            
+            showMessage(`Вы выбрали ${pathName}...`, 2000);
         }
         
         // Начало боя
@@ -781,6 +1022,11 @@
             document.getElementById('attackBtn').addEventListener('click', attackEnemy);
             document.getElementById('fleeBtn').addEventListener('click', () => endCombat(false));
             
+            // Кнопки выбора пути
+            document.getElementById('leftPathBtn').addEventListener('click', () => choosePath('left'));
+            document.getElementById('centerPathBtn').addEventListener('click', () => choosePath('center'));
+            document.getElementById('rightPathBtn').addEventListener('click', () => choosePath('right'));
+            
             // Управление с клавиатуры для десктопов
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp') {
@@ -797,6 +1043,15 @@
                         attackEnemy();
                     } else if (e.key === 'Escape' || e.key === 'r' || e.key === 'R') {
                         endCombat(false);
+                    }
+                }
+                if (gameState.isAtFork) {
+                    if (e.key === 'ArrowLeft') {
+                        choosePath('left');
+                    } else if (e.key === 'ArrowUp') {
+                        choosePath('center');
+                    } else if (e.key === 'ArrowRight') {
+                        choosePath('right');
                     }
                 }
             });
@@ -822,6 +1077,7 @@
             generateWorld();
             updateHealth();
             updateDistance();
+            updateVisits();
             gameLoop(performance.now());
         }
         
