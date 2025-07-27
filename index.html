@@ -195,7 +195,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: #000 url('https://raw.githubusercontent.com/username/repo/main/castle-bg.png') no-repeat center center;
+            background: #000 url('https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/castle-bg.png') no-repeat center center;
             background-size: cover;
             display: flex;
             flex-direction: column;
@@ -463,13 +463,13 @@
         // Загрузка текстур
         async function loadTextures() {
             const texturePaths = {
-                road: 'https://pijamka88.github.io/ArenaFighters/road.png',
-                tree: 'https://pijamka88.github.io/ArenaFighters/pine_tree.png',
-                ground: 'https://pijamka88.github.io/ArenaFighters/ground.png',
-                castle: 'https://pijamka88.github.io/ArenaFighters/castle.png',
-                sky: 'https://pijamka88.github.io/ArenaFighters/night_sky.png',
-                moon: 'https://pijamka88.github.io/ArenaFighters/moon.png',
-                stars: 'https://pijamka88.github.io/ArenaFighters/stars.png'
+                road: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/road.png',
+                tree: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/pine_tree.png',
+                ground: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/ground.png',
+                castle: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/castle.png',
+                sky: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/night_sky.png',
+                moon: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/moon.png',
+                stars: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/stars.png'
             };
 
             const loadPromises = Object.entries(texturePaths).map(async ([name, url]) => {
