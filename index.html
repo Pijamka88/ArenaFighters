@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Daggerfall Web Adventure</title>
+    <title>Daggerfall Road Adventure</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -17,7 +17,7 @@
         body {
             overflow: hidden;
             background: #0a0a14;
-            font-family: 'Courier New', monospace;
+            font-family: 'Old English Text MT', 'Times New Roman', serif;
             color: #e0e0e0;
             height: 100vh;
             display: flex;
@@ -50,114 +50,184 @@
         
         .status-bar {
             position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 14px;
-            border: 1px solid #444;
+            top: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 18px;
+            border: 2px solid #5a3a20;
             display: flex;
-            gap: 15px;
+            gap: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
         }
         
         .status-item {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
         }
         
         .health-bar {
-            width: 80px;
-            height: 12px;
-            background: #333;
-            border-radius: 3px;
+            width: 120px;
+            height: 18px;
+            background: #3a1a0a;
+            border-radius: 4px;
             overflow: hidden;
+            border: 1px solid #5a3a20;
         }
         
         .health-fill {
             height: 100%;
-            background: linear-gradient(to right, #d00, #a00);
+            background: linear-gradient(to right, #d00, #800);
             width: 100%;
+            transition: width 0.3s;
         }
         
-        .controls {
+        .compass {
             position: absolute;
-            bottom: 20px;
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            padding: 0 20px;
-            pointer-events: auto;
-        }
-        
-        .movement-controls {
-            display: grid;
-            grid-template-columns: repeat(3, 50px);
-            grid-template-rows: repeat(2, 50px);
-            gap: 8px;
-        }
-        
-        .action-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            align-items: flex-end;
-        }
-        
-        .control-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+            top: 15px;
+            right: 15px;
             background: rgba(0, 0, 0, 0.7);
-            border: 2px solid #666;
-            color: white;
-            font-size: 24px;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: all 0.1s;
+            border: 2px solid #5a3a20;
+            font-size: 32px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            color: #d0a040;
         }
         
-        .control-btn:active {
-            background: rgba(50, 50, 50, 0.7);
-            transform: scale(0.95);
-        }
-        
-        .center-btn {
-            grid-column: 2;
-            grid-row: 1;
-        }
-        
-        .turn-btn {
-            width: 40px;
-            height: 40px;
+        .message {
+            position: absolute;
+            bottom: 180px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px 25px;
+            border-radius: 10px;
             font-size: 20px;
+            max-width: 85%;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+            border: 2px solid #d0a040;
+            color: #f0d080;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.7);
+            pointer-events: none;
         }
         
-        #turnLeft {
-            grid-column: 1;
-            grid-row: 2;
+        .choice-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px solid #5a3a20;
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+            pointer-events: auto;
         }
         
-        #turnRight {
-            grid-column: 3;
-            grid-row: 2;
+        .choice-title {
+            font-size: 22px;
+            text-align: center;
+            color: #d0a040;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 2px #000;
         }
         
-        #actionBtn {
-            width: 65px;
-            height: 65px;
-            font-size: 28px;
-            background: rgba(100, 0, 0, 0.7);
-            border-color: #a00;
+        .choice-btn {
+            background: linear-gradient(to bottom, #5a3a20, #3a1a0a);
+            color: #f0d080;
+            border: none;
+            padding: 15px;
+            font-size: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Old English Text MT', serif;
+            text-align: center;
+            border: 1px solid #7a5a30;
+            transition: all 0.2s;
         }
         
-        #jumpBtn {
-            width: 65px;
-            height: 65px;
-            font-size: 28px;
+        .choice-btn:hover {
+            background: linear-gradient(to bottom, #7a5a30, #5a3a20);
+            transform: translateY(-2px);
+        }
+        
+        .choice-btn:active {
+            transform: translateY(1px);
+        }
+        
+        .combat-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 15px;
+            border: 2px solid #a00;
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+            pointer-events: auto;
+        }
+        
+        .combat-title {
+            font-size: 22px;
+            text-align: center;
+            color: #f00;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 2px #000;
+        }
+        
+        .combat-btn {
+            background: linear-gradient(to bottom, #a00, #600);
+            color: #fff;
+            border: none;
+            padding: 15px;
+            font-size: 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Old English Text MT', serif;
+            text-align: center;
+            border: 1px solid #f00;
+            transition: all 0.2s;
+        }
+        
+        .combat-btn:hover {
+            background: linear-gradient(to bottom, #d00, #800);
+        }
+        
+        .enemy-health {
+            width: 100%;
+            height: 20px;
+            background: #3a1a0a;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #5a3a20;
+            margin-bottom: 10px;
+        }
+        
+        .enemy-health-fill {
+            height: 100%;
+            background: linear-gradient(to right, #f00, #800);
+            width: 100%;
+            transition: width 0.3s;
         }
         
         .title-screen {
@@ -166,7 +236,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to bottom, #0a0a1a, #1a1a3a);
+            background: url('https://i.imgur.com/JYQ3q3a.jpg') no-repeat center center;
+            background-size: cover;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -177,40 +248,46 @@
         }
         
         .title {
-            font-size: 42px;
+            font-size: 52px;
             font-weight: bold;
-            text-shadow: 0 0 10px rgba(255, 200, 0, 0.7);
-            margin-bottom: 20px;
-            letter-spacing: 4px;
+            text-shadow: 0 0 15px rgba(255, 200, 0, 0.8), 3px 3px 5px #000;
+            margin-bottom: 30px;
+            letter-spacing: 6px;
+            font-family: 'Old English Text MT', serif;
+            color: #d0a040;
         }
         
         .subtitle {
-            font-size: 22px;
-            margin-bottom: 40px;
+            font-size: 26px;
+            margin-bottom: 50px;
             color: #b0a060;
             max-width: 80%;
-            line-height: 1.4;
+            line-height: 1.5;
+            text-shadow: 2px 2px 4px #000;
         }
         
         .start-btn {
             background: linear-gradient(to bottom, #b09040, #705020);
             color: #fff;
             border: none;
-            padding: 15px 40px;
-            font-size: 20px;
-            border-radius: 30px;
+            padding: 20px 50px;
+            font-size: 26px;
+            border-radius: 35px;
             cursor: pointer;
             font-weight: bold;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-            transition: all 0.2s;
-            margin-top: 20px;
+            letter-spacing: 3px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+            transition: all 0.3s;
+            margin-top: 30px;
+            font-family: 'Old English Text MT', serif;
+            border: 2px solid #d0a040;
         }
         
         .start-btn:hover {
             transform: scale(1.05);
-            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+            background: linear-gradient(to bottom, #d0b050, #907030);
         }
         
         .loading {
@@ -219,7 +296,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: #000;
+            background: #000 url('https://i.imgur.com/JYQ3q3a.jpg') no-repeat center center;
+            background-size: cover;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -227,59 +305,75 @@
             flex-direction: column;
         }
         
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+        }
+        
+        .loading-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: #d0a040;
+            text-shadow: 2px 2px 4px #000;
+        }
+        
         .loading-bar {
             width: 80%;
-            max-width: 300px;
-            height: 20px;
-            background: #222;
-            border-radius: 10px;
+            max-width: 400px;
+            height: 25px;
+            background: #3a1a0a;
+            border-radius: 12px;
             overflow: hidden;
-            margin-top: 20px;
-            border: 1px solid #444;
+            margin-top: 30px;
+            border: 2px solid #5a3a20;
         }
         
         .loading-fill {
             height: 100%;
-            background: linear-gradient(to right, #b09040, #e0c060);
+            background: linear-gradient(to right, #b09040, #d0b050);
             width: 0%;
             transition: width 0.3s;
         }
         
         .loading-text {
-            margin-top: 15px;
-            font-size: 16px;
+            margin-top: 20px;
+            font-size: 20px;
             color: #b0a060;
         }
         
-        .compass {
+        .crosshair {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.6);
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid #444;
-            font-size: 24px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 30px;
+            pointer-events: none;
         }
         
-        .message {
+        .crosshair::before, .crosshair::after {
+            content: '';
             position: absolute;
-            bottom: 120px;
+            background: rgba(255, 0, 0, 0.7);
+        }
+        
+        .crosshair::before {
+            width: 100%;
+            height: 3px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .crosshair::after {
+            width: 3px;
+            height: 100%;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 16px;
-            max-width: 80%;
-            text-align: center;
-            opacity: 0;
-            transition: opacity 0.3s;
-            border: 1px solid #b09040;
         }
     </style>
 </head>
@@ -299,38 +393,44 @@
                     <span id="weapon">Меч</span>
                 </div>
                 <div class="status-item">
-                    <span>🏹</span>
-                    <span id="arrows">12</span>
+                    <span>🛡️</span>
+                    <span id="armor">Кольчуга</span>
                 </div>
             </div>
             <div class="compass" id="compass">N</div>
-            <div class="message" id="message">Вы нашли золотую монету!</div>
-            <div class="controls">
-                <div class="movement-controls">
-                    <button class="control-btn turn-btn" id="turnLeft">↩️</button>
-                    <button class="control-btn center-btn" id="forwardBtn">↑</button>
-                    <button class="control-btn turn-btn" id="turnRight">↪️</button>
-                    <button class="control-btn" id="leftBtn">←</button>
-                    <button class="control-btn" id="backBtn">↓</button>
-                    <button class="control-btn" id="rightBtn">→</button>
+            <div class="message" id="message">Вы видите развилку впереди</div>
+            <div class="crosshair"></div>
+            
+            <div class="choice-panel" id="choicePanel">
+                <div class="choice-title">Куда направиться?</div>
+                <button class="choice-btn" id="goLeftBtn">↰ Налево</button>
+                <button class="choice-btn" id="goStraightBtn">↑ Прямо</button>
+                <button class="choice-btn" id="goRightBtn">↱ Направо</button>
+            </div>
+            
+            <div class="combat-panel" id="combatPanel">
+                <div class="combat-title" id="enemyName">Разбойник</div>
+                <div class="enemy-health">
+                    <div class="enemy-health-fill" id="enemyHealthFill"></div>
                 </div>
-                <div class="action-controls">
-                    <button class="control-btn" id="jumpBtn">↥</button>
-                    <button class="control-btn" id="actionBtn">⚔️</button>
-                </div>
+                <button class="combat-btn" id="attackBtn">⚔️ Атаковать</button>
+                <button class="combat-btn" id="fleeBtn">🏃‍♂️ Бежать</button>
             </div>
         </div>
         <div class="title-screen" id="titleScreen">
-            <h1 class="title">DAGGERFALL WEB</h1>
-            <p class="subtitle">Отправляйтесь в подземелья Иллиака в этом псевдотрёхмерном приключении, оптимизированном для Telegram</p>
-            <button class="start-btn" id="startBtn">НАЧАТЬ ИГРУ</button>
+            <h1 class="title">DAGGERFALL ROAD</h1>
+            <p class="subtitle">Путешествие по дорогам Иллиака. Выбери свой путь, но будь готов к опасностям!</p>
+            <button class="start-btn" id="startBtn">В путь</button>
         </div>
         <div class="loading" id="loadingScreen">
-            <div>ЗАГРУЗКА ПОДЗЕМЕЛИЙ...</div>
-            <div class="loading-bar">
-                <div class="loading-fill" id="loadingFill"></div>
+            <div class="loading-overlay"></div>
+            <div class="loading-content">
+                <div>ПОДГОТОВКА ПУТИ...</div>
+                <div class="loading-bar">
+                    <div class="loading-fill" id="loadingFill"></div>
+                </div>
+                <div class="loading-text" id="loadingText">Создание мира...</div>
             </div>
-            <div class="loading-text" id="loadingText">Инициализация raycasting...</div>
         </div>
     </div>
 
@@ -351,6 +451,10 @@
         const messageEl = document.getElementById('message');
         const healthFill = document.getElementById('healthFill');
         const compass = document.getElementById('compass');
+        const choicePanel = document.getElementById('choicePanel');
+        const combatPanel = document.getElementById('combatPanel');
+        const enemyHealthFill = document.getElementById('enemyHealthFill');
+        const enemyNameEl = document.getElementById('enemyName');
         
         // Настройка размеров canvas
         function resizeCanvas() {
@@ -365,112 +469,140 @@
         const gameState = {
             isRunning: false,
             player: {
-                x: 8.5,
-                y: 8.5,
+                x: 0,
+                y: 0,
                 angle: 0,
                 health: 100,
-                height: 0.5,
-                moveSpeed: 0.05,
-                turnSpeed: 0.03,
-                isMovingForward: false,
-                isMovingBackward: false,
-                isMovingLeft: false,
-                isMovingRight: false,
-                isTurningLeft: false,
-                isTurningRight: false
+                maxHealth: 100,
+                weapon: 'Меч',
+                armor: 'Кольчуга',
+                damage: 10,
+                defense: 5,
+                speed: 0.05,
+                distance: 0,
+                path: []
             },
-            map: [
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-            ],
+            currentRoad: {
+                length: 0,
+                hasFork: false,
+                forkDistance: 0,
+                hasEnemy: false,
+                enemyDistance: 0
+            },
+            enemy: null,
             textures: {
-                wall: null,
-                wall2: null,
-                floor: null,
-                ceiling: null
+                road: null,
+                forest: null,
+                sky: null
             },
             fov: Math.PI / 3,
-            rayCount: 200,
-            resolution: 1,
+            rayCount: 150,
             lastTime: 0,
-            objects: [
-                {x: 5.5, y: 5.5, type: 'chest'},
-                {x: 10.5, y: 5.5, type: 'enemy'},
-                {x: 7.5, y: 12.5, type: 'pillar'},
-                {x: 3.5, y: 10.5, type: 'torch'}
-            ]
+            isInCombat: false,
+            isAtFork: false
         };
         
-        // Имитация загрузки
-        function simulateLoading() {
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += 2;
-                loadingFill.style.width = `${progress}%`;
-                
-                if (progress < 20) loadingText.textContent = "Загрузка текстур...";
-                else if (progress < 50) loadingText.textContent = "Генерация карты...";
-                else if (progress < 80) loadingText.textContent = "Инициализация игрока...";
-                else loadingText.textContent = "Завершение...";
-                
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        loadingScreen.style.display = 'none';
-                        titleScreen.style.display = 'flex';
-                    }, 500);
-                }
-            }, 50);
+        // Процедурная генерация мира
+        function generateWorld() {
+            // Сброс состояния
+            gameState.player.distance = 0;
+            gameState.player.path = [];
+            gameState.currentRoad = generateRoadSegment();
+        }
+        
+        function generateRoadSegment() {
+            const length = Math.floor(Math.random() * 30) + 20; // Длина отрезка дороги
+            const hasFork = Math.random() > 0.7; // 30% chance of fork
+            const forkDistance = hasFork ? Math.floor(Math.random() * (length - 10)) + 5 : 0;
+            
+            const hasEnemy = Math.random() > 0.5; // 50% chance of enemy
+            const enemyDistance = hasEnemy ? Math.floor(Math.random() * (length - 5)) + 3 : 0;
+            
+            return {
+                length,
+                hasFork,
+                forkDistance,
+                hasEnemy,
+                enemyDistance
+            };
+        }
+        
+        function generateEnemy() {
+            const enemies = [
+                { name: "Разбойник", health: 30, damage: 8, speed: 1.0 },
+                { name: "Волк", health: 20, damage: 5, speed: 1.2 },
+                { name: "Гоблин", health: 25, damage: 7, speed: 1.1 },
+                { name: "Бандит", health: 35, damage: 9, speed: 0.9 },
+                { name: "Орк", health: 40, damage: 10, speed: 0.8 }
+            ];
+            
+            return {...enemies[Math.floor(Math.random() * enemies.length)]};
         }
         
         // Создание текстур
         function createTextures() {
-            // Создаем простые текстуры программно
-            const wall = document.createElement('canvas');
-            const wallCtx = wall.getContext('2d');
-            wall.width = 64;
-            wall.height = 64;
+            // Текстура дороги
+            const road = document.createElement('canvas');
+            const roadCtx = road.getContext('2d');
+            road.width = 256;
+            road.height = 256;
             
-            // Текстура стены (каменная кладка)
-            wallCtx.fillStyle = '#805020';
-            wallCtx.fillRect(0, 0, 64, 64);
-            wallCtx.fillStyle = '#604010';
-            for (let i = 0; i < 64; i += 8) {
-                for (let j = 0; j < 64; j += 8) {
-                    if ((i + j) % 16 === 0) {
-                        wallCtx.fillRect(i, j, 8, 8);
+            roadCtx.fillStyle = '#5a4a3a';
+            roadCtx.fillRect(0, 0, 256, 256);
+            
+            // Добавляем детали дороги
+            roadCtx.fillStyle = '#4a3a2a';
+            for (let i = 0; i < 256; i += 32) {
+                roadCtx.fillRect(i, 0, 16, 256);
+            }
+            
+            // Текстура леса
+            const forest = document.createElement('canvas');
+            const forestCtx = forest.getContext('2d');
+            forest.width = 256;
+            forest.height = 256;
+            
+            forestCtx.fillStyle = '#1a3a1a';
+            forestCtx.fillRect(0, 0, 256, 256);
+            
+            // Добавляем деревья
+            forestCtx.fillStyle = '#0a2a0a';
+            for (let i = 0; i < 256; i += 32) {
+                for (let j = 0; j < 256; j += 32) {
+                    if (Math.random() > 0.3) {
+                        forestCtx.beginPath();
+                        forestCtx.arc(i + Math.random() * 32, j + Math.random() * 32, 4 + Math.random() * 8, 0, Math.PI * 2);
+                        forestCtx.fill();
                     }
                 }
             }
             
-            // Вторая текстура стены
-            const wall2 = document.createElement('canvas');
-            const wall2Ctx = wall2.getContext('2d');
-            wall2.width = 64;
-            wall2.height = 64;
-            wall2Ctx.fillStyle = '#706050';
-            wall2Ctx.fillRect(0, 0, 64, 64);
-            wall2Ctx.fillStyle = '#505040';
-            for (let i = 0; i < 64; i += 12) {
-                wall2Ctx.fillRect(i, 0, 6, 64);
+            // Текстура неба
+            const sky = document.createElement('canvas');
+            const skyCtx = sky.getContext('2d');
+            sky.width = 256;
+            sky.height = 256;
+            
+            const gradient = skyCtx.createLinearGradient(0, 0, 0, 256);
+            gradient.addColorStop(0, '#304070');
+            gradient.addColorStop(1, '#102040');
+            skyCtx.fillStyle = gradient;
+            skyCtx.fillRect(0, 0, 256, 256);
+            
+            // Добавляем облака
+            skyCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            for (let i = 0; i < 10; i++) {
+                const x = Math.random() * 256;
+                const y = Math.random() * 100;
+                const size = 20 + Math.random() * 40;
+                skyCtx.beginPath();
+                skyCtx.arc(x, y, size, 0, Math.PI * 2);
+                skyCtx.fill();
             }
             
-            gameState.textures.wall = wall;
-            gameState.textures.wall2 = wall2;
+            gameState.textures.road = road;
+            gameState.textures.forest = forest;
+            gameState.textures.sky = sky;
         }
         
         // Показ сообщения
@@ -483,9 +615,17 @@
             }, duration);
         }
         
-        // Обновление здоровья
+        // Обновление здоровья игрока
         function updateHealth() {
-            healthFill.style.width = `${gameState.player.health}%`;
+            const percent = (gameState.player.health / gameState.player.maxHealth) * 100;
+            healthFill.style.width = `${percent}%`;
+        }
+        
+        // Обновление здоровья врага
+        function updateEnemyHealth() {
+            if (!gameState.enemy) return;
+            const percent = (gameState.enemy.health / gameState.enemy.maxHealth) * 100;
+            enemyHealthFill.style.width = `${percent}%`;
         }
         
         // Обновление компаса
@@ -496,195 +636,251 @@
             compass.textContent = directions[(index + 8) % 8];
         }
         
-        // Raycasting рендеринг
+        // Рендеринг дороги
         function render() {
             const width = canvas.width;
             const height = canvas.height;
             const player = gameState.player;
             
             // Очистка экрана
-            ctx.fillStyle = '#304070'; // Цвет неба
-            ctx.fillRect(0, 0, width, height / 2);
-            ctx.fillStyle = '#202020'; // Цвет пола
-            ctx.fillRect(0, height / 2, width, height / 2);
+            if (gameState.textures.sky) {
+                ctx.drawImage(gameState.textures.sky, 0, 0, width, height / 2);
+            } else {
+                ctx.fillStyle = '#304070';
+                ctx.fillRect(0, 0, width, height / 2);
+            }
             
-            // Raycasting
-            for (let ray = 0; ray < gameState.rayCount; ray++) {
-                const rayAngle = player.angle - gameState.fov / 2 + 
-                                 (ray / gameState.rayCount) * gameState.fov;
+            // Рисуем пол (дорогу и обочину)
+            if (gameState.textures.road && gameState.textures.forest) {
+                // Дорога занимает центральную часть экрана
+                const roadWidth = width * 0.6;
+                const roadLeft = (width - roadWidth) / 2;
                 
-                let distance = 0;
-                let hitWall = false;
-                
-                const rayDirX = Math.cos(rayAngle);
-                const rayDirY = Math.sin(rayAngle);
-                
-                let posX = player.x;
-                let posY = player.y;
-                
-                while (!hitWall && distance < 20) {
-                    distance += 0.05;
+                // Перспектива дороги
+                for (let y = height / 2; y < height; y++) {
+                    const depth = (y - height / 2) / (height / 2);
+                    const segmentWidth = roadWidth * (1 - depth * 0.8);
+                    const segmentLeft = (width - segmentWidth) / 2;
                     
-                    posX = player.x + rayDirX * distance;
-                    posY = player.y + rayDirY * distance;
-                    
-                    // Проверка попадания в стену
-                    if (gameState.map[Math.floor(posY)][Math.floor(posX)] > 0) {
-                        hitWall = true;
+                    if (depth < 0.3) {
+                        // Ближняя часть - дорога
+                        const textureY = Math.floor((y - height / 2) / (height / 2) * 256) % 256;
+                        ctx.drawImage(
+                            gameState.textures.road,
+                            0, textureY, 256, 1,
+                            segmentLeft, y, segmentWidth, 1
+                        );
+                    } else {
+                        // Дальняя часть - лес
+                        const textureY = Math.floor((y - height / 2) / (height / 2) * 256) % 256;
+                        ctx.drawImage(
+                            gameState.textures.forest,
+                            0, textureY, 256, 1,
+                            0, y, width, 1
+                        );
+                        
+                        // Оставляем дорогу посередине
+                        ctx.drawImage(
+                            gameState.textures.road,
+                            0, textureY, 256, 1,
+                            segmentLeft, y, segmentWidth, 1
+                        );
                     }
                 }
+            } else {
+                // Простой рендеринг без текстур
+                ctx.fillStyle = '#202020';
+                ctx.fillRect(0, height / 2, width, height / 2);
                 
-                // Корректировка искажения (fish-eye effect)
-                const correctedDistance = distance * Math.cos(rayAngle - player.angle);
+                // Дорога
+                const roadWidth = width * 0.6;
+                const roadLeft = (width - roadWidth) / 2;
+                ctx.fillStyle = '#5a4a3a';
+                ctx.fillRect(roadLeft, height / 2, roadWidth, height / 2);
+            }
+            
+            // Рисуем врага, если он есть и близко
+            if (gameState.currentRoad.hasEnemy && 
+                gameState.player.distance >= gameState.currentRoad.enemyDistance - 5 &&
+                gameState.player.distance <= gameState.currentRoad.enemyDistance) {
+                const distanceToEnemy = gameState.currentRoad.enemyDistance - gameState.player.distance;
                 
-                // Расчет высоты стены
-                const wallHeight = Math.min((height / correctedDistance) * 1.5, height * 10);
-                
-                // Определение типа стены для текстуры
-                const wallType = gameState.map[Math.floor(posY)][Math.floor(posX)] === 1 ? 
-                                 gameState.textures.wall : gameState.textures.wall2;
-                
-                // Рисование стены
-                const columnWidth = width / gameState.rayCount;
-                const columnX = ray * columnWidth;
-                const wallTop = (height - wallHeight) / 2;
-                
-                if (wallType) {
-                    // Получение координаты текстуры
-                    const textureX = Math.floor(wallType.width * (posX + posY) % wallType.width);
+                if (distanceToEnemy <= 3) {
+                    const enemySize = (1 - distanceToEnemy / 3) * height * 0.6;
+                    const enemyY = height / 2 - enemySize / 2;
                     
-                    ctx.drawImage(
-                        wallType,
-                        textureX, 0, 1, wallType.height,
-                        columnX, wallTop, columnWidth, wallHeight
-                    );
-                } else {
-                    // Запасной вариант - однотонный цвет
-                    ctx.fillStyle = hitWall ? '#805020' : '#000';
-                    ctx.fillRect(columnX, wallTop, columnWidth, wallHeight);
+                    ctx.fillStyle = '#800';
+                    ctx.fillRect(width / 2 - enemySize / 4, enemyY, enemySize / 2, enemySize);
+                    
+                    // Голова
+                    ctx.fillStyle = '#a00';
+                    ctx.beginPath();
+                    ctx.arc(width / 2, enemyY + enemySize * 0.2, enemySize * 0.15, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Оружие
+                    ctx.strokeStyle = '#333';
+                    ctx.lineWidth = enemySize * 0.05;
+                    ctx.beginPath();
+                    ctx.moveTo(width / 2 - enemySize * 0.3, enemyY + enemySize * 0.4);
+                    ctx.lineTo(width / 2 + enemySize * 0.3, enemyY + enemySize * 0.6);
+                    ctx.stroke();
+                    
+                    // Если враг очень близко, начинаем бой
+                    if (distanceToEnemy <= 0.5 && !gameState.isInCombat) {
+                        startCombat();
+                    }
                 }
             }
             
-            // Рисование объектов
-            gameState.objects.forEach(obj => {
-                // Преобразование мировых координат в координаты относительно игрока
-                const objX = obj.x - player.x;
-                const objY = obj.y - player.y;
+            // Рисуем развилку, если она есть и близко
+            if (gameState.currentRoad.hasFork && 
+                gameState.player.distance >= gameState.currentRoad.forkDistance - 5 &&
+                gameState.player.distance <= gameState.currentRoad.forkDistance) {
+                const distanceToFork = gameState.currentRoad.forkDistance - gameState.player.distance;
                 
-                // Поворот системы координат
-                const playerAngle = player.angle;
-                const rotX = objX * Math.cos(playerAngle) + objY * Math.sin(playerAngle);
-                const rotY = -objX * Math.sin(playerAngle) + objY * Math.cos(playerAngle);
-                
-                if (rotY <= 0) return; // Объект позади игрока
-                
-                // Проекция на экран
-                const screenX = (rotX / rotY) * (width / 2) / Math.tan(gameState.fov / 2) + width / 2;
-                const screenY = (height / 2) - (player.height / rotY) * (height / 2) / Math.tan(gameState.fov / 2);
-                
-                // Размер объекта
-                const size = Math.min(1000 / rotY, 100);
-                
-                if (obj.type === 'chest') {
-                    ctx.fillStyle = '#b09040';
-                    ctx.fillRect(screenX - size/4, screenY - size/2, size/2, size/3);
-                    ctx.fillStyle = '#d0b050';
-                    ctx.fillRect(screenX - size/5, screenY - size/2.5, size/2.5, size/15);
-                } else if (obj.type === 'torch') {
-                    // Основание факела
-                    ctx.fillStyle = '#804020';
-                    ctx.fillRect(screenX - size/20, screenY - size/2, size/10, size/2);
+                if (distanceToFork <= 3) {
+                    const forkSize = (1 - distanceToFork / 3) * height * 0.4;
                     
-                    // Пламя
-                    ctx.fillStyle = '#ff6000';
+                    // Рисуем развилку
+                    ctx.fillStyle = '#5a4a3a';
                     ctx.beginPath();
-                    ctx.arc(screenX, screenY - size/2, size/8, 0, Math.PI * 2);
+                    ctx.moveTo(width / 2 - forkSize / 2, height / 2 + forkSize);
+                    ctx.lineTo(width / 2, height / 2);
+                    ctx.lineTo(width / 2 + forkSize / 2, height / 2 + forkSize);
                     ctx.fill();
                     
-                    ctx.fillStyle = '#ffa000';
-                    ctx.beginPath();
-                    ctx.arc(screenX, screenY - size/2, size/12, 0, Math.PI * 2);
-                    ctx.fill();
+                    // Если подошли к развилке, показываем выбор
+                    if (distanceToFork <= 0.1 && !gameState.isAtFork && !gameState.isInCombat) {
+                        showForkChoice();
+                    }
                 }
-            });
-            
-            // Рисование прицела
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-            ctx.beginPath();
-            ctx.arc(width / 2, height / 2, 4, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)';
-            ctx.lineWidth = 1;
-            ctx.stroke();
-            
-            // Рисование границ экрана (имитация шлема)
-            ctx.strokeStyle = 'rgba(100, 100, 100, 0.5)';
-            ctx.lineWidth = 10;
-            ctx.strokeRect(0, 0, width, height);
+            }
         }
         
         // Обновление состояния игры
         function update(deltaTime) {
             const player = gameState.player;
             
-            // Движение игрока
-            const moveStep = player.moveSpeed * deltaTime;
-            const turnStep = player.turnSpeed * deltaTime;
-            
-            if (player.isMovingForward) {
-                const newX = player.x + Math.cos(player.angle) * moveStep;
-                const newY = player.y + Math.sin(player.angle) * moveStep;
+            if (!gameState.isInCombat && !gameState.isAtFork) {
+                // Движение вперед по дороге
+                player.distance += player.speed * deltaTime;
                 
-                if (gameState.map[Math.floor(newY)][Math.floor(newX)] === 0) {
-                    player.x = newX;
-                    player.y = newY;
+                // Проверка на конец текущего отрезка дороги
+                if (player.distance >= gameState.currentRoad.length) {
+                    player.distance = 0;
+                    gameState.currentRoad = generateRoadSegment();
+                    showMessage("Вы продолжаете путь...");
+                }
+                
+                // Проверка на приближение к врагу
+                if (gameState.currentRoad.hasEnemy && 
+                    Math.abs(player.distance - gameState.currentRoad.enemyDistance) < 0.5) {
+                    showMessage(`Вы видите ${gameState.enemy.name.toLowerCase()} на дороге!`);
+                }
+                
+                // Проверка на приближение к развилке
+                if (gameState.currentRoad.hasFork && 
+                    Math.abs(player.distance - gameState.currentRoad.forkDistance) < 0.5) {
+                    showMessage("Вы подошли к развилке...");
                 }
             }
-            
-            if (player.isMovingBackward) {
-                const newX = player.x - Math.cos(player.angle) * moveStep;
-                const newY = player.y - Math.sin(player.angle) * moveStep;
-                
-                if (gameState.map[Math.floor(newY)][Math.floor(newX)] === 0) {
-                    player.x = newX;
-                    player.y = newY;
-                }
-            }
-            
-            if (player.isMovingLeft) {
-                const newX = player.x + Math.cos(player.angle - Math.PI/2) * moveStep;
-                const newY = player.y + Math.sin(player.angle - Math.PI/2) * moveStep;
-                
-                if (gameState.map[Math.floor(newY)][Math.floor(newX)] === 0) {
-                    player.x = newX;
-                    player.y = newY;
-                }
-            }
-            
-            if (player.isMovingRight) {
-                const newX = player.x + Math.cos(player.angle + Math.PI/2) * moveStep;
-                const newY = player.y + Math.sin(player.angle + Math.PI/2) * moveStep;
-                
-                if (gameState.map[Math.floor(newY)][Math.floor(newX)] === 0) {
-                    player.x = newX;
-                    player.y = newY;
-                }
-            }
-            
-            if (player.isTurningLeft) {
-                player.angle -= turnStep;
-            }
-            
-            if (player.isTurningRight) {
-                player.angle += turnStep;
-            }
-            
-            // Нормализация угла
-            player.angle %= Math.PI * 2;
-            if (player.angle < 0) player.angle += Math.PI * 2;
             
             // Обновление UI
             updateCompass();
+        }
+        
+        // Начало боя
+        function startCombat() {
+            gameState.isInCombat = true;
+            gameState.enemy = generateEnemy();
+            gameState.enemy.maxHealth = gameState.enemy.health;
+            
+            enemyNameEl.textContent = gameState.enemy.name;
+            updateEnemyHealth();
+            combatPanel.style.display = 'flex';
+            
+            showMessage(`На вас напал ${gameState.enemy.name.toLowerCase()}!`, 2000);
+        }
+        
+        // Завершение боя
+        function endCombat(playerWon) {
+            gameState.isInCombat = false;
+            combatPanel.style.display = 'none';
+            
+            if (playerWon) {
+                showMessage(`Вы победили ${gameState.enemy.name.toLowerCase()}!`, 2000);
+                gameState.currentRoad.hasEnemy = false;
+            } else {
+                showMessage("Вы бежите от врага...", 2000);
+                // Отступаем немного назад
+                gameState.player.distance = Math.max(0, gameState.player.distance - 5);
+            }
+        }
+        
+        // Показ выбора на развилке
+        function showForkChoice() {
+            gameState.isAtFork = true;
+            choicePanel.style.display = 'flex';
+            showMessage("Куда вы хотите пойти?", 5000);
+        }
+        
+        // Выбор направления на развилке
+        function makeChoice(direction) {
+            gameState.isAtFork = false;
+            choicePanel.style.display = 'none';
+            
+            // Запоминаем выбор
+            gameState.player.path.push(direction);
+            
+            // Генерируем новый отрезок дороги
+            gameState.player.distance = 0;
+            gameState.currentRoad = generateRoadSegment();
+            
+            showMessage(`Вы идёте ${direction.toLowerCase()}...`, 2000);
+        }
+        
+        // Атака врага
+        function attackEnemy() {
+            if (!gameState.isInCombat || !gameState.enemy) return;
+            
+            // Урон игрока
+            const playerDamage = Math.max(1, gameState.player.damage + Math.floor(Math.random() * 6) - 3);
+            gameState.enemy.health -= playerDamage;
+            updateEnemyHealth();
+            
+            showMessage(`Вы нанесли ${playerDamage} урона!`, 1000);
+            
+            // Проверка на победу
+            if (gameState.enemy.health <= 0) {
+                endCombat(true);
+                return;
+            }
+            
+            // Урон врага
+            setTimeout(() => {
+                if (!gameState.isInCombat) return;
+                
+                const enemyDamage = Math.max(1, gameState.enemy.damage + Math.floor(Math.random() * 4) - 2 - gameState.player.defense);
+                gameState.player.health -= enemyDamage;
+                updateHealth();
+                
+                showMessage(`${gameState.enemy.name} нанес вам ${enemyDamage} урона!`, 1000);
+                
+                // Проверка на поражение
+                if (gameState.player.health <= 0) {
+                    gameState.player.health = 0;
+                    updateHealth();
+                    showMessage("Вы пали в бою...", 3000);
+                    setTimeout(() => {
+                        // Рестарт игры
+                        gameState.player.health = gameState.player.maxHealth;
+                        updateHealth();
+                        generateWorld();
+                        showMessage("Вы очнулись у начала пути...", 3000);
+                    }, 3000);
+                }
+            }, 500);
         }
         
         // Игровой цикл
@@ -702,98 +898,33 @@
         
         // Настройка управления
         function setupControls() {
-            // Кнопки движения
-            document.getElementById('forwardBtn').addEventListener('touchstart', () => {
-                gameState.player.isMovingForward = true;
-            });
-            document.getElementById('forwardBtn').addEventListener('touchend', () => {
-                gameState.player.isMovingForward = false;
-            });
+            // Кнопки выбора на развилке
+            document.getElementById('goLeftBtn').addEventListener('click', () => makeChoice('Налево'));
+            document.getElementById('goStraightBtn').addEventListener('click', () => makeChoice('Прямо'));
+            document.getElementById('goRightBtn').addEventListener('click', () => makeChoice('Направо'));
             
-            document.getElementById('backBtn').addEventListener('touchstart', () => {
-                gameState.player.isMovingBackward = true;
-            });
-            document.getElementById('backBtn').addEventListener('touchend', () => {
-                gameState.player.isMovingBackward = false;
-            });
-            
-            document.getElementById('leftBtn').addEventListener('touchstart', () => {
-                gameState.player.isMovingLeft = true;
-            });
-            document.getElementById('leftBtn').addEventListener('touchend', () => {
-                gameState.player.isMovingLeft = false;
-            });
-            
-            document.getElementById('rightBtn').addEventListener('touchstart', () => {
-                gameState.player.isMovingRight = true;
-            });
-            document.getElementById('rightBtn').addEventListener('touchend', () => {
-                gameState.player.isMovingRight = false;
-            });
-            
-            document.getElementById('turnLeft').addEventListener('touchstart', () => {
-                gameState.player.isTurningLeft = true;
-            });
-            document.getElementById('turnLeft').addEventListener('touchend', () => {
-                gameState.player.isTurningLeft = false;
-            });
-            
-            document.getElementById('turnRight').addEventListener('touchstart', () => {
-                gameState.player.isTurningRight = true;
-            });
-            document.getElementById('turnRight').addEventListener('touchend', () => {
-                gameState.player.isTurningRight = false;
-            });
-            
-            // Кнопки действий
-            document.getElementById('actionBtn').addEventListener('click', () => {
-                showMessage("Вы атакуете мечом!", 1000);
-            });
-            
-            document.getElementById('jumpBtn').addEventListener('click', () => {
-                showMessage("Прыжок!", 800);
-            });
+            // Кнопки боя
+            document.getElementById('attackBtn').addEventListener('click', attackEnemy);
+            document.getElementById('fleeBtn').addEventListener('click', () => endCombat(false));
             
             // Управление с клавиатуры для десктопов
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp') {
-                    gameState.player.isMovingForward = true;
+                if (gameState.isAtFork) {
+                    if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A' || e.key === 'ф' || e.key === 'Ф') {
+                        makeChoice('Налево');
+                    } else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W' || e.key === 'ц' || e.key === 'Ц') {
+                        makeChoice('Прямо');
+                    } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D' || e.key === 'в' || e.key === 'В') {
+                        makeChoice('Направо');
+                    }
                 }
-                if (e.key === 's' || e.key === 'S' || e.key === 'ArrowDown') {
-                    gameState.player.isMovingBackward = true;
-                }
-                if (e.key === 'a' || e.key === 'A' || e.key === 'ArrowLeft') {
-                    gameState.player.isMovingLeft = true;
-                }
-                if (e.key === 'd' || e.key === 'D' || e.key === 'ArrowRight') {
-                    gameState.player.isMovingRight = true;
-                }
-                if (e.key === 'q' || e.key === 'Q') {
-                    gameState.player.isTurningLeft = true;
-                }
-                if (e.key === 'e' || e.key === 'E') {
-                    gameState.player.isTurningRight = true;
-                }
-            });
-            
-            document.addEventListener('keyup', (e) => {
-                if (e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp') {
-                    gameState.player.isMovingForward = false;
-                }
-                if (e.key === 's' || e.key === 'S' || e.key === 'ArrowDown') {
-                    gameState.player.isMovingBackward = false;
-                }
-                if (e.key === 'a' || e.key === 'A' || e.key === 'ArrowLeft') {
-                    gameState.player.isMovingLeft = false;
-                }
-                if (e.key === 'd' || e.key === 'D' || e.key === 'ArrowRight') {
-                    gameState.player.isMovingRight = false;
-                }
-                if (e.key === 'q' || e.key === 'Q') {
-                    gameState.player.isTurningLeft = false;
-                }
-                if (e.key === 'e' || e.key === 'E') {
-                    gameState.player.isTurningRight = false;
+                
+                if (gameState.isInCombat) {
+                    if (e.key === ' ' || e.key === 'f' || e.key === 'F' || e.key === 'а' || e.key === 'А') {
+                        attackEnemy();
+                    } else if (e.key === 'Escape' || e.key === 'r' || e.key === 'R' || e.key === 'к' || e.key === 'К') {
+                        endCombat(false);
+                    }
                 }
             });
         }
@@ -803,8 +934,32 @@
             titleScreen.style.display = 'none';
             gameState.isRunning = true;
             gameState.lastTime = performance.now();
+            gameState.player.health = gameState.player.maxHealth;
             updateHealth();
+            generateWorld();
             gameLoop(performance.now());
+        }
+        
+        // Имитация загрузки
+        function simulateLoading() {
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 2;
+                loadingFill.style.width = `${progress}%`;
+                
+                if (progress < 20) loadingText.textContent = "Создание дорог...";
+                else if (progress < 50) loadingText.textContent = "Размещение врагов...";
+                else if (progress < 80) loadingText.textContent = "Подготовка оружия...";
+                else loadingText.textContent = "Готово к путешествию...";
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loadingScreen.style.display = 'none';
+                        titleScreen.style.display = 'flex';
+                    }, 500);
+                }
+            }, 50);
         }
         
         // Инициализация
