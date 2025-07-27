@@ -464,12 +464,14 @@
         async function loadTextures() {
             const texturePaths = {
                 road: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/road.png',
-                tree: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/pine_tree.png',
+                tree: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/tree.png',
                 ground: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/ground.png',
                 castle: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/castle.png',
-                sky: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/night_sky.png',
+                sky: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/sky.png',
                 moon: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/moon.png',
-                stars: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/stars.png'
+                stars: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/stars.png',
+                enemy: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/enemy.png',
+                fork: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/fork.png'
             };
 
             const loadPromises = Object.entries(texturePaths).map(async ([name, url]) => {
@@ -616,6 +618,44 @@
                     ctx.fillStyle = '#102040';
                     ctx.beginPath();
                     ctx.arc(5, 3, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                    break;
+                    
+                case 'enemy':
+                    canvas.width = 16;
+                    canvas.height = 16;
+                    ctx.fillStyle = '#800';
+                    ctx.fillRect(0, 0, 16, 16);
+                    ctx.fillStyle = '#a00';
+                    ctx.fillRect(5, 3, 6, 5);
+                    ctx.fillStyle = '#333';
+                    ctx.fillRect(6, 8, 4, 6);
+                    break;
+                    
+                case 'fork':
+                    canvas.width = 16;
+                    canvas.height = 16;
+                    ctx.fillStyle = '#3a3a3a';
+                    ctx.beginPath();
+                    ctx.moveTo(0, 16);
+                    ctx.lineTo(5, 8);
+                    ctx.lineTo(11, 8);
+                    ctx.lineTo(16, 16);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.fillStyle = '#ffff00';
+                    ctx.beginPath();
+                    ctx.moveTo(2, 12);
+                    ctx.lineTo(0, 16);
+                    ctx.lineTo(2, 16);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.fillRect(5, 12, 6, 4);
+                    ctx.beginPath();
+                    ctx.moveTo(14, 12);
+                    ctx.lineTo(16, 16);
+                    ctx.lineTo(14, 16);
+                    ctx.closePath();
                     ctx.fill();
                     break;
             }
@@ -792,29 +832,36 @@
                 const forkX = width / 2 - forkSize / 2;
                 const forkY = height / 2 + 50;
                 
-                ctx.fillStyle = '#3a3a3a';
-                ctx.beginPath();
-                ctx.moveTo(forkX, forkY + forkSize);
-                ctx.lineTo(forkX + forkSize / 3, forkY);
-                ctx.lineTo(forkX + forkSize * 2/3, forkY);
-                ctx.lineTo(forkX + forkSize, forkY + forkSize);
-                ctx.closePath();
-                ctx.fill();
-                
-                ctx.fillStyle = '#ffff00';
-                ctx.beginPath();
-                ctx.moveTo(forkX + forkSize / 6, forkY + forkSize / 2);
-                ctx.lineTo(forkX, forkY + forkSize);
-                ctx.lineTo(forkX + forkSize / 6, forkY + forkSize);
-                ctx.closePath();
-                ctx.fill();
-                ctx.fillRect(forkX + forkSize / 3, forkY + forkSize / 2, forkSize / 3, forkSize / 2);
-                ctx.beginPath();
-                ctx.moveTo(forkX + forkSize * 5/6, forkY + forkSize / 2);
-                ctx.lineTo(forkX + forkSize, forkY + forkSize);
-                ctx.lineTo(forkX + forkSize * 5/6, forkY + forkSize);
-                ctx.closePath();
-                ctx.fill();
+                if (gameState.textures.fork) {
+                    ctx.drawImage(
+                        gameState.textures.fork,
+                        forkX, forkY, forkSize, forkSize
+                    );
+                } else {
+                    ctx.fillStyle = '#3a3a3a';
+                    ctx.beginPath();
+                    ctx.moveTo(forkX, forkY + forkSize);
+                    ctx.lineTo(forkX + forkSize / 3, forkY);
+                    ctx.lineTo(forkX + forkSize * 2/3, forkY);
+                    ctx.lineTo(forkX + forkSize, forkY + forkSize);
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    ctx.fillStyle = '#ffff00';
+                    ctx.beginPath();
+                    ctx.moveTo(forkX + forkSize / 6, forkY + forkSize / 2);
+                    ctx.lineTo(forkX, forkY + forkSize);
+                    ctx.lineTo(forkX + forkSize / 6, forkY + forkSize);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.fillRect(forkX + forkSize / 3, forkY + forkSize / 2, forkSize / 3, forkSize / 2);
+                    ctx.beginPath();
+                    ctx.moveTo(forkX + forkSize * 5/6, forkY + forkSize / 2);
+                    ctx.lineTo(forkX + forkSize, forkY + forkSize);
+                    ctx.lineTo(forkX + forkSize * 5/6, forkY + forkSize);
+                    ctx.closePath();
+                    ctx.fill();
+                }
             }
             
             // Рисуем врага
@@ -823,12 +870,19 @@
                 const enemyX = width / 2 - enemySize / 2;
                 const enemyY = height / 2 - enemySize / 2;
                 
-                ctx.fillStyle = '#800';
-                ctx.fillRect(enemyX, enemyY, enemySize, enemySize);
-                ctx.fillStyle = '#a00';
-                ctx.fillRect(enemyX + enemySize * 0.3, enemyY + enemySize * 0.2, enemySize * 0.4, enemySize * 0.3);
-                ctx.fillStyle = '#333';
-                ctx.fillRect(enemyX + enemySize * 0.4, enemyY + enemySize * 0.5, enemySize * 0.2, enemySize * 0.4);
+                if (gameState.textures.enemy) {
+                    ctx.drawImage(
+                        gameState.textures.enemy,
+                        enemyX, enemyY, enemySize, enemySize
+                    );
+                } else {
+                    ctx.fillStyle = '#800';
+                    ctx.fillRect(enemyX, enemyY, enemySize, enemySize);
+                    ctx.fillStyle = '#a00';
+                    ctx.fillRect(enemyX + enemySize * 0.3, enemyY + enemySize * 0.2, enemySize * 0.4, enemySize * 0.3);
+                    ctx.fillStyle = '#333';
+                    ctx.fillRect(enemyX + enemySize * 0.4, enemyY + enemySize * 0.5, enemySize * 0.2, enemySize * 0.4);
+                }
             }
         }
 
