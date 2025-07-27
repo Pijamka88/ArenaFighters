@@ -10,7 +10,7 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            touch-action: none;
+            touch-action: manipulation; /* Изменено с none на manipulation для лучшей работы на мобильных */
             user-select: none;
             image-rendering: pixelated;
         }
@@ -334,7 +334,7 @@
             src: url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="gameContainer">
@@ -457,10 +457,11 @@
             lastTime: 0,
             isInCombat: false,
             isAtFork: false,
-            nextForkDistance: 300
+            nextForkDistance: 300,
+            texturesLoaded: false // Добавлен флаг загрузки текстур
         };
         
-        // Загрузка текстур
+        // Загрузка текстур с исправленными URL
         async function loadTextures() {
             const texturePaths = {
                 road: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/road.png',
@@ -474,25 +475,32 @@
                 fork: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/fork.png'
             };
 
-            const loadPromises = Object.entries(texturePaths).map(async ([name, url]) => {
-                try {
+            try {
+                const loadPromises = Object.entries(texturePaths).map(async ([name, url]) => {
                     const img = new Image();
                     img.src = url;
                     await new Promise((resolve, reject) => {
                         img.onload = resolve;
                         img.onerror = () => {
                             console.warn(`Не удалось загрузить ${name}, используется запасной вариант`);
+                            gameState.textures[name] = generateFallbackTexture(name);
                             resolve();
                         };
                     });
                     gameState.textures[name] = img;
-                } catch (error) {
-                    console.error(`Ошибка загрузки ${name}:`, error);
-                    gameState.textures[name] = generateFallbackTexture(name);
-                }
-            });
+                });
 
-            await Promise.all(loadPromises);
+                await Promise.all(loadPromises);
+                gameState.texturesLoaded = true; // Устанавливаем флаг после загрузки
+                console.log("Все текстуры загружены");
+            } catch (error) {
+                console.error("Ошибка загрузки текстур:", error);
+                // Генерируем все запасные текстуры в случае ошибки
+                Object.keys(texturePaths).forEach(name => {
+                    gameState.textures[name] = generateFallbackTexture(name);
+                });
+                gameState.texturesLoaded = true;
+            }
         }
 
         // Генерация запасных текстур
@@ -692,6 +700,8 @@
             };
             
             updateVisits();
+            updateHealth();
+            updateDistance();
         }
 
         // Генерация врага
@@ -1031,33 +1041,48 @@
             }, 500);
         }
 
-        // Настройка управления
+        // Настройка управления с исправлениями
         function setupControls() {
-            document.getElementById('forwardBtn').addEventListener('touchstart', () => {
+            const forwardBtn = document.getElementById('forwardBtn');
+            const leftBtn = document.getElementById('leftBtn');
+            const rightBtn = document.getElementById('rightBtn');
+
+            // Добавляем обработчики для touch и mouse событий
+            const addMultiEventListeners = (element, events, handler) => {
+                events.forEach(event => {
+                    element.addEventListener(event, handler);
+                });
+            };
+
+            // Кнопка движения вперед
+            addMultiEventListeners(forwardBtn, ['mousedown', 'touchstart'], () => {
                 gameState.player.isMoving = true;
             });
-            document.getElementById('forwardBtn').addEventListener('touchend', () => {
+            addMultiEventListeners(forwardBtn, ['mouseup', 'mouseleave', 'touchend'], () => {
                 gameState.player.isMoving = false;
             });
-            
-            document.getElementById('leftBtn').addEventListener('touchstart', () => {
+
+            // Кнопка движения влево
+            addMultiEventListeners(leftBtn, ['mousedown', 'touchstart'], () => {
                 gameState.player.direction = -1;
             });
-            document.getElementById('leftBtn').addEventListener('touchend', () => {
+            addMultiEventListeners(leftBtn, ['mouseup', 'mouseleave', 'touchend'], () => {
                 if (gameState.player.direction === -1) {
                     gameState.player.direction = 0;
                 }
             });
-            
-            document.getElementById('rightBtn').addEventListener('touchstart', () => {
+
+            // Кнопка движения вправо
+            addMultiEventListeners(rightBtn, ['mousedown', 'touchstart'], () => {
                 gameState.player.direction = 1;
             });
-            document.getElementById('rightBtn').addEventListener('touchend', () => {
+            addMultiEventListeners(rightBtn, ['mouseup', 'mouseleave', 'touchend'], () => {
                 if (gameState.player.direction === 1) {
                     gameState.player.direction = 0;
                 }
             });
             
+            // Остальные обработчики без изменений
             document.getElementById('attackBtn').addEventListener('click', attackEnemy);
             document.getElementById('fleeBtn').addEventListener('click', () => endCombat(false));
             
@@ -1122,15 +1147,30 @@
         // Инициализация игры
         async function init() {
             resizeCanvas();
-            await loadTextures();
-            setupControls();
+            setupControls(); // Перенесено перед загрузкой текстур
+            
+            // Показываем сообщение о загрузке
+            showMessage("Загрузка игры...", 2000);
+            
+            try {
+                await loadTextures();
+            } catch (error) {
+                console.error("Ошибка при загрузке текстур:", error);
+                showMessage("Ошибка загрузки, используются базовые текстуры", 3000);
+            }
             
             startBtn.addEventListener('click', () => {
+                if (!gameState.texturesLoaded) {
+                    showMessage("Текстуры еще загружаются...", 2000);
+                    return;
+                }
+                
                 titleScreen.style.display = 'none';
                 generateWorld();
                 gameState.isRunning = true;
                 gameState.lastTime = performance.now();
-                gameLoop(performance.now());
+                gameLoop(gameState.lastTime);
+                showMessage("В путь! Держитесь дороги...", 2000);
             });
             
             tg.onEvent('viewportChanged', () => {
