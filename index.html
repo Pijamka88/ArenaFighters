@@ -10,11 +10,10 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            touch-action: manipulation; /* Изменено с none на manipulation для лучшей работы на мобильных */
+            touch-action: manipulation;
             user-select: none;
             image-rendering: pixelated;
         }
-        
         body {
             overflow: hidden;
             background: #0a0a14;
@@ -24,13 +23,11 @@
             display: flex;
             flex-direction: column;
         }
-        
         #gameContainer {
             position: relative;
             flex-grow: 1;
             overflow: hidden;
         }
-        
         #gameCanvas {
             position: absolute;
             top: 0;
@@ -38,7 +35,6 @@
             width: 100%;
             height: 100%;
         }
-        
         #uiOverlay {
             position: absolute;
             top: 0;
@@ -48,55 +44,49 @@
             pointer-events: none;
             z-index: 10;
         }
-        
         .status-bar {
             position: absolute;
-            top: 10px;
+            bottom: 110px;
             left: 10px;
             background: rgba(0, 0, 0, 0.7);
-            padding: 10px;
+            padding: 8px 12px;
             border-radius: 5px;
-            font-size: 12px;
+            font-size: 10px;
             border: 2px solid #5a3a20;
             display: flex;
-            gap: 15px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            gap: 10px;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
         }
-        
         .status-item {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
         }
-        
         .health-bar {
-            width: 80px;
-            height: 10px;
+            width: 60px;
+            height: 8px;
             background: #3a1a0a;
             border-radius: 3px;
             overflow: hidden;
             border: 1px solid #5a3a20;
         }
-        
         .health-fill {
             height: 100%;
             background: linear-gradient(to right, #d00, #800);
             width: 100%;
             transition: width 0.3s;
         }
-        
-        .distance-bar {
+        .distance-info {
             position: absolute;
-            top: 10px;
+            bottom: 110px;
             right: 10px;
             background: rgba(0, 0, 0, 0.7);
-            padding: 10px;
+            padding: 8px 12px;
             border-radius: 5px;
-            font-size: 12px;
+            font-size: 10px;
             border: 2px solid #5a3a20;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
         }
-        
         .controls {
             position: absolute;
             bottom: 20px;
@@ -106,7 +96,6 @@
             gap: 20px;
             pointer-events: auto;
         }
-        
         .control-btn {
             width: 70px;
             height: 70px;
@@ -122,12 +111,10 @@
             transition: all 0.1s;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
         }
-        
         .control-btn:active {
             background: rgba(50, 50, 50, 0.7);
             transform: scale(0.95);
         }
-        
         .combat-panel {
             position: absolute;
             bottom: 100px;
@@ -145,7 +132,6 @@
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
             pointer-events: auto;
         }
-        
         .combat-title {
             font-size: 14px;
             text-align: center;
@@ -153,7 +139,6 @@
             margin-bottom: 8px;
             text-shadow: 2px 2px 0 #000;
         }
-        
         .combat-btn {
             background: linear-gradient(to bottom, #a00, #600);
             color: #fff;
@@ -167,11 +152,9 @@
             transition: all 0.2s;
             text-shadow: 1px 1px 0 #000;
         }
-        
         .combat-btn:hover {
             background: linear-gradient(to bottom, #d00, #800);
         }
-        
         .enemy-health {
             width: 100%;
             height: 10px;
@@ -181,14 +164,12 @@
             border: 1px solid #5a3a20;
             margin-bottom: 10px;
         }
-        
         .enemy-health-fill {
             height: 100%;
             background: linear-gradient(to right, #f00, #800);
             width: 100%;
             transition: width 0.3s;
         }
-        
         .title-screen {
             position: absolute;
             top: 0;
@@ -205,7 +186,6 @@
             color: #e0d0a0;
             text-align: center;
         }
-        
         .title {
             font-size: 24px;
             font-weight: bold;
@@ -214,7 +194,6 @@
             letter-spacing: 2px;
             color: #d0a040;
         }
-        
         .subtitle {
             font-size: 12px;
             margin-bottom: 30px;
@@ -223,7 +202,6 @@
             line-height: 1.5;
             text-shadow: 2px 2px 0 #000;
         }
-        
         .start-btn {
             background: linear-gradient(to bottom, #b09040, #705020);
             color: #fff;
@@ -240,23 +218,21 @@
             border: 2px solid #d0a040;
             text-shadow: 1px 1px 0 #000;
         }
-        
         .start-btn:hover {
             transform: scale(1.05);
             box-shadow: 0 7px 20px rgba(0, 0, 0, 0.6);
             background: linear-gradient(to bottom, #d0b050, #907030);
         }
-        
         .message {
             position: absolute;
-            bottom: 180px;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translate(-50%, -50%);
             background: rgba(0, 0, 0, 0.8);
-            padding: 10px 15px;
+            padding: 15px 25px;
             border-radius: 5px;
-            font-size: 12px;
-            max-width: 80%;
+            font-size: 14px;
+            max-width: 90%;
             text-align: center;
             opacity: 0;
             transition: opacity 0.3s;
@@ -266,25 +242,6 @@
             pointer-events: none;
             text-shadow: 1px 1px 0 #000;
         }
-        
-        .castle-indicator {
-            position: absolute;
-            top: 50%;
-            right: 20px;
-            transform: translateY(-50%);
-            font-size: 12px;
-            color: #fff;
-            text-shadow: 1px 1px 0 #000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .castle-icon {
-            font-size: 24px;
-        }
-        
         .fork-panel {
             position: absolute;
             bottom: 100px;
@@ -302,7 +259,6 @@
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
             pointer-events: auto;
         }
-        
         .fork-title {
             font-size: 14px;
             text-align: center;
@@ -310,7 +266,6 @@
             margin-bottom: 8px;
             text-shadow: 2px 2px 0 #000;
         }
-        
         .fork-btn {
             background: linear-gradient(to bottom, #5a3a20, #3a1a0a);
             color: #f0d080;
@@ -324,17 +279,15 @@
             transition: all 0.2s;
             text-shadow: 1px 1px 0 #000;
         }
-        
         .fork-btn:hover {
             background: linear-gradient(to bottom, #7a5a30, #5a3a20);
         }
-        
         @font-face {
             font-family: 'Press Start 2P';
             src: url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         }
     </style>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="gameContainer">
@@ -347,30 +300,15 @@
                         <div class="health-fill" id="healthFill"></div>
                     </div>
                 </div>
-                <div class="status-item">
-                    <span>⚔️</span>
-                    <span id="weapon">10</span>
-                </div>
-                <div class="status-item">
-                    <span>🏆</span>
-                    <span id="visits">0</span>
-                </div>
             </div>
-            <div class="distance-bar">
-                <span id="distance">0m</span>
-            </div>
-            <div class="castle-indicator">
-                <div class="castle-icon">🏰</div>
-                <div id="castleDistance">1000m</div>
-            </div>
+            <div class="distance-info" id="castleDistance">1000m до замка</div>
+
             <div class="message" id="message">Добро пожаловать в Daggerfall Road!</div>
-            
             <div class="controls">
                 <button class="control-btn" id="leftBtn">←</button>
                 <button class="control-btn" id="forwardBtn">↑</button>
                 <button class="control-btn" id="rightBtn">→</button>
             </div>
-            
             <div class="combat-panel" id="combatPanel">
                 <div class="combat-title" id="enemyName">Разбойник</div>
                 <div class="enemy-health">
@@ -379,7 +317,6 @@
                 <button class="combat-btn" id="attackBtn">⚔️ Атаковать</button>
                 <button class="combat-btn" id="fleeBtn">🏃‍♂️ Бежать</button>
             </div>
-            
             <div class="fork-panel" id="forkPanel">
                 <div class="fork-title">Выберите путь:</div>
                 <button class="fork-btn" id="leftPathBtn">← Лесная тропа</button>
@@ -393,7 +330,6 @@
             <button class="start-btn" id="startBtn">НАЧАТЬ</button>
         </div>
     </div>
-
     <script>
         // Инициализация Telegram Web App
         const tg = window.Telegram.WebApp;
@@ -407,23 +343,20 @@
         const startBtn = document.getElementById('startBtn');
         const messageEl = document.getElementById('message');
         const healthFill = document.getElementById('healthFill');
-        const distanceEl = document.getElementById('distance');
         const castleDistanceEl = document.getElementById('castleDistance');
         const combatPanel = document.getElementById('combatPanel');
         const enemyHealthFill = document.getElementById('enemyHealthFill');
         const enemyNameEl = document.getElementById('enemyName');
         const forkPanel = document.getElementById('forkPanel');
-        const visitsEl = document.getElementById('visits');
-        
+
         // Настройка размеров canvas
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
         }
-        
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
-        
+
         // Состояние игры
         const gameState = {
             isRunning: false,
@@ -443,7 +376,8 @@
                 direction: 0,
                 isMoving: false,
                 visits: 0,
-                forksPassed: 0
+                forksPassed: 0,
+                cameraOffset: 0
             },
             enemy: null,
             trees: [],
@@ -451,26 +385,25 @@
                 x: 0,
                 y: 0,
                 size: 0,
-                parallax: 0
+                parallax: 0,
+                visibleDistance: 1500
             },
             textures: {},
             lastTime: 0,
             isInCombat: false,
             isAtFork: false,
             nextForkDistance: 300,
-            texturesLoaded: false // Добавлен флаг загрузки текстур
+            texturesLoaded: false,
+            groundPattern: null
         };
-        
-        // Загрузка текстур с исправленными URL
+
+        // Загрузка текстур
         async function loadTextures() {
             const texturePaths = {
                 road: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/road.png',
                 tree: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/tree.png',
                 ground: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/ground.png',
                 castle: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/castle.png',
-                sky: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/sky.png',
-                moon: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/moon.png',
-                stars: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/stars.png',
                 enemy: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/enemy.png',
                 fork: 'https://raw.githubusercontent.com/Pijamka88/ArenaFighters/main/fork.png'
             };
@@ -482,8 +415,7 @@
                     await new Promise((resolve, reject) => {
                         img.onload = resolve;
                         img.onerror = () => {
-                            console.warn(`Не удалось загрузить ${name}, используется запасной вариант`);
-                            gameState.textures[name] = generateFallbackTexture(name);
+                            console.warn(`Не удалось загрузить ${name}`);
                             resolve();
                         };
                     });
@@ -491,184 +423,18 @@
                 });
 
                 await Promise.all(loadPromises);
-                gameState.texturesLoaded = true; // Устанавливаем флаг после загрузки
-                console.log("Все текстуры загружены");
+                
+                // Создаем паттерн для земли
+                if (gameState.textures.ground) {
+                    gameState.groundPattern = ctx.createPattern(gameState.textures.ground, 'repeat');
+                }
+                
+                gameState.texturesLoaded = true;
+                console.log("Текстуры загружены");
             } catch (error) {
                 console.error("Ошибка загрузки текстур:", error);
-                // Генерируем все запасные текстуры в случае ошибки
-                Object.keys(texturePaths).forEach(name => {
-                    gameState.textures[name] = generateFallbackTexture(name);
-                });
                 gameState.texturesLoaded = true;
             }
-        }
-
-        // Генерация запасных текстур
-        function generateFallbackTexture(name) {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            
-            switch(name) {
-                case 'ground':
-                    canvas.width = 16;
-                    canvas.height = 16;
-                    ctx.fillStyle = '#0a2a0a';
-                    ctx.fillRect(0, 0, 16, 16);
-                    
-                    ctx.fillStyle = '#1a3a1a';
-                    for(let i = 0; i < 20; i++) {
-                        ctx.fillRect(
-                            Math.floor(Math.random() * 16),
-                            Math.floor(Math.random() * 16),
-                            1, 1
-                        );
-                    }
-                    break;
-                    
-                case 'road':
-                    canvas.width = 16;
-                    canvas.height = 16;
-                    ctx.fillStyle = '#3a3a3a';
-                    ctx.fillRect(0, 0, 16, 16);
-                    ctx.fillStyle = '#ffff00';
-                    ctx.fillRect(0, 7, 16, 2);
-                    break;
-                    
-                case 'tree':
-                    canvas.width = 16;
-                    canvas.height = 32;
-                    ctx.fillStyle = '#5a3a20';
-                    ctx.fillRect(7, 20, 2, 12);
-                    ctx.fillStyle = '#1a5a1a';
-                    ctx.beginPath();
-                    ctx.moveTo(8, 24);
-                    ctx.lineTo(16, 16);
-                    ctx.lineTo(0, 16);
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.beginPath();
-                    ctx.moveTo(8, 16);
-                    ctx.lineTo(14, 10);
-                    ctx.lineTo(2, 10);
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.beginPath();
-                    ctx.moveTo(8, 10);
-                    ctx.lineTo(12, 6);
-                    ctx.lineTo(4, 6);
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.fillRect(7, 4, 2, 2);
-                    break;
-                    
-                case 'castle':
-                    canvas.width = 32;
-                    canvas.height = 32;
-                    ctx.fillStyle = '#555';
-                    ctx.fillRect(4, 16, 24, 16);
-                    ctx.fillRect(0, 8, 8, 24);
-                    ctx.fillRect(24, 8, 8, 24);
-                    ctx.fillRect(12, 0, 8, 32);
-                    ctx.fillStyle = '#ff0';
-                    ctx.fillRect(2, 12, 4, 4);
-                    ctx.fillRect(26, 12, 4, 4);
-                    ctx.fillRect(14, 8, 4, 4);
-                    ctx.fillStyle = '#a00';
-                    ctx.beginPath();
-                    ctx.moveTo(0, 8);
-                    ctx.lineTo(4, 4);
-                    ctx.lineTo(8, 8);
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.beginPath();
-                    ctx.moveTo(24, 8);
-                    ctx.lineTo(28, 4);
-                    ctx.lineTo(32, 8);
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.beginPath();
-                    ctx.moveTo(12, 0);
-                    ctx.lineTo(16, -4);
-                    ctx.lineTo(20, 0);
-                    ctx.closePath();
-                    ctx.fill();
-                    break;
-                    
-                case 'sky':
-                    canvas.width = 16;
-                    canvas.height = 16;
-                    ctx.fillStyle = '#102040';
-                    ctx.fillRect(0, 0, 16, 16);
-                    break;
-                    
-                case 'stars':
-                    canvas.width = 16;
-                    canvas.height = 16;
-                    ctx.fillStyle = '#102040';
-                    ctx.fillRect(0, 0, 16, 16);
-                    ctx.fillStyle = '#fff';
-                    for(let i = 0; i < 20; i++) {
-                        ctx.fillRect(
-                            Math.floor(Math.random() * 16),
-                            Math.floor(Math.random() * 16),
-                            1, 1
-                        );
-                    }
-                    break;
-                    
-                case 'moon':
-                    canvas.width = 8;
-                    canvas.height = 8;
-                    ctx.fillStyle = '#fff';
-                    ctx.beginPath();
-                    ctx.arc(4, 4, 3, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.fillStyle = '#102040';
-                    ctx.beginPath();
-                    ctx.arc(5, 3, 2, 0, Math.PI * 2);
-                    ctx.fill();
-                    break;
-                    
-                case 'enemy':
-                    canvas.width = 16;
-                    canvas.height = 16;
-                    ctx.fillStyle = '#800';
-                    ctx.fillRect(0, 0, 16, 16);
-                    ctx.fillStyle = '#a00';
-                    ctx.fillRect(5, 3, 6, 5);
-                    ctx.fillStyle = '#333';
-                    ctx.fillRect(6, 8, 4, 6);
-                    break;
-                    
-                case 'fork':
-                    canvas.width = 16;
-                    canvas.height = 16;
-                    ctx.fillStyle = '#3a3a3a';
-                    ctx.beginPath();
-                    ctx.moveTo(0, 16);
-                    ctx.lineTo(5, 8);
-                    ctx.lineTo(11, 8);
-                    ctx.lineTo(16, 16);
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.fillStyle = '#ffff00';
-                    ctx.beginPath();
-                    ctx.moveTo(2, 12);
-                    ctx.lineTo(0, 16);
-                    ctx.lineTo(2, 16);
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.fillRect(5, 12, 6, 4);
-                    ctx.beginPath();
-                    ctx.moveTo(14, 12);
-                    ctx.lineTo(16, 16);
-                    ctx.lineTo(14, 16);
-                    ctx.closePath();
-                    ctx.fill();
-                    break;
-            }
-            
-            return canvas;
         }
 
         // Генерация мира
@@ -679,27 +445,33 @@
             gameState.player.health = gameState.player.maxHealth;
             gameState.player.direction = 0;
             gameState.player.forksPassed = 0;
+            gameState.player.cameraOffset = 0;
             gameState.trees = [];
             gameState.nextForkDistance = gameState.player.castleDistance / 3;
-            
-            for (let i = 0; i < 100; i++) {
+
+            // Генерируем деревья разного размера
+            for (let i = 0; i < 150; i++) {
+                const side = Math.random() > 0.5 ? 1 : -1;
+                const distance = 5 + Math.random() * 25;
+                const sizeModifier = 0.7 + Math.random() * 0.6;
                 gameState.trees.push({
-                    x: Math.random() > 0.5 ? -2 - Math.random() * 3 : 2 + Math.random() * 3,
-                    y: -Math.random() * 200,
-                    size: 0.5 + Math.random() * 0.8,
-                    speed: 0.5 + Math.random() * 0.8,
-                    parallax: 0.2 + Math.random() * 0.3
+                    x: side * (3 + Math.random() * 3),
+                    y: -distance,
+                    distance: distance,
+                    baseDistance: distance,
+                    side: side,
+                    sizeModifier: sizeModifier
                 });
             }
-            
+
             gameState.castle = {
                 x: 0,
                 y: -gameState.player.castleDistance,
                 size: 1,
-                parallax: 0
+                parallax: 0,
+                visibleDistance: 1500
             };
-            
-            updateVisits();
+
             updateHealth();
             updateDistance();
         }
@@ -708,7 +480,6 @@
         function generateEnemy() {
             const baseHealth = 30 + gameState.player.visits * 5;
             const baseDamage = 8 + gameState.player.visits * 1;
-            
             const enemies = [
                 { name: "Разбойник", health: baseHealth, damage: baseDamage, speed: 1.0 },
                 { name: "Волк", health: baseHealth * 0.7, damage: baseDamage * 0.6, speed: 1.2 },
@@ -716,7 +487,6 @@
                 { name: "Бандит", health: baseHealth * 1.2, damage: baseDamage * 1.1, speed: 0.9 },
                 { name: "Орк", health: baseHealth * 1.3, damage: baseDamage * 1.2, speed: 0.8 }
             ];
-            
             return {...enemies[Math.floor(Math.random() * enemies.length)]};
         }
 
@@ -724,7 +494,6 @@
         function showMessage(text, duration = 3000) {
             messageEl.textContent = text;
             messageEl.style.opacity = '1';
-            
             setTimeout(() => {
                 messageEl.style.opacity = '0';
             }, duration);
@@ -745,160 +514,154 @@
 
         // Обновление дистанции
         function updateDistance() {
-            distanceEl.textContent = `${Math.floor(gameState.player.totalDistance)}m`;
-            castleDistanceEl.textContent = `${Math.max(0, Math.floor(gameState.player.castleDistance - gameState.player.totalDistance))}m`;
+            castleDistanceEl.textContent = `${Math.max(0, Math.floor(gameState.player.castleDistance - gameState.player.totalDistance))}m до замка`;
         }
 
-        // Обновление счетчика посещений
-        function updateVisits() {
-            visitsEl.textContent = gameState.player.visits;
+        // Функция для расчета параллакса
+        function calculateParallaxOffset(distance, maxOffset = 100) {
+            const t = Math.min(1, distance / 20);
+            return gameState.player.cameraOffset * maxOffset * (1 - t);
         }
 
-        // Рендеринг игры
+        // Рендеринг с увеличенными деревьями
         function render() {
             const width = canvas.width;
             const height = canvas.height;
             const player = gameState.player;
-            
+            const horizon = height * 0.5;
+
             // Очистка экрана
-            if (gameState.textures.sky && gameState.textures.stars) {
-                ctx.fillStyle = ctx.createPattern(gameState.textures.sky, 'repeat');
-                ctx.fillRect(0, 0, width, height / 2);
-                ctx.fillStyle = ctx.createPattern(gameState.textures.stars, 'repeat');
-                ctx.fillRect(0, 0, width, height / 2);
-                
-                if (gameState.textures.moon) {
-                    const moonSize = 50;
-                    ctx.drawImage(
-                        gameState.textures.moon,
-                        width - 70, 30, moonSize, moonSize
-                    );
-                }
-            } else {
-                ctx.fillStyle = '#102040';
-                ctx.fillRect(0, 0, width, height / 2);
-            }
-            
-            // Рисуем землю
-            if (gameState.textures.ground) {
-                ctx.fillStyle = ctx.createPattern(gameState.textures.ground, 'repeat');
-                ctx.fillRect(0, height / 2, width, height / 2);
+            ctx.fillStyle = '#102040';
+            ctx.fillRect(0, 0, width, height);
+
+            // Рисуем землю с текстурой
+            if (gameState.groundPattern) {
+                ctx.fillStyle = gameState.groundPattern;
+                ctx.fillRect(0, horizon, width, height - horizon);
             } else {
                 ctx.fillStyle = '#0a1a0a';
-                ctx.fillRect(0, height / 2, width, height / 2);
+                ctx.fillRect(0, horizon, width, height - horizon);
             }
-            
-            // Рисуем замок
-            if (gameState.textures.castle && gameState.player.castleDistance - gameState.player.totalDistance < 500) {
-                const castleSize = Math.min(200, (500 - (gameState.player.castleDistance - gameState.player.totalDistance)) * 0.4);
-                const castleX = width / 2 - castleSize / 2 + gameState.castle.parallax * 50;
-                const castleY = height / 2 - castleSize;
-                
-                ctx.drawImage(
-                    gameState.textures.castle,
-                    castleX, castleY, castleSize, castleSize * 1.5
-                );
+
+            // Рисуем дорогу
+            if (gameState.textures.road) {
+                const segments = 100;
+                const maxSegmentWidth = width * 0.7;
+                const minSegmentWidth = width * 0.1;
+                const segmentHeight = 20;
+
+                for (let i = 0; i < segments; i++) {
+                    const t = i / segments;
+                    const segmentWidth = maxSegmentWidth * Math.pow(0.5, t * 2) + minSegmentWidth * (1 - Math.pow(0.5, t * 2));
+                    const distance = 5 + i * 0.2;
+                    const parallaxOffset = calculateParallaxOffset(distance, 150);
+                    const segmentX = (width - segmentWidth) / 2 + parallaxOffset;
+                    const segmentY = horizon + i * segmentHeight;
+
+                    if (segmentY > height) break;
+
+                    if (t > 0.8) {
+                        ctx.globalAlpha = 1 - (t - 0.8) * 5;
+                    }
+
+                    ctx.drawImage(
+                        gameState.textures.road,
+                        0, 0, gameState.textures.road.width, gameState.textures.road.height / segments,
+                        segmentX, segmentY, segmentWidth, segmentHeight
+                    );
+
+                    // Бордюры дороги
+                    ctx.fillStyle = '#5a3a20';
+                    ctx.fillRect(segmentX - 10, segmentY, 10, segmentHeight);
+                    ctx.fillRect(segmentX + segmentWidth, segmentY, 10, segmentHeight);
+
+                    ctx.globalAlpha = 1;
+                }
             }
-            
-            // Рисуем деревья
+
+            // Рисуем деревья с увеличенным размером
             if (gameState.textures.tree) {
-                gameState.trees.forEach(tree => {
-                    const treeX = width / 2 + tree.x * 50 - player.direction * 30 * tree.parallax;
-                    const treeY = height / 2 + tree.y - player.distance * tree.speed;
-                    const treeWidth = 50 * tree.size;
-                    const treeHeight = 100 * tree.size;
+                const sortedTrees = [...gameState.trees].sort((a, b) => a.distance - b.distance);
+
+                sortedTrees.forEach(tree => {
+                    tree.distance -= player.speed * 0.1;
+
+                    if (tree.distance <= 0.5) {
+                        tree.distance = tree.baseDistance + Math.random() * 5;
+                        tree.side = Math.random() > 0.5 ? 1 : -1;
+                        tree.x = tree.side * (3 + Math.random() * 3);
+                    }
+
+                    // Увеличенный масштаб для деревьев
+                    const scale = 1 / tree.distance;
+                    const treeWidth = 80 * scale * 4 * tree.sizeModifier; // Увеличенный базовый размер
+                    const treeHeight = 160 * scale * 4 * tree.sizeModifier;
+
+                    // Параллакс
+                    const parallaxOffset = calculateParallaxOffset(tree.distance, 100);
+                    const treeScreenX = width / 2 + tree.x * 200 / tree.distance + parallaxOffset;
                     
-                    if (treeY < height) {
+                    // Позиционируем деревья так, чтобы при приближении они касались верхней границы
+                    const treeScreenY = horizon - treeHeight * 0.8 + 50 / tree.distance;
+
+                    if (treeScreenY < height && treeScreenY + treeHeight > 0 &&
+                        treeScreenX < width && treeScreenX + treeWidth > 0) {
                         ctx.drawImage(
                             gameState.textures.tree,
-                            treeX, treeY, treeWidth, treeHeight
+                            treeScreenX, treeScreenY, treeWidth, treeHeight
                         );
-                    }
-                    
-                    if (treeY > height) {
-                        tree.y = -100;
-                        tree.x = Math.random() > 0.5 ? -2 - Math.random() * 3 : 2 + Math.random() * 3;
                     }
                 });
             }
-            
-            // Рисуем дорогу
-            if (gameState.textures.road) {
-                const roadWidth = width * 0.4;
-                const roadLeft = width / 2 - roadWidth / 2 + player.direction * 30;
-                
-                ctx.fillStyle = ctx.createPattern(gameState.textures.road, 'repeat');
-                ctx.fillRect(roadLeft, height / 2, roadWidth, height / 2);
-                
-                // Бордюры дороги
-                ctx.fillStyle = '#5a3a20';
-                ctx.fillRect(roadLeft - 10, height / 2, 10, height / 2);
-                ctx.fillRect(roadLeft + roadWidth, height / 2, 10, height / 2);
+
+            // Рисуем замок
+            if (gameState.textures.castle) {
+                const castleDistance = gameState.player.castleDistance - gameState.player.totalDistance;
+                if (castleDistance < gameState.castle.visibleDistance) {
+                    const scale = Math.max(0.05, Math.pow(1 - castleDistance / gameState.castle.visibleDistance, 2) * 2);
+                    const parallaxOffset = calculateParallaxOffset(castleDistance, 80);
+                    const castleWidth = 300 * scale;
+                    const castleHeight = 450 * scale;
+                    const castleX = width / 2 - castleWidth / 2 + parallaxOffset;
+                    const castleY = horizon - castleHeight + 40 * scale;
+
+                    ctx.drawImage(
+                        gameState.textures.castle,
+                        castleX, castleY, castleWidth, castleHeight
+                    );
+                }
             }
-            
+
             // Рисуем развилку
-            if (gameState.isAtFork) {
-                const forkSize = 100;
-                const forkX = width / 2 - forkSize / 2;
-                const forkY = height / 2 + 50;
-                
-                if (gameState.textures.fork) {
-                    ctx.drawImage(
-                        gameState.textures.fork,
-                        forkX, forkY, forkSize, forkSize
-                    );
-                } else {
-                    ctx.fillStyle = '#3a3a3a';
-                    ctx.beginPath();
-                    ctx.moveTo(forkX, forkY + forkSize);
-                    ctx.lineTo(forkX + forkSize / 3, forkY);
-                    ctx.lineTo(forkX + forkSize * 2/3, forkY);
-                    ctx.lineTo(forkX + forkSize, forkY + forkSize);
-                    ctx.closePath();
-                    ctx.fill();
-                    
-                    ctx.fillStyle = '#ffff00';
-                    ctx.beginPath();
-                    ctx.moveTo(forkX + forkSize / 6, forkY + forkSize / 2);
-                    ctx.lineTo(forkX, forkY + forkSize);
-                    ctx.lineTo(forkX + forkSize / 6, forkY + forkSize);
-                    ctx.closePath();
-                    ctx.fill();
-                    ctx.fillRect(forkX + forkSize / 3, forkY + forkSize / 2, forkSize / 3, forkSize / 2);
-                    ctx.beginPath();
-                    ctx.moveTo(forkX + forkSize * 5/6, forkY + forkSize / 2);
-                    ctx.lineTo(forkX + forkSize, forkY + forkSize);
-                    ctx.lineTo(forkX + forkSize * 5/6, forkY + forkSize);
-                    ctx.closePath();
-                    ctx.fill();
-                }
+            if (gameState.isAtFork && gameState.textures.fork) {
+                const forkSize = 120;
+                const parallaxOffset = calculateParallaxOffset(5, 30);
+                const forkX = width / 2 - forkSize / 2 + parallaxOffset;
+                const forkY = horizon + 50;
+                ctx.drawImage(
+                    gameState.textures.fork,
+                    forkX, forkY, forkSize, forkSize
+                );
             }
-            
+
             // Рисуем врага
-            if (gameState.isInCombat && gameState.enemy) {
-                const enemySize = 100;
-                const enemyX = width / 2 - enemySize / 2;
-                const enemyY = height / 2 - enemySize / 2;
-                
-                if (gameState.textures.enemy) {
-                    ctx.drawImage(
-                        gameState.textures.enemy,
-                        enemyX, enemyY, enemySize, enemySize
-                    );
-                } else {
-                    ctx.fillStyle = '#800';
-                    ctx.fillRect(enemyX, enemyY, enemySize, enemySize);
-                    ctx.fillStyle = '#a00';
-                    ctx.fillRect(enemyX + enemySize * 0.3, enemyY + enemySize * 0.2, enemySize * 0.4, enemySize * 0.3);
-                    ctx.fillStyle = '#333';
-                    ctx.fillRect(enemyX + enemySize * 0.4, enemyY + enemySize * 0.5, enemySize * 0.2, enemySize * 0.4);
-                }
+            if (gameState.isInCombat && gameState.enemy && gameState.textures.enemy) {
+                const enemySize = 120;
+                const parallaxOffset = calculateParallaxOffset(5, 30);
+                const enemyX = width / 2 - enemySize / 2 + parallaxOffset;
+                const enemyY = horizon - enemySize / 2;
+                ctx.drawImage(
+                    gameState.textures.enemy,
+                    enemyX, enemyY, enemySize, enemySize
+                );
             }
         }
 
         // Обновление состояния игры
         function update(deltaTime) {
             const player = gameState.player;
+            
+            player.cameraOffset = player.direction * 0.8;
             
             if (!gameState.isInCombat && !gameState.isAtFork) {
                 if (player.isMoving) {
@@ -909,8 +672,6 @@
                 
                 player.distance += player.speed * deltaTime;
                 player.totalDistance += player.speed * deltaTime;
-                
-                gameState.castle.parallax = player.direction * 0.5;
                 
                 if (player.totalDistance >= gameState.nextForkDistance && player.forksPassed < 3) {
                     showFork();
@@ -968,8 +729,8 @@
             }
             
             if (gameState.player.forksPassed < 3) {
-                gameState.nextForkDistance = player.totalDistance + 
-                    (gameState.player.castleDistance - player.totalDistance) / (4 - gameState.player.forksPassed);
+                gameState.nextForkDistance = gameState.player.totalDistance +
+                    (gameState.player.castleDistance - gameState.player.totalDistance) / (4 - gameState.player.forksPassed);
             }
             
             showMessage(`Вы выбрали ${pathName}...`, 2000);
@@ -978,17 +739,14 @@
         // Начало боя
         function startCombat() {
             if (gameState.isInCombat) return;
-            
             gameState.isInCombat = true;
             gameState.player.isMoving = false;
             gameState.player.speed = 0;
             gameState.enemy = generateEnemy();
             gameState.enemy.maxHealth = gameState.enemy.health;
-            
             enemyNameEl.textContent = gameState.enemy.name;
             updateEnemyHealth();
             combatPanel.style.display = 'flex';
-            
             showMessage(`На вас напал ${gameState.enemy.name.toLowerCase()}!`, 2000);
         }
 
@@ -996,7 +754,6 @@
         function endCombat(playerWon) {
             gameState.isInCombat = false;
             combatPanel.style.display = 'none';
-            
             if (playerWon) {
                 showMessage(`Вы победили ${gameState.enemy.name.toLowerCase()}!`, 2000);
             } else {
@@ -1012,7 +769,6 @@
             const playerDamage = Math.max(1, gameState.player.damage + Math.floor(Math.random() * 6) - 3);
             gameState.enemy.health -= playerDamage;
             updateEnemyHealth();
-            
             showMessage(`Вы нанесли ${playerDamage} урона!`, 1000);
             
             if (gameState.enemy.health <= 0) {
@@ -1022,11 +778,9 @@
             
             setTimeout(() => {
                 if (!gameState.isInCombat) return;
-                
                 const enemyDamage = Math.max(1, gameState.enemy.damage + Math.floor(Math.random() * 4) - 2 - gameState.player.defense);
                 gameState.player.health -= enemyDamage;
                 updateHealth();
-                
                 showMessage(`${gameState.enemy.name} нанес вам ${enemyDamage} урона!`, 1000);
                 
                 if (gameState.player.health <= 0) {
@@ -1041,55 +795,62 @@
             }, 500);
         }
 
-        // Настройка управления с исправлениями
+        // Настройка управления
         function setupControls() {
             const forwardBtn = document.getElementById('forwardBtn');
             const leftBtn = document.getElementById('leftBtn');
             const rightBtn = document.getElementById('rightBtn');
 
-            // Добавляем обработчики для touch и mouse событий
-            const addMultiEventListeners = (element, events, handler) => {
-                events.forEach(event => {
-                    element.addEventListener(event, handler);
-                });
-            };
-
-            // Кнопка движения вперед
-            addMultiEventListeners(forwardBtn, ['mousedown', 'touchstart'], () => {
+            // Обработчики для кнопки движения вперед
+            forwardBtn.addEventListener('mousedown', () => gameState.player.isMoving = true);
+            forwardBtn.addEventListener('mouseup', () => gameState.player.isMoving = false);
+            forwardBtn.addEventListener('mouseleave', () => gameState.player.isMoving = false);
+            forwardBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
                 gameState.player.isMoving = true;
             });
-            addMultiEventListeners(forwardBtn, ['mouseup', 'mouseleave', 'touchend'], () => {
-                gameState.player.isMoving = false;
-            });
+            forwardBtn.addEventListener('touchend', () => gameState.player.isMoving = false);
 
-            // Кнопка движения влево
-            addMultiEventListeners(leftBtn, ['mousedown', 'touchstart'], () => {
+            // Обработчики для кнопки движения влево
+            leftBtn.addEventListener('mousedown', () => gameState.player.direction = -1);
+            leftBtn.addEventListener('mouseup', () => {
+                if (gameState.player.direction === -1) gameState.player.direction = 0;
+            });
+            leftBtn.addEventListener('mouseleave', () => {
+                if (gameState.player.direction === -1) gameState.player.direction = 0;
+            });
+            leftBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
                 gameState.player.direction = -1;
             });
-            addMultiEventListeners(leftBtn, ['mouseup', 'mouseleave', 'touchend'], () => {
-                if (gameState.player.direction === -1) {
-                    gameState.player.direction = 0;
-                }
+            leftBtn.addEventListener('touchend', () => {
+                if (gameState.player.direction === -1) gameState.player.direction = 0;
             });
 
-            // Кнопка движения вправо
-            addMultiEventListeners(rightBtn, ['mousedown', 'touchstart'], () => {
+            // Обработчики для кнопки движения вправо
+            rightBtn.addEventListener('mousedown', () => gameState.player.direction = 1);
+            rightBtn.addEventListener('mouseup', () => {
+                if (gameState.player.direction === 1) gameState.player.direction = 0;
+            });
+            rightBtn.addEventListener('mouseleave', () => {
+                if (gameState.player.direction === 1) gameState.player.direction = 0;
+            });
+            rightBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
                 gameState.player.direction = 1;
             });
-            addMultiEventListeners(rightBtn, ['mouseup', 'mouseleave', 'touchend'], () => {
-                if (gameState.player.direction === 1) {
-                    gameState.player.direction = 0;
-                }
+            rightBtn.addEventListener('touchend', () => {
+                if (gameState.player.direction === 1) gameState.player.direction = 0;
             });
-            
-            // Остальные обработчики без изменений
+
+            // Остальные обработчики
             document.getElementById('attackBtn').addEventListener('click', attackEnemy);
             document.getElementById('fleeBtn').addEventListener('click', () => endCombat(false));
-            
             document.getElementById('leftPathBtn').addEventListener('click', () => choosePath('left'));
             document.getElementById('centerPathBtn').addEventListener('click', () => choosePath('center'));
             document.getElementById('rightPathBtn').addEventListener('click', () => choosePath('right'));
-            
+
+            // Управление с клавиатуры
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp') {
                     gameState.player.isMoving = true;
@@ -1117,7 +878,7 @@
                     }
                 }
             });
-            
+
             document.addEventListener('keyup', (e) => {
                 if (e.key === 'w' || e.key === 'W' || e.key === 'ArrowUp') {
                     gameState.player.isMoving = false;
@@ -1134,20 +895,17 @@
         // Игровой цикл
         function gameLoop(timestamp) {
             if (!gameState.isRunning) return;
-            
             const deltaTime = Math.min(timestamp - gameState.lastTime, 100) / 16;
             gameState.lastTime = timestamp;
-            
             update(deltaTime);
             render();
-            
             requestAnimationFrame(gameLoop);
         }
 
         // Инициализация игры
         async function init() {
             resizeCanvas();
-            setupControls(); // Перенесено перед загрузкой текстур
+            setupControls();
             
             // Показываем сообщение о загрузке
             showMessage("Загрузка игры...", 2000);
@@ -1156,15 +914,10 @@
                 await loadTextures();
             } catch (error) {
                 console.error("Ошибка при загрузке текстур:", error);
-                showMessage("Ошибка загрузки, используются базовые текстуры", 3000);
+                showMessage("Ошибка загрузки текстур", 3000);
             }
             
             startBtn.addEventListener('click', () => {
-                if (!gameState.texturesLoaded) {
-                    showMessage("Текстуры еще загружаются...", 2000);
-                    return;
-                }
-                
                 titleScreen.style.display = 'none';
                 generateWorld();
                 gameState.isRunning = true;
