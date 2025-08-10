@@ -2,824 +2,456 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Arena Chaos</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Побег от полиции</title>
     <style>
-        * {
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             height: 100vh;
-            overflow: hidden;
             touch-action: manipulation;
         }
-
+        
         #game-container {
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            max-width: 500px;
-            margin: 0 auto;
             position: relative;
-            background: rgba(10, 10, 20, 0.8);
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            width: 300px;
+            height: 300px;
+            background-color: #333;
+            margin-bottom: 20px;
         }
-
-        /* Главное меню */
-        #main-menu {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            padding: 20px;
-            text-align: center;
+        
+        .road {
+            position: absolute;
+            background-color: #555;
         }
-
-        .logo {
-            font-size: 3.5rem;
-            font-weight: 900;
-            margin-bottom: 30px;
-            background: linear-gradient(45deg, #ff7e5f, #feb47b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 15px rgba(255, 126, 95, 0.3);
-        }
-
-        .menu-button {
-            background: linear-gradient(45deg, #4a00e0, #8e2de2);
-            color: white;
-            border: none;
-            border-radius: 50px;
-            padding: 15px 40px;
-            margin: 15px 0;
-            font-size: 1.2rem;
-            font-weight: 600;
-            width: 80%;
-            max-width: 280px;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .menu-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-        }
-
-        .menu-button:active {
-            transform: translateY(1px);
-        }
-
-        .menu-button:nth-child(2) {
-            background: linear-gradient(45deg, #11998e, #38ef7d);
-        }
-
-        .menu-button:nth-child(3) {
-            background: linear-gradient(45deg, #ff416c, #ff4b2b);
-        }
-
-        /* Игровой экран */
-        #game-screen {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-            position: relative;
-        }
-
-        /* Верхняя панель - информация о герое */
-        .player-info {
-            display: flex;
-            justify-content: space-between;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.5);
-            border-bottom: 2px solid #ff7e5f;
-        }
-
-        .info-section {
-            background: rgba(30, 30, 50, 0.7);
-            padding: 10px 15px;
-            border-radius: 10px;
-            min-width: 100px;
-            text-align: center;
-        }
-
-        .info-label {
-            font-size: 0.8rem;
-            color: #aaa;
-            margin-bottom: 5px;
-        }
-
-        .info-value {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #fff;
-        }
-
-        .health-bar {
+        
+        .horizontal {
             height: 20px;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 10px;
-            margin-top: 5px;
-            overflow: hidden;
+            width: 100%;
         }
-
-        .health-fill {
+        
+        .vertical {
+            width: 20px;
             height: 100%;
-            background: linear-gradient(90deg, #ff7e5f, #feb47b);
-            border-radius: 10px;
-            transition: width 0.3s;
         }
-
-        /* Арена */
-        #arena {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-            background: radial-gradient(circle, #1e3c72 0%, #2a5298 100%);
-            border: 3px solid #ff7e5f;
-            margin: 15px;
-            border-radius: 10px;
-            box-shadow: 0 0 30px rgba(255, 126, 95, 0.2) inset;
+        
+        .intersection {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #777;
         }
-
-        /* Игрок и враги */
+        
+        .traffic-light {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+        
         .player {
             position: absolute;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #4a00e0, #8e2de2);
+            width: 16px;
+            height: 16px;
+            background-color: #00ff00;
             border-radius: 50%;
-            bottom: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 0 20px rgba(138, 43, 226, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.8rem;
-            color: white;
             z-index: 10;
-            border: 3px solid #fff;
         }
-
-        .enemy {
+        
+        .police {
             position: absolute;
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            width: 16px;
+            height: 16px;
+            background-color: #0000ff;
             border-radius: 50%;
-            top: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 0 15px rgba(255, 75, 43, 0.7);
+            z-index: 9;
+        }
+        
+        #controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 300px;
+        }
+        
+        #direction-buttons {
             display: flex;
             justify-content: center;
-            align-items: center;
-            font-size: 1.5rem;
-            color: white;
-            z-index: 5;
-            border: 2px solid #ffcc00;
+            margin-bottom: 10px;
         }
-
-        .damage-effect {
-            position: absolute;
-            color: #ff0000;
-            font-weight: bold;
-            font-size: 1.2rem;
-            animation: floatUp 1s forwards;
-        }
-
-        @keyframes floatUp {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-50px); opacity: 0; }
-        }
-
-        /* Нижняя панель - способности */
-        .abilities {
-            display: flex;
-            justify-content: space-around;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.5);
-            border-top: 2px solid #ff7e5f;
-        }
-
-        .ability {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.8rem;
+        
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            background-color: #4CAF50;
             color: white;
             cursor: pointer;
-            position: relative;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s;
-            background: linear-gradient(135deg, #11998e, #38ef7d);
         }
-
-        .ability:active {
-            transform: scale(0.95);
-        }
-
-        .ability.cooldown {
-            opacity: 0.5;
+        
+        button:disabled {
+            background-color: #cccccc;
             cursor: not-allowed;
         }
-
-        .cooldown-timer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.2rem;
-            font-weight: bold;
-        }
-
-        .ability-name {
-            position: absolute;
-            bottom: -20px;
-            font-size: 0.7rem;
-            color: #aaa;
-            width: 100%;
+        
+        #stats {
             text-align: center;
+            margin-bottom: 10px;
+            font-size: 18px;
         }
-
-        /* Экран окончания игры */
-        #game-over {
+        
+        #message {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #ff0000;
+            min-height: 24px;
+        }
+        
+        #restart-btn {
+            background-color: #f44336;
             display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            z-index: 100;
-            padding: 20px;
-            text-align: center;
-        }
-
-        .result-text {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
-            color: #ff7e5f;
-        }
-
-        .stats {
-            background: rgba(30, 30, 50, 0.8);
-            padding: 20px;
-            border-radius: 15px;
-            margin: 20px 0;
-            width: 80%;
-        }
-
-        .stat {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .stat:last-child {
-            border-bottom: none;
-        }
-
-        /* Анимации */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .pulse {
-            animation: pulse 0.5s;
-        }
-
-        /* Адаптивность для Telegram Web App */
-        @media (max-height: 700px) {
-            .player, .enemy {
-                width: 50px;
-                height: 50px;
-                font-size: 1.5rem;
-            }
-            
-            .ability {
-                width: 60px;
-                height: 60px;
-                font-size: 1.5rem;
-            }
-            
-            .info-value {
-                font-size: 1.1rem;
-            }
         }
     </style>
 </head>
 <body>
-    <div id="game-container">
-        <!-- Главное меню -->
-        <div id="main-menu">
-            <div class="logo">ARENA CHAOS</div>
-            <button class="menu-button" id="start-button">
-                <i class="fas fa-play"></i> НАЧАТЬ БОЙ
-            </button>
-            <button class="menu-button">
-                <i class="fas fa-trophy"></i> ДОСТИЖЕНИЯ
-            </button>
-            <button class="menu-button">
-                <i class="fas fa-cog"></i> НАСТРОЙКИ
-            </button>
+    <h1>Побег от полиции</h1>
+    <div id="stats">Ходов: <span id="turn-counter">0</span></div>
+    <div id="message"></div>
+    <div id="game-container"></div>
+    <div id="controls">
+        <div id="direction-buttons">
+            <button id="left-btn">← Влево</button>
+            <button id="straight-btn">Прямо</button>
+            <button id="right-btn">Вправо →</button>
         </div>
-
-        <!-- Игровой экран -->
-        <div id="game-screen">
-            <!-- Информация о герое -->
-            <div class="player-info">
-                <div class="info-section">
-                    <div class="info-label">УРОВЕНЬ</div>
-                    <div class="info-value" id="level">1</div>
-                </div>
-                <div class="info-section">
-                    <div class="info-label">ЗДОРОВЬЕ</div>
-                    <div class="info-value" id="health">100/100</div>
-                    <div class="health-bar">
-                        <div class="health-fill" id="health-bar" style="width: 100%"></div>
-                    </div>
-                </div>
-                <div class="info-section">
-                    <div class="info-label">ОПЫТ</div>
-                    <div class="info-value" id="exp">0/100</div>
-                </div>
-            </div>
-
-            <!-- Арена -->
-            <div id="arena">
-                <div class="player">⚔️</div>
-                <!-- Враг будет добавлен динамически -->
-            </div>
-
-            <!-- Способности -->
-            <div class="abilities">
-                <div class="ability" id="ability1">
-                    <i class="fas fa-bolt"></i>
-                    <div class="ability-name">УДАР</div>
-                </div>
-                <div class="ability" id="ability2">
-                    <i class="fas fa-shield-alt"></i>
-                    <div class="ability-name">ЩИТ</div>
-                </div>
-                <div class="ability" id="ability3">
-                    <i class="fas fa-fire"></i>
-                    <div class="ability-name">ОГОНЬ</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Экран окончания игры -->
-        <div id="game-over">
-            <div class="result-text" id="result-text">ПОРАЖЕНИЕ!</div>
-            <div class="stats">
-                <div class="stat">
-                    <span>Уровень достигнут:</span>
-                    <span id="final-level">1</span>
-                </div>
-                <div class="stat">
-                    <span>Врагов побеждено:</span>
-                    <span id="enemies-defeated">0</span>
-                </div>
-                <div class="stat">
-                    <span>Рекорд:</span>
-                    <span id="high-score">0</span>
-                </div>
-            </div>
-            <button class="menu-button" id="restart-button">
-                <i class="fas fa-redo"></i> ИГРАТЬ СНОВА
-            </button>
-            <button class="menu-button" id="menu-button">
-                <i class="fas fa-home"></i> ГЛАВНОЕ МЕНЮ
-            </button>
-        </div>
+        <button id="restart-btn">Начать заново</button>
     </div>
 
     <script>
+        // Игровые константы
+        const GRID_SIZE = 5;
+        const CELL_SIZE = 60;
+        const ROAD_WIDTH = 20;
+        
         // Состояние игры
-        const gameState = {
-            player: {
-                level: 1,
-                health: 100,
-                maxHealth: 100,
-                exp: 0,
-                expToNextLevel: 100,
-                damage: 10,
-                defense: 5
-            },
-            enemy: {
-                health: 50,
-                maxHealth: 50,
-                damage: 8,
-                level: 1,
-                type: 'warrior'
-            },
-            abilities: {
-                strike: { cooldown: 0, maxCooldown: 3000, ready: true },
-                shield: { cooldown: 0, maxCooldown: 8000, ready: true },
-                fireball: { cooldown: 0, maxCooldown: 15000, ready: true }
-            },
-            gameActive: false,
-            enemiesDefeated: 0,
-            highScore: 0
+        let gameState = {
+            playerPos: null,
+            playerDirection: null,
+            policePositions: [],
+            currentTurn: 0,
+            isGameOver: false,
+            intersections: [],
+            roads: []
         };
-
-        // Элементы интерфейса
-        const elements = {
-            mainMenu: document.getElementById('main-menu'),
-            gameScreen: document.getElementById('game-screen'),
-            gameOver: document.getElementById('game-over'),
-            startButton: document.getElementById('start-button'),
-            restartButton: document.getElementById('restart-button'),
-            menuButton: document.getElementById('menu-button'),
-            level: document.getElementById('level'),
-            health: document.getElementById('health'),
-            healthBar: document.getElementById('health-bar'),
-            exp: document.getElementById('exp'),
-            arena: document.getElementById('arena'),
-            resultText: document.getElementById('result-text'),
-            finalLevel: document.getElementById('final-level'),
-            enemiesDefeated: document.getElementById('enemies-defeated'),
-            highScore: document.getElementById('high-score'),
-            ability1: document.getElementById('ability1'),
-            ability2: document.getElementById('ability2'),
-            ability3: document.getElementById('ability3')
-        };
-
+        
+        // DOM элементы
+        const gameContainer = document.getElementById('game-container');
+        const turnCounter = document.getElementById('turn-counter');
+        const messageEl = document.getElementById('message');
+        const leftBtn = document.getElementById('left-btn');
+        const straightBtn = document.getElementById('straight-btn');
+        const rightBtn = document.getElementById('right-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        
         // Инициализация игры
         function initGame() {
-            resetGameState();
-            setupEventListeners();
-        }
-
-        // Сброс состояния игры
-        function resetGameState() {
-            gameState.player = {
-                level: 1,
-                health: 100,
-                maxHealth: 100,
-                exp: 0,
-                expToNextLevel: 100,
-                damage: 10,
-                defense: 5
+            gameContainer.innerHTML = '';
+            gameState = {
+                playerPos: { x: 0, y: 0 },
+                playerDirection: 'right',
+                policePositions: [
+                    { x: GRID_SIZE - 1, y: GRID_SIZE - 1, direction: 'left' },
+                    { x: 0, y: GRID_SIZE - 1, direction: 'right' }
+                ],
+                currentTurn: 0,
+                isGameOver: false,
+                intersections: [],
+                roads: []
             };
             
-            gameState.enemy = {
-                health: 50,
-                maxHealth: 50,
-                damage: 8,
-                level: 1,
-                type: 'warrior'
-            };
+            // Создаем дороги и перекрестки
+            createRoads();
             
-            gameState.enemiesDefeated = 0;
-            gameState.gameActive = true;
+            // Размещаем игрока и полицию
+            placePlayer();
+            placePolice();
             
+            // Обновляем UI
             updateUI();
-            createEnemy();
+            
+            // Показываем сообщение
+            showMessage('Выберите направление движения');
         }
-
-        // Настройка обработчиков событий
-        function setupEventListeners() {
-            elements.startButton.addEventListener('click', startGame);
-            elements.restartButton.addEventListener('click', startGame);
-            elements.menuButton.addEventListener('click', showMainMenu);
-            
-            elements.ability1.addEventListener('click', () => useAbility('strike'));
-            elements.ability2.addEventListener('click', () => useAbility('shield'));
-            elements.ability3.addEventListener('click', () => useAbility('fireball'));
-        }
-
-        // Начать игру
-        function startGame() {
-            resetGameState();
-            elements.mainMenu.style.display = 'none';
-            elements.gameOver.style.display = 'none';
-            elements.gameScreen.style.display = 'flex';
-            
-            // Запуск игрового цикла
-            gameLoop();
-        }
-
-        // Показать главное меню
-        function showMainMenu() {
-            elements.mainMenu.style.display = 'flex';
-            elements.gameOver.style.display = 'none';
-            elements.gameScreen.style.display = 'none';
-            gameState.gameActive = false;
-        }
-
-        // Создать врага
-        function createEnemy() {
-            // Очистить арену
-            elements.arena.innerHTML = '<div class="player">⚔️</div>';
-            
-            // Создать врага с учетом уровня игрока
-            const enemyLevel = Math.max(1, gameState.player.level - 1 + Math.floor(Math.random() * 3));
-            const enemyTypes = ['warrior', 'archer', 'mage'];
-            const enemyType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
-            
-            // Базовые характеристики врага
-            let health = 40 + (enemyLevel * 10);
-            let damage = 7 + (enemyLevel * 2);
-            
-            // Модификаторы в зависимости от типа
-            if (enemyType === 'archer') {
-                health *= 0.8;
-                damage *= 1.2;
-            } else if (enemyType === 'mage') {
-                health *= 0.7;
-                damage *= 1.5;
+        
+        // Создаем дорожную сеть
+        function createRoads() {
+            // Горизонтальные дороги
+            for (let y = 0; y < GRID_SIZE; y++) {
+                const road = document.createElement('div');
+                road.className = 'road horizontal';
+                road.style.top = `${y * CELL_SIZE + (CELL_SIZE - ROAD_WIDTH) / 2}px`;
+                gameContainer.appendChild(road);
             }
             
-            gameState.enemy = {
-                health: Math.round(health),
-                maxHealth: Math.round(health),
-                damage: Math.round(damage),
-                level: enemyLevel,
-                type: enemyType
-            };
+            // Вертикальные дороги
+            for (let x = 0; x < GRID_SIZE; x++) {
+                const road = document.createElement('div');
+                road.className = 'road vertical';
+                road.style.left = `${x * CELL_SIZE + (CELL_SIZE - ROAD_WIDTH) / 2}px`;
+                gameContainer.appendChild(road);
+            }
             
-            // Создать элемент врага
-            const enemy = document.createElement('div');
-            enemy.className = 'enemy';
-            
-            // Иконка в зависимости от типа
-            if (enemyType === 'warrior') enemy.innerHTML = '🛡️';
-            else if (enemyType === 'archer') enemy.innerHTML = '🏹';
-            else enemy.innerHTML = '🔮';
-            
-            elements.arena.appendChild(enemy);
-        }
-
-        // Использовать способность
-        function useAbility(ability) {
-            if (!gameState.gameActive || !gameState.abilities[ability].ready) return;
-            
-            // Установить перезарядку
-            gameState.abilities[ability].ready = false;
-            gameState.abilities[ability].cooldown = gameState.abilities[ability].maxCooldown;
-            
-            const abilityElement = elements[`ability${ability === 'strike' ? 1 : ability === 'shield' ? 2 : 3}`];
-            abilityElement.classList.add('cooldown');
-            
-            // Эффект способности
-            switch(ability) {
-                case 'strike':
-                    // Нанести урон врагу
-                    const strikeDamage = gameState.player.damage * 2;
-                    gameState.enemy.health -= strikeDamage;
-                    createDamageEffect(strikeDamage, true);
-                    break;
+            // Перекрестки
+            for (let y = 0; y < GRID_SIZE; y++) {
+                for (let x = 0; x < GRID_SIZE; x++) {
+                    const intersection = document.createElement('div');
+                    intersection.className = 'intersection';
+                    intersection.style.left = `${x * CELL_SIZE + (CELL_SIZE - ROAD_WIDTH) / 2}px`;
+                    intersection.style.top = `${y * CELL_SIZE + (CELL_SIZE - ROAD_WIDTH) / 2}px`;
                     
-                case 'shield':
-                    // Временная защита
-                    gameState.player.defense += 10;
-                    setTimeout(() => {
-                        gameState.player.defense -= 10;
-                    }, 5000);
-                    createShieldEffect();
-                    break;
+                    // Светофор
+                    const trafficLight = document.createElement('div');
+                    trafficLight.className = 'traffic-light';
+                    trafficLight.style.backgroundColor = y % 2 === x % 2 ? '#ff0000' : '#00ff00';
+                    trafficLight.style.left = `${x * CELL_SIZE + (CELL_SIZE - ROAD_WIDTH) / 2 + 7}px`;
+                    trafficLight.style.top = `${y * CELL_SIZE + (CELL_SIZE - ROAD_WIDTH) / 2 + 7}px`;
                     
-                case 'fireball':
-                    // Нанести большой урон
-                    const fireDamage = gameState.player.damage * 4;
-                    gameState.enemy.health -= fireDamage;
-                    createFireEffect(fireDamage);
-                    break;
-            }
-            
-            // Обновить UI
-            updateUI();
-            
-            // Проверить, побежден ли враг
-            if (gameState.enemy.health <= 0) {
-                defeatEnemy();
-            }
-        }
-
-        // Создать эффект урона
-        function createDamageEffect(damage, isPlayerAttack = false) {
-            const effect = document.createElement('div');
-            effect.className = 'damage-effect';
-            effect.textContent = `-${damage}`;
-            
-            if (isPlayerAttack) {
-                effect.style.left = 'calc(50% - 20px)';
-                effect.style.top = '40%';
-            } else {
-                effect.style.left = 'calc(50% - 20px)';
-                effect.style.top = '60%';
-            }
-            
-            elements.arena.appendChild(effect);
-            
-            // Удалить эффект после анимации
-            setTimeout(() => {
-                if (elements.arena.contains(effect)) {
-                    elements.arena.removeChild(effect);
-                }
-            }, 1000);
-        }
-
-        // Создать эффект щита
-        function createShieldEffect() {
-            const player = document.querySelector('.player');
-            player.classList.add('pulse');
-            player.style.boxShadow = '0 0 20px rgba(0, 195, 255, 0.8)';
-            
-            setTimeout(() => {
-                player.classList.remove('pulse');
-                player.style.boxShadow = '0 0 20px rgba(138, 43, 226, 0.7)';
-            }, 1000);
-        }
-
-        // Создать эффект огня
-        function createFireEffect(damage) {
-            const enemy = document.querySelector('.enemy');
-            enemy.classList.add('pulse');
-            enemy.style.boxShadow = '0 0 30px rgba(255, 100, 0, 0.9)';
-            
-            // Эффект урона
-            createDamageEffect(damage, true);
-            
-            setTimeout(() => {
-                if (enemy) {
-                    enemy.classList.remove('pulse');
-                    enemy.style.boxShadow = '0 0 15px rgba(255, 75, 43, 0.7)';
-                }
-            }, 1000);
-        }
-
-        // Победа над врагом
-        function defeatEnemy() {
-            gameState.enemiesDefeated++;
-            
-            // Наградить опытом
-            const expGain = 20 + (gameState.enemy.level * 5);
-            gameState.player.exp += expGain;
-            
-            // Проверить повышение уровня
-            if (gameState.player.exp >= gameState.player.expToNextLevel) {
-                levelUp();
-            }
-            
-            // Создать нового врага
-            setTimeout(() => {
-                if (gameState.gameActive) {
-                    createEnemy();
-                }
-            }, 1500);
-            
-            updateUI();
-        }
-
-        // Повышение уровня
-        function levelUp() {
-            gameState.player.level++;
-            gameState.player.exp -= gameState.player.expToNextLevel;
-            gameState.player.expToNextLevel = Math.round(gameState.player.expToNextLevel * 1.5);
-            
-            // Улучшить характеристики
-            gameState.player.maxHealth = Math.round(gameState.player.maxHealth * 1.2);
-            gameState.player.health = gameState.player.maxHealth;
-            gameState.player.damage = Math.round(gameState.player.damage * 1.15);
-            gameState.player.defense = Math.round(gameState.player.defense * 1.1);
-            
-            // Эффект повышения уровня
-            const player = document.querySelector('.player');
-            player.classList.add('pulse');
-            player.style.boxShadow = '0 0 30px rgba(255, 215, 0, 0.8)';
-            
-            setTimeout(() => {
-                player.classList.remove('pulse');
-                player.style.boxShadow = '0 0 20px rgba(138, 43, 226, 0.7)';
-            }, 1000);
-        }
-
-        // Игровой цикл
-        function gameLoop() {
-            if (!gameState.gameActive) return;
-            
-            // Обновить перезарядку способностей
-            updateCooldowns();
-            
-            // Атаковать игрока (случайный интервал)
-            if (Math.random() < 0.01) {
-                attackPlayer();
-            }
-            
-            // Продолжить цикл
-            requestAnimationFrame(gameLoop);
-        }
-
-        // Атаковать игрока
-        function attackPlayer() {
-            if (!gameState.gameActive || gameState.enemy.health <= 0) return;
-            
-            // Рассчитать урон с учетом защиты
-            const damage = Math.max(1, gameState.enemy.damage - gameState.player.defense);
-            gameState.player.health -= damage;
-            
-            // Эффект урона
-            createDamageEffect(damage, false);
-            
-            // Обновить UI
-            updateUI();
-            
-            // Проверить поражение
-            if (gameState.player.health <= 0) {
-                gameOver();
-            }
-        }
-
-        // Обновить перезарядку способностей
-        function updateCooldowns() {
-            const now = Date.now();
-            
-            for (const ability in gameState.abilities) {
-                if (!gameState.abilities[ability].ready) {
-                    gameState.abilities[ability].cooldown -= 16;
+                    gameContainer.appendChild(intersection);
+                    gameContainer.appendChild(trafficLight);
                     
-                    if (gameState.abilities[ability].cooldown <= 0) {
-                        gameState.abilities[ability].ready = true;
-                        gameState.abilities[ability].cooldown = 0;
-                        
-                        const abilityElement = elements[`ability${ability === 'strike' ? 1 : ability === 'shield' ? 2 : 3}`];
-                        abilityElement.classList.remove('cooldown');
-                    }
+                    // Сохраняем перекрестки для проверки
+                    gameState.intersections.push({ x, y });
                 }
             }
         }
-
-        // Обновить интерфейс
+        
+        // Размещаем игрока на поле
+        function placePlayer() {
+            const player = document.createElement('div');
+            player.id = 'player';
+            player.className = 'player';
+            updateElementPosition(player, gameState.playerPos);
+            gameContainer.appendChild(player);
+        }
+        
+        // Размещаем полицейские машины
+        function placePolice() {
+            gameState.policePositions.forEach((pos, index) => {
+                const police = document.createElement('div');
+                police.className = 'police';
+                police.id = `police-${index}`;
+                updateElementPosition(police, pos);
+                gameContainer.appendChild(police);
+            });
+        }
+        
+        // Обновляем позицию элемента
+        function updateElementPosition(element, pos) {
+            element.style.left = `${pos.x * CELL_SIZE + (CELL_SIZE - ROAD_WIDTH) / 2 + 2}px`;
+            element.style.top = `${pos.y * CELL_SIZE + (CELL_SIZE - ROAD_WIDTH) / 2 + 2}px`;
+        }
+        
+        // Обновляем UI
         function updateUI() {
-            // Информация о игроке
-            elements.level.textContent = gameState.player.level;
-            elements.health.textContent = `${gameState.player.health}/${gameState.player.maxHealth}`;
-            elements.exp.textContent = `${gameState.player.exp}/${gameState.player.expToNextLevel}`;
+            turnCounter.textContent = gameState.currentTurn;
             
-            // Полоса здоровья
-            const healthPercent = (gameState.player.health / gameState.player.maxHealth) * 100;
-            elements.healthBar.style.width = `${healthPercent}%`;
+            // Обновляем позиции
+            const player = document.getElementById('player');
+            if (player) updateElementPosition(player, gameState.playerPos);
             
-            // Изменение цвета полосы здоровья
-            if (healthPercent > 70) {
-                elements.healthBar.style.background = 'linear-gradient(90deg, #38ef7d, #11998e)';
-            } else if (healthPercent > 30) {
-                elements.healthBar.style.background = 'linear-gradient(90deg, #fbb040, #f9d423)';
-            } else {
-                elements.healthBar.style.background = 'linear-gradient(90deg, #ff416c, #ff4b2b)';
+            gameState.policePositions.forEach((pos, index) => {
+                const police = document.getElementById(`police-${index}`);
+                if (police) updateElementPosition(police, pos);
+            });
+            
+            // Блокируем кнопки, если игра окончена
+            leftBtn.disabled = gameState.isGameOver;
+            straightBtn.disabled = gameState.isGameOver;
+            rightBtn.disabled = gameState.isGameOver;
+            restartBtn.style.display = gameState.isGameOver ? 'block' : 'none';
+        }
+        
+        // Показываем сообщение
+        function showMessage(msg) {
+            messageEl.textContent = msg;
+        }
+        
+        // Проверяем, находится ли позиция на перекрестке
+        function isAtIntersection(pos) {
+            return gameState.intersections.some(intersection => 
+                intersection.x === pos.x && intersection.y === pos.y);
+        }
+        
+        // Получаем возможные направления движения
+        function getPossibleDirections(pos) {
+            const directions = [];
+            
+            // Проверяем границы карты
+            if (pos.x > 0) directions.push('left');
+            if (pos.x < GRID_SIZE - 1) directions.push('right');
+            if (pos.y > 0) directions.push('up');
+            if (pos.y < GRID_SIZE - 1) directions.push('down');
+            
+            return directions;
+        }
+        
+        // Двигаем игрока
+        function movePlayer(direction) {
+            if (gameState.isGameOver) return;
+            
+            // Проверяем, что игрок на перекрестке
+            if (!isAtIntersection(gameState.playerPos)) {
+                showMessage('Вы можете повернуть только на перекрестке!');
+                return;
+            }
+            
+            // Обновляем направление игрока
+            gameState.playerDirection = direction;
+            
+            // Двигаем игрока в выбранном направлении
+            switch (direction) {
+                case 'left':
+                    gameState.playerPos.x--;
+                    break;
+                case 'right':
+                    gameState.playerPos.x++;
+                    break;
+                case 'up':
+                    gameState.playerPos.y--;
+                    break;
+                case 'down':
+                    gameState.playerPos.y++;
+                    break;
+            }
+            
+            // Увеличиваем счетчик ходов
+            gameState.currentTurn++;
+            
+            // Проверяем столкновение с полицией
+            checkCollision();
+            
+            if (!gameState.isGameOver) {
+                // Двигаем полицию
+                movePolice();
+                
+                // Проверяем столкновение снова после движения полиции
+                checkCollision();
+            }
+            
+            // Обновляем UI
+            updateUI();
+            
+            // Показываем сообщение
+            if (!gameState.isGameOver) {
+                showMessage('Выберите направление движения');
             }
         }
-
-        // Конец игры
-        function gameOver() {
-            gameState.gameActive = false;
+        
+        // Простой ИИ для полиции
+        function movePolice() {
+            gameState.policePositions.forEach(police => {
+                // Если полиция на перекрестке, выбираем направление
+                if (isAtIntersection(police)) {
+                    // Простой ИИ: двигаемся в сторону игрока
+                    const dx = gameState.playerPos.x - police.x;
+                    const dy = gameState.playerPos.y - police.y;
+                    
+                    const possibleDirections = getPossibleDirections(police);
+                    let chosenDirection = police.direction;
+                    
+                    // Предпочитаем движение по горизонтали, если игрок на той же линии
+                    if (dx !== 0 && Math.abs(dx) >= Math.abs(dy)) {
+                        chosenDirection = dx > 0 ? 'right' : 'left';
+                    } else if (dy !== 0) {
+                        chosenDirection = dy > 0 ? 'down' : 'up';
+                    }
+                    
+                    // Если выбранное направление невозможно, выбираем случайное из возможных
+                    if (!possibleDirections.includes(chosenDirection)) {
+                        const randomIndex = Math.floor(Math.random() * possibleDirections.length);
+                        chosenDirection = possibleDirections[randomIndex];
+                    }
+                    
+                    police.direction = chosenDirection;
+                }
+                
+                // Двигаем полицию в текущем направлении
+                switch (police.direction) {
+                    case 'left':
+                        police.x--;
+                        break;
+                    case 'right':
+                        police.x++;
+                        break;
+                    case 'up':
+                        police.y--;
+                        break;
+                    case 'down':
+                        police.y++;
+                        break;
+                }
+            });
+        }
+        
+        // Проверяем столкновение с полицией
+        function checkCollision() {
+            const player = gameState.playerPos;
             
-            // Обновить рекорд
-            if (gameState.enemiesDefeated > gameState.highScore) {
-                gameState.highScore = gameState.enemiesDefeated;
+            // Проверяем столкновение с каждой полицейской машиной
+            for (const police of gameState.policePositions) {
+                if (player.x === police.x && player.y === police.y) {
+                    gameState.isGameOver = true;
+                    showMessage(`Игра окончена! Вас поймали за ${gameState.currentTurn} ходов.`);
+                    return;
+                }
             }
             
-            // Обновить экран окончания игры
-            elements.resultText.textContent = 'ПОРАЖЕНИЕ!';
-            elements.finalLevel.textContent = gameState.player.level;
-            elements.enemiesDefeated.textContent = gameState.enemiesDefeated;
-            elements.highScore.textContent = gameState.highScore;
-            
-            // Показать экран окончания игры
-            elements.gameOver.style.display = 'flex';
+            // Проверяем выход за границы (на всякий случай)
+            if (player.x < 0 || player.x >= GRID_SIZE || player.y < 0 || player.y >= GRID_SIZE) {
+                gameState.isGameOver = true;
+                showMessage(`Игра окончена! Вы выехали за пределы города.`);
+            }
         }
-
-        // Запуск игры при загрузке
-        window.onload = initGame;
+        
+        // Обработчики событий
+        leftBtn.addEventListener('click', () => {
+            const directions = {
+                'up': 'left',
+                'left': 'down',
+                'down': 'right',
+                'right': 'up'
+            };
+            movePlayer(directions[gameState.playerDirection]);
+        });
+        
+        straightBtn.addEventListener('click', () => {
+            movePlayer(gameState.playerDirection);
+        });
+        
+        rightBtn.addEventListener('click', () => {
+            const directions = {
+                'up': 'right',
+                'right': 'down',
+                'down': 'left',
+                'left': 'up'
+            };
+            movePlayer(directions[gameState.playerDirection]);
+        });
+        
+        restartBtn.addEventListener('click', initGame);
+        
+        // Запускаем игру
+        initGame();
     </script>
 </body>
 </html>
