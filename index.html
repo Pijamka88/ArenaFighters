@@ -4,865 +4,822 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Arena Chaos</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;500&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            touch-action: manipulation;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
-        
+
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             color: #fff;
             height: 100vh;
             overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        #game-container {
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
-        
-        .game-container {
-            width: 100%;
-            max-width: 500px;
             height: 100vh;
+            max-width: 500px;
+            margin: 0 auto;
             position: relative;
-            overflow: hidden;
+            background: rgba(10, 10, 20, 0.8);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Главное меню */
+        #main-menu {
             display: flex;
             flex-direction: column;
-        }
-        
-        /* Главное меню */
-        .screen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100%;
             padding: 20px;
             text-align: center;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 10;
-            background: rgba(10, 15, 30, 0.95);
         }
-        
-        #main-menu {
-            display: flex;
-        }
-        
+
         .logo {
-            font-family: 'Orbitron', sans-serif;
             font-size: 3.5rem;
-            margin-bottom: 40px;
-            text-shadow: 0 0 10px #00eeff, 0 0 20px #00eeff;
-            letter-spacing: 3px;
-            background: linear-gradient(to right, #00eeff, #00c3ff);
+            font-weight: 900;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #ff7e5f, #feb47b);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(255, 126, 95, 0.3);
         }
-        
-        .menu-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 80%;
-            max-width: 300px;
-        }
-        
-        .btn {
-            background: linear-gradient(135deg, #00c3ff, #0072ff);
+
+        .menu-button {
+            background: linear-gradient(45deg, #4a00e0, #8e2de2);
+            color: white;
             border: none;
             border-radius: 50px;
-            color: white;
-            padding: 15px 25px;
-            font-size: 1.1rem;
-            font-weight: 500;
+            padding: 15px 40px;
+            margin: 15px 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+            width: 80%;
+            max-width: 280px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0, 114, 255, 0.3);
-            font-family: 'Roboto', sans-serif;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
-        
-        .btn:hover, .btn:active {
+
+        .menu-button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0, 114, 255, 0.5);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
         }
-        
-        .btn:active {
+
+        .menu-button:active {
             transform: translateY(1px);
         }
-        
-        .btn-ability {
-            background: linear-gradient(135deg, #ff416c, #ff4b2b);
-            margin-top: 10px;
+
+        .menu-button:nth-child(2) {
+            background: linear-gradient(45deg, #11998e, #38ef7d);
         }
-        
+
+        .menu-button:nth-child(3) {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+        }
+
         /* Игровой экран */
         #game-screen {
             display: none;
             flex-direction: column;
             height: 100%;
-            padding: 20px;
+            position: relative;
         }
-        
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            width: 100%;
-        }
-        
+
+        /* Верхняя панель - информация о герое */
         .player-info {
             display: flex;
-            flex-direction: column;
-            gap: 8px;
+            justify-content: space-between;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border-bottom: 2px solid #ff7e5f;
         }
-        
-        .level-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+
+        .info-section {
+            background: rgba(30, 30, 50, 0.7);
+            padding: 10px 15px;
+            border-radius: 10px;
+            min-width: 100px;
+            text-align: center;
         }
-        
-        .level {
-            background: #ff9800;
-            color: #000;
+
+        .info-label {
+            font-size: 0.8rem;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1.3rem;
             font-weight: bold;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.9rem;
+            color: #fff;
         }
-        
-        .exp-bar {
-            width: 150px;
-            height: 12px;
-            background: #333;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        
-        .exp-fill {
-            height: 100%;
-            background: linear-gradient(to right, #00c3ff, #0072ff);
-            border-radius: 10px;
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-        
-        .game-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            margin: 20px 0;
-        }
-        
-        .arena {
-            width: 100%;
-            height: 250px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 3px solid #00eeff;
-            border-radius: 10px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(0, 238, 255, 0.3);
-        }
-        
-        .player-character, .enemy-character {
-            position: absolute;
-            width: 80px;
-            height: 80px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: transform 0.2s;
-        }
-        
-        .player-character {
-            left: 20%;
-            bottom: 30px;
-            background: linear-gradient(135deg, #0072ff, #00c3ff);
-            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-        }
-        
-        .enemy-character {
-            right: 20%;
-            bottom: 30px;
-            background: linear-gradient(135deg, #ff416c, #ff4b2b);
-            clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-        }
-        
+
         .health-bar {
-            position: absolute;
-            width: 80%;
             height: 20px;
-            background: #333;
+            background: rgba(0, 0, 0, 0.5);
             border-radius: 10px;
+            margin-top: 5px;
             overflow: hidden;
-            top: 20px;
         }
-        
+
         .health-fill {
             height: 100%;
+            background: linear-gradient(90deg, #ff7e5f, #feb47b);
             border-radius: 10px;
-            transition: width 0.3s ease;
+            transition: width 0.3s;
         }
-        
-        .player-health .health-fill {
-            background: linear-gradient(to right, #4CAF50, #8BC34A);
-            width: 100%;
+
+        /* Арена */
+        #arena {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(circle, #1e3c72 0%, #2a5298 100%);
+            border: 3px solid #ff7e5f;
+            margin: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(255, 126, 95, 0.2) inset;
         }
-        
-        .enemy-health .health-fill {
-            background: linear-gradient(to right, #f44336, #ff9800);
-            width: 100%;
-        }
-        
-        .player-health {
-            left: 10%;
-        }
-        
-        .enemy-health {
-            right: 10%;
-        }
-        
-        .health-label {
+
+        /* Игрок и враги */
+        .player {
             position: absolute;
-            top: -25px;
-            font-size: 0.9rem;
-            font-weight: bold;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #4a00e0, #8e2de2);
+            border-radius: 50%;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            color: white;
+            z-index: 10;
+            border: 3px solid #fff;
         }
-        
-        .player-health .health-label {
-            left: 0;
-            color: #00eeff;
-        }
-        
-        .enemy-health .health-label {
-            right: 0;
-            color: #ff416c;
-        }
-        
-        .combat-text {
+
+        .enemy {
             position: absolute;
-            font-size: 1.2rem;
-            font-weight: bold;
-            animation: floatUp 1s forwards;
-            pointer-events: none;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            border-radius: 50%;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 15px rgba(255, 75, 43, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            color: white;
             z-index: 5;
+            border: 2px solid #ffcc00;
         }
-        
+
+        .damage-effect {
+            position: absolute;
+            color: #ff0000;
+            font-weight: bold;
+            font-size: 1.2rem;
+            animation: floatUp 1s forwards;
+        }
+
         @keyframes floatUp {
             0% { transform: translateY(0); opacity: 1; }
             100% { transform: translateY(-50px); opacity: 0; }
         }
-        
-        .player-damage {
-            color: #ff416c;
-        }
-        
-        .enemy-damage {
-            color: #00eeff;
-        }
-        
-        .ability-container {
+
+        /* Нижняя панель - способности */
+        .abilities {
             display: flex;
-            flex-direction: column;
+            justify-content: space-around;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border-top: 2px solid #ff7e5f;
+        }
+
+        .ability {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
             align-items: center;
-            margin-top: 20px;
-            width: 100%;
+            font-size: 1.8rem;
+            color: white;
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s;
+            background: linear-gradient(135deg, #11998e, #38ef7d);
         }
-        
-        .ability-btn {
-            width: 80%;
-            max-width: 300px;
-            height: 60px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            background: linear-gradient(135deg, #ff9800, #ff5722);
-            border: 3px solid #ffd600;
-            box-shadow: 0 0 15px rgba(255, 152, 0, 0.5);
+
+        .ability:active {
+            transform: scale(0.95);
         }
-        
-        .cooldown-overlay {
+
+        .ability.cooldown {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .cooldown-timer {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            border-radius: 50%;
             background: rgba(0, 0, 0, 0.7);
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             font-weight: bold;
-            border-radius: 50px;
-            opacity: 0;
-            pointer-events: none;
         }
-        
-        /* Экран победы/поражения */
-        .result-screen {
-            background: rgba(10, 15, 30, 0.95);
-            z-index: 20;
-        }
-        
-        .result-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 20px;
-        }
-        
-        .result-title {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-            font-family: 'Orbitron', sans-serif;
-        }
-        
-        .victory {
-            color: #4CAF50;
-            text-shadow: 0 0 10px rgba(76, 175, 80, 0.7);
-        }
-        
-        .defeat {
-            color: #f44336;
-            text-shadow: 0 0 10px rgba(244, 67, 54, 0.7);
-        }
-        
-        .reward-info {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px;
-            border-radius: 10px;
+
+        .ability-name {
+            position: absolute;
+            bottom: -20px;
+            font-size: 0.7rem;
+            color: #aaa;
+            width: 100%;
             text-align: center;
-            margin: 10px 0;
         }
-        
+
+        /* Экран окончания игры */
+        #game-over {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 100;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .result-text {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #ff7e5f;
+        }
+
+        .stats {
+            background: rgba(30, 30, 50, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            width: 80%;
+        }
+
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat:last-child {
+            border-bottom: none;
+        }
+
         /* Анимации */
-        @keyframes attackAnimation {
-            0% { transform: translateX(0); }
-            50% { transform: translateX(30px); }
-            100% { transform: translateX(0); }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
-        
-        @keyframes enemyAttackAnimation {
-            0% { transform: translateX(0); }
-            50% { transform: translateX(-30px); }
-            100% { transform: translateX(0); }
+
+        .pulse {
+            animation: pulse 0.5s;
         }
-        
-        @keyframes abilityAnimation {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 152, 0, 0.7); }
-            70% { transform: scale(1.1); box-shadow: 0 0 0 15px rgba(255, 152, 0, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 152, 0, 0); }
-        }
-        
-        .attack {
-            animation: attackAnimation 0.3s ease;
-        }
-        
-        .enemy-attack {
-            animation: enemyAttackAnimation 0.3s ease;
-        }
-        
-        .ability-active {
-            animation: abilityAnimation 0.5s ease;
-        }
-        
-        /* Мобильная оптимизация */
-        @media (max-width: 480px) {
-            .logo {
-                font-size: 2.5rem;
+
+        /* Адаптивность для Telegram Web App */
+        @media (max-height: 700px) {
+            .player, .enemy {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
             }
             
-            .btn {
-                padding: 12px 20px;
-                font-size: 1rem;
-            }
-            
-            .game-area {
-                margin: 10px 0;
-            }
-            
-            .arena {
-                height: 200px;
-            }
-            
-            .player-character, .enemy-character {
+            .ability {
                 width: 60px;
                 height: 60px;
+                font-size: 1.5rem;
             }
             
-            .ability-btn {
-                height: 50px;
-                font-size: 1rem;
-            }
-            
-            .result-title {
-                font-size: 2rem;
+            .info-value {
+                font-size: 1.1rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
+    <div id="game-container">
         <!-- Главное меню -->
-        <div id="main-menu" class="screen">
+        <div id="main-menu">
             <div class="logo">ARENA CHAOS</div>
-            <div class="menu-buttons">
-                <button id="start-btn" class="btn">Начать игру</button>
-                <button id="how-to-play-btn" class="btn">Как играть</button>
-                <button id="credits-btn" class="btn">Разработчики</button>
-            </div>
+            <button class="menu-button" id="start-button">
+                <i class="fas fa-play"></i> НАЧАТЬ БОЙ
+            </button>
+            <button class="menu-button">
+                <i class="fas fa-trophy"></i> ДОСТИЖЕНИЯ
+            </button>
+            <button class="menu-button">
+                <i class="fas fa-cog"></i> НАСТРОЙКИ
+            </button>
         </div>
-        
-        <!-- Экран "Как играть" -->
-        <div id="how-to-play" class="screen">
-            <h2>Как играть</h2>
-            <div class="instruction">
-                <p>⚔️ В игре Arena Chaos бои проходят автоматически.</p>
-                <p>🔥 Ваш персонаж сражается с врагами, которые становятся сильнее с каждым уровнем.</p>
-                <p>💥 Ваша задача - вовремя использовать специальную способность, нажав на кнопку внизу экрана.</p>
-                <p>🌟 За победу вы получаете опыт и повышаете уровень, становясь сильнее.</p>
-                <p>🏆 Пройдите как можно больше уровней!</p>
-            </div>
-            <button id="back-from-instructions" class="btn">Назад</button>
-        </div>
-        
-        <!-- Экран "Разработчики" -->
-        <div id="credits" class="screen">
-            <h2>Разработчики</h2>
-            <div class="credits-info">
-                <p>Игра "Arena Chaos" создана для Telegram Web App</p>
-                <p>Версия: 1.0</p>
-                <p>Оптимизировано для мобильных устройств</p>
-                <p>Разработано: 2023</p>
-            </div>
-            <button id="back-from-credits" class="btn">Назад</button>
-        </div>
-        
+
         <!-- Игровой экран -->
-        <div id="game-screen" class="screen">
-            <div class="top-bar">
-                <div class="player-info">
-                    <div class="level-container">
-                        <span>Уровень:</span>
-                        <div class="level">1</div>
-                    </div>
-                    <div class="exp-bar">
-                        <div class="exp-fill"></div>
+        <div id="game-screen">
+            <!-- Информация о герое -->
+            <div class="player-info">
+                <div class="info-section">
+                    <div class="info-label">УРОВЕНЬ</div>
+                    <div class="info-value" id="level">1</div>
+                </div>
+                <div class="info-section">
+                    <div class="info-label">ЗДОРОВЬЕ</div>
+                    <div class="info-value" id="health">100/100</div>
+                    <div class="health-bar">
+                        <div class="health-fill" id="health-bar" style="width: 100%"></div>
                     </div>
                 </div>
-                <div class="wave-info">
-                    <div class="level-container">
-                        <span>Волна:</span>
-                        <div class="level enemy-level">1</div>
-                    </div>
+                <div class="info-section">
+                    <div class="info-label">ОПЫТ</div>
+                    <div class="info-value" id="exp">0/100</div>
                 </div>
             </div>
-            
-            <div class="game-area">
-                <div class="arena">
-                    <!-- Полоски здоровья -->
-                    <div class="health-bar player-health">
-                        <div class="health-fill"></div>
-                        <div class="health-label">Игрок</div>
-                    </div>
-                    <div class="health-bar enemy-health">
-                        <div class="health-fill"></div>
-                        <div class="health-label">Враг</div>
-                    </div>
-                    
-                    <!-- Персонажи -->
-                    <div class="player-character">
-                        <span class="character-icon">⚔️</span>
-                    </div>
-                    <div class="enemy-character">
-                        <span class="character-icon">👹</span>
-                    </div>
+
+            <!-- Арена -->
+            <div id="arena">
+                <div class="player">⚔️</div>
+                <!-- Враг будет добавлен динамически -->
+            </div>
+
+            <!-- Способности -->
+            <div class="abilities">
+                <div class="ability" id="ability1">
+                    <i class="fas fa-bolt"></i>
+                    <div class="ability-name">УДАР</div>
                 </div>
-                
-                <div class="ability-container">
-                    <button id="ability-btn" class="btn btn-ability ability-btn">
-                        Огненный шар
-                        <div class="cooldown-overlay"></div>
-                    </button>
+                <div class="ability" id="ability2">
+                    <i class="fas fa-shield-alt"></i>
+                    <div class="ability-name">ЩИТ</div>
+                </div>
+                <div class="ability" id="ability3">
+                    <i class="fas fa-fire"></i>
+                    <div class="ability-name">ОГОНЬ</div>
                 </div>
             </div>
         </div>
-        
-        <!-- Экран победы -->
-        <div id="victory-screen" class="screen result-screen">
-            <div class="result-content">
-                <div class="result-title victory">ПОБЕДА!</div>
-                <div class="reward-info">
-                    <p>Вы победили врага!</p>
-                    <p class="exp-reward">+100 опыта</p>
+
+        <!-- Экран окончания игры -->
+        <div id="game-over">
+            <div class="result-text" id="result-text">ПОРАЖЕНИЕ!</div>
+            <div class="stats">
+                <div class="stat">
+                    <span>Уровень достигнут:</span>
+                    <span id="final-level">1</span>
                 </div>
-                <button id="next-level-btn" class="btn">Следующий уровень</button>
-                <button id="to-menu-from-victory" class="btn">В меню</button>
-            </div>
-        </div>
-        
-        <!-- Экран поражения -->
-        <div id="defeat-screen" class="screen result-screen">
-            <div class="result-content">
-                <div class="result-title defeat">ПОРАЖЕНИЕ!</div>
-                <div class="reward-info">
-                    <p>Вы достигли уровня: <span class="reached-level">1</span></p>
-                    <p>Ваш рекорд: <span class="high-score">1</span></p>
+                <div class="stat">
+                    <span>Врагов побеждено:</span>
+                    <span id="enemies-defeated">0</span>
                 </div>
-                <button id="restart-btn" class="btn">Играть снова</button>
-                <button id="to-menu-from-defeat" class="btn">В меню</button>
+                <div class="stat">
+                    <span>Рекорд:</span>
+                    <span id="high-score">0</span>
+                </div>
             </div>
+            <button class="menu-button" id="restart-button">
+                <i class="fas fa-redo"></i> ИГРАТЬ СНОВА
+            </button>
+            <button class="menu-button" id="menu-button">
+                <i class="fas fa-home"></i> ГЛАВНОЕ МЕНЮ
+            </button>
         </div>
     </div>
 
     <script>
         // Состояние игры
         const gameState = {
-            playerLevel: 1,
-            playerExp: 0,
-            expToNextLevel: 100,
-            playerHealth: 100,
-            playerMaxHealth: 100,
-            playerDamage: 10,
-            currentWave: 1,
-            enemyHealth: 50,
-            enemyMaxHealth: 50,
-            enemyDamage: 5,
-            abilityCooldown: 0,
-            abilityDamage: 30,
+            player: {
+                level: 1,
+                health: 100,
+                maxHealth: 100,
+                exp: 0,
+                expToNextLevel: 100,
+                damage: 10,
+                defense: 5
+            },
+            enemy: {
+                health: 50,
+                maxHealth: 50,
+                damage: 8,
+                level: 1,
+                type: 'warrior'
+            },
+            abilities: {
+                strike: { cooldown: 0, maxCooldown: 3000, ready: true },
+                shield: { cooldown: 0, maxCooldown: 8000, ready: true },
+                fireball: { cooldown: 0, maxCooldown: 15000, ready: true }
+            },
             gameActive: false,
+            enemiesDefeated: 0,
             highScore: 0
         };
 
         // Элементы интерфейса
         const elements = {
             mainMenu: document.getElementById('main-menu'),
-            howToPlay: document.getElementById('how-to-play'),
-            credits: document.getElementById('credits'),
             gameScreen: document.getElementById('game-screen'),
-            victoryScreen: document.getElementById('victory-screen'),
-            defeatScreen: document.getElementById('defeat-screen'),
-            
-            startBtn: document.getElementById('start-btn'),
-            howToPlayBtn: document.getElementById('how-to-play-btn'),
-            creditsBtn: document.getElementById('credits-btn'),
-            backFromInstructions: document.getElementById('back-from-instructions'),
-            backFromCredits: document.getElementById('back-from-credits'),
-            abilityBtn: document.getElementById('ability-btn'),
-            nextLevelBtn: document.getElementById('next-level-btn'),
-            toMenuFromVictory: document.getElementById('to-menu-from-victory'),
-            restartBtn: document.getElementById('restart-btn'),
-            toMenuFromDefeat: document.getElementById('to-menu-from-defeat'),
-            
-            playerLevel: document.querySelector('.player-info .level'),
-            expFill: document.querySelector('.exp-fill'),
-            enemyLevel: document.querySelector('.enemy-level'),
-            playerHealthFill: document.querySelector('.player-health .health-fill'),
-            enemyHealthFill: document.querySelector('.enemy-health .health-fill'),
-            playerCharacter: document.querySelector('.player-character'),
-            enemyCharacter: document.querySelector('.enemy-character'),
-            cooldownOverlay: document.querySelector('.cooldown-overlay'),
-            
-            expReward: document.querySelector('.exp-reward'),
-            reachedLevel: document.querySelector('.reached-level'),
-            highScoreElement: document.querySelector('.high-score')
+            gameOver: document.getElementById('game-over'),
+            startButton: document.getElementById('start-button'),
+            restartButton: document.getElementById('restart-button'),
+            menuButton: document.getElementById('menu-button'),
+            level: document.getElementById('level'),
+            health: document.getElementById('health'),
+            healthBar: document.getElementById('health-bar'),
+            exp: document.getElementById('exp'),
+            arena: document.getElementById('arena'),
+            resultText: document.getElementById('result-text'),
+            finalLevel: document.getElementById('final-level'),
+            enemiesDefeated: document.getElementById('enemies-defeated'),
+            highScore: document.getElementById('high-score'),
+            ability1: document.getElementById('ability1'),
+            ability2: document.getElementById('ability2'),
+            ability3: document.getElementById('ability3')
         };
+
+        // Инициализация игры
+        function initGame() {
+            resetGameState();
+            setupEventListeners();
+        }
+
+        // Сброс состояния игры
+        function resetGameState() {
+            gameState.player = {
+                level: 1,
+                health: 100,
+                maxHealth: 100,
+                exp: 0,
+                expToNextLevel: 100,
+                damage: 10,
+                defense: 5
+            };
+            
+            gameState.enemy = {
+                health: 50,
+                maxHealth: 50,
+                damage: 8,
+                level: 1,
+                type: 'warrior'
+            };
+            
+            gameState.enemiesDefeated = 0;
+            gameState.gameActive = true;
+            
+            updateUI();
+            createEnemy();
+        }
 
         // Настройка обработчиков событий
         function setupEventListeners() {
-            // Навигация по меню
-            elements.startBtn.addEventListener('click', startGame);
-            elements.howToPlayBtn.addEventListener('click', () => showScreen('how-to-play'));
-            elements.creditsBtn.addEventListener('click', () => showScreen('credits'));
-            elements.backFromInstructions.addEventListener('click', () => showScreen('main-menu'));
-            elements.backFromCredits.addEventListener('click', () => showScreen('main-menu'));
+            elements.startButton.addEventListener('click', startGame);
+            elements.restartButton.addEventListener('click', startGame);
+            elements.menuButton.addEventListener('click', showMainMenu);
             
-            // Игровые действия
-            elements.abilityBtn.addEventListener('click', useAbility);
-            elements.nextLevelBtn.addEventListener('click', nextLevel);
-            elements.toMenuFromVictory.addEventListener('click', returnToMenu);
-            elements.restartBtn.addEventListener('click', restartGame);
-            elements.toMenuFromDefeat.addEventListener('click', returnToMenu);
-        }
-
-        // Показать экран
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.style.display = 'none';
-            });
-            document.getElementById(screenId).style.display = 'flex';
+            elements.ability1.addEventListener('click', () => useAbility('strike'));
+            elements.ability2.addEventListener('click', () => useAbility('shield'));
+            elements.ability3.addEventListener('click', () => useAbility('fireball'));
         }
 
         // Начать игру
         function startGame() {
             resetGameState();
-            showScreen('game-screen');
-            updateUI();
-            startCombat();
+            elements.mainMenu.style.display = 'none';
+            elements.gameOver.style.display = 'none';
+            elements.gameScreen.style.display = 'flex';
+            
+            // Запуск игрового цикла
+            gameLoop();
         }
 
-        // Сброс состояния игры
-        function resetGameState() {
-            gameState.playerLevel = 1;
-            gameState.playerExp = 0;
-            gameState.expToNextLevel = 100;
-            gameState.playerHealth = 100;
-            gameState.playerMaxHealth = 100;
-            gameState.playerDamage = 10;
-            gameState.currentWave = 1;
-            gameState.enemyHealth = 50;
-            gameState.enemyMaxHealth = 50;
-            gameState.enemyDamage = 5;
-            gameState.abilityCooldown = 0;
-            gameState.gameActive = true;
-            
-            elements.abilityBtn.disabled = false;
-            elements.cooldownOverlay.style.opacity = '0';
+        // Показать главное меню
+        function showMainMenu() {
+            elements.mainMenu.style.display = 'flex';
+            elements.gameOver.style.display = 'none';
+            elements.gameScreen.style.display = 'none';
+            gameState.gameActive = false;
         }
 
-        // Обновление интерфейса
-        function updateUI() {
-            // Обновление информации игрока
-            elements.playerLevel.textContent = gameState.playerLevel;
-            elements.expFill.style.width = `${(gameState.playerExp / gameState.expToNextLevel) * 100}%`;
+        // Создать врага
+        function createEnemy() {
+            // Очистить арену
+            elements.arena.innerHTML = '<div class="player">⚔️</div>';
             
-            // Обновление информации врага
-            elements.enemyLevel.textContent = gameState.currentWave;
+            // Создать врага с учетом уровня игрока
+            const enemyLevel = Math.max(1, gameState.player.level - 1 + Math.floor(Math.random() * 3));
+            const enemyTypes = ['warrior', 'archer', 'mage'];
+            const enemyType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
             
-            // Обновление здоровья
-            elements.playerHealthFill.style.width = `${(gameState.playerHealth / gameState.playerMaxHealth) * 100}%`;
-            elements.enemyHealthFill.style.width = `${(gameState.enemyHealth / gameState.enemyMaxHealth) * 100}%`;
+            // Базовые характеристики врага
+            let health = 40 + (enemyLevel * 10);
+            let damage = 7 + (enemyLevel * 2);
             
-            // Обновление кнопки способности
-            if (gameState.abilityCooldown > 0) {
-                elements.abilityBtn.disabled = true;
-                elements.cooldownOverlay.textContent = gameState.abilityCooldown;
-                elements.cooldownOverlay.style.opacity = '1';
-            } else {
-                elements.abilityBtn.disabled = false;
-                elements.cooldownOverlay.style.opacity = '0';
+            // Модификаторы в зависимости от типа
+            if (enemyType === 'archer') {
+                health *= 0.8;
+                damage *= 1.2;
+            } else if (enemyType === 'mage') {
+                health *= 0.7;
+                damage *= 1.5;
             }
-        }
-
-        // Начать бой
-        function startCombat() {
-            if (!gameState.gameActive) return;
             
-            // Автоматическая атака игрока
-            setTimeout(() => {
-                if (!gameState.gameActive) return;
-                
-                // Анимация атаки игрока
-                elements.playerCharacter.classList.add('attack');
-                setTimeout(() => {
-                    elements.playerCharacter.classList.remove('attack');
-                }, 300);
-                
-                // Нанесение урона врагу
-                const damage = Math.floor(gameState.playerDamage * (0.8 + Math.random() * 0.4));
-                gameState.enemyHealth -= damage;
-                if (gameState.enemyHealth < 0) gameState.enemyHealth = 0;
-                
-                // Создание текста урона
-                createDamageText(elements.enemyCharacter, damage, 'player-damage');
-                updateUI();
-                
-                // Проверка на победу
-                if (gameState.enemyHealth <= 0) {
-                    playerWin();
-                    return;
-                }
-                
-                // Атака врага
-                setTimeout(() => {
-                    if (!gameState.gameActive) return;
-                    
-                    // Анимация атаки врага
-                    elements.enemyCharacter.classList.add('enemy-attack');
-                    setTimeout(() => {
-                        elements.enemyCharacter.classList.remove('enemy-attack');
-                    }, 300);
-                    
-                    // Нанесение урона игроку
-                    const enemyDamage = Math.floor(gameState.enemyDamage * (0.8 + Math.random() * 0.4));
-                    gameState.playerHealth -= enemyDamage;
-                    if (gameState.playerHealth < 0) gameState.playerHealth = 0;
-                    
-                    // Создание текста урона
-                    createDamageText(elements.playerCharacter, enemyDamage, 'enemy-damage');
-                    updateUI();
-                    
-                    // Проверка на поражение
-                    if (gameState.playerHealth <= 0) {
-                        playerLose();
-                        return;
-                    }
-                    
-                    // Продолжение боя
-                    startCombat();
-                }, 500);
-            }, 1000);
-        }
-
-        // Создание текста урона
-        function createDamageText(target, damage, className) {
-            const damageText = document.createElement('div');
-            damageText.classList.add('combat-text', className);
-            damageText.textContent = `-${damage}`;
-            damageText.style.left = `${target.offsetLeft + target.offsetWidth / 2}px`;
-            damageText.style.top = `${target.offsetTop}px`;
-            document.querySelector('.arena').appendChild(damageText);
+            gameState.enemy = {
+                health: Math.round(health),
+                maxHealth: Math.round(health),
+                damage: Math.round(damage),
+                level: enemyLevel,
+                type: enemyType
+            };
             
-            // Удаление текста после анимации
-            setTimeout(() => {
-                damageText.remove();
-            }, 1000);
+            // Создать элемент врага
+            const enemy = document.createElement('div');
+            enemy.className = 'enemy';
+            
+            // Иконка в зависимости от типа
+            if (enemyType === 'warrior') enemy.innerHTML = '🛡️';
+            else if (enemyType === 'archer') enemy.innerHTML = '🏹';
+            else enemy.innerHTML = '🔮';
+            
+            elements.arena.appendChild(enemy);
         }
 
         // Использовать способность
-        function useAbility() {
-            if (gameState.abilityCooldown > 0 || !gameState.gameActive) return;
+        function useAbility(ability) {
+            if (!gameState.gameActive || !gameState.abilities[ability].ready) return;
             
-            // Анимация способности
-            elements.abilityBtn.classList.add('ability-active');
-            setTimeout(() => {
-                elements.abilityBtn.classList.remove('ability-active');
-            }, 500);
+            // Установить перезарядку
+            gameState.abilities[ability].ready = false;
+            gameState.abilities[ability].cooldown = gameState.abilities[ability].maxCooldown;
             
-            // Нанесение урона способностью
-            const damage = Math.floor(gameState.abilityDamage * (0.9 + Math.random() * 0.2));
-            gameState.enemyHealth -= damage;
-            if (gameState.enemyHealth < 0) gameState.enemyHealth = 0;
+            const abilityElement = elements[`ability${ability === 'strike' ? 1 : ability === 'shield' ? 2 : 3}`];
+            abilityElement.classList.add('cooldown');
             
-            // Создание текста урона
-            createDamageText(elements.enemyCharacter, damage, 'player-damage');
-            createDamageText(elements.enemyCharacter, '🔥', 'player-damage');
-            
-            // Установка перезарядки
-            gameState.abilityCooldown = 3;
-            updateUI();
-            
-            // Проверка на победу
-            if (gameState.enemyHealth <= 0) {
-                playerWin();
-                return;
+            // Эффект способности
+            switch(ability) {
+                case 'strike':
+                    // Нанести урон врагу
+                    const strikeDamage = gameState.player.damage * 2;
+                    gameState.enemy.health -= strikeDamage;
+                    createDamageEffect(strikeDamage, true);
+                    break;
+                    
+                case 'shield':
+                    // Временная защита
+                    gameState.player.defense += 10;
+                    setTimeout(() => {
+                        gameState.player.defense -= 10;
+                    }, 5000);
+                    createShieldEffect();
+                    break;
+                    
+                case 'fireball':
+                    // Нанести большой урон
+                    const fireDamage = gameState.player.damage * 4;
+                    gameState.enemy.health -= fireDamage;
+                    createFireEffect(fireDamage);
+                    break;
             }
             
-            // Обновление перезарядки
-            const cooldownInterval = setInterval(() => {
-                if (!gameState.gameActive) {
-                    clearInterval(cooldownInterval);
-                    return;
-                }
-                
-                gameState.abilityCooldown--;
-                updateUI();
-                
-                if (gameState.abilityCooldown <= 0) {
-                    clearInterval(cooldownInterval);
+            // Обновить UI
+            updateUI();
+            
+            // Проверить, побежден ли враг
+            if (gameState.enemy.health <= 0) {
+                defeatEnemy();
+            }
+        }
+
+        // Создать эффект урона
+        function createDamageEffect(damage, isPlayerAttack = false) {
+            const effect = document.createElement('div');
+            effect.className = 'damage-effect';
+            effect.textContent = `-${damage}`;
+            
+            if (isPlayerAttack) {
+                effect.style.left = 'calc(50% - 20px)';
+                effect.style.top = '40%';
+            } else {
+                effect.style.left = 'calc(50% - 20px)';
+                effect.style.top = '60%';
+            }
+            
+            elements.arena.appendChild(effect);
+            
+            // Удалить эффект после анимации
+            setTimeout(() => {
+                if (elements.arena.contains(effect)) {
+                    elements.arena.removeChild(effect);
                 }
             }, 1000);
         }
 
-        // Игрок победил
-        function playerWin() {
-            gameState.gameActive = false;
+        // Создать эффект щита
+        function createShieldEffect() {
+            const player = document.querySelector('.player');
+            player.classList.add('pulse');
+            player.style.boxShadow = '0 0 20px rgba(0, 195, 255, 0.8)';
             
-            // Награда за победу
-            const expReward = 50 + gameState.currentWave * 10;
-            gameState.playerExp += expReward;
-            elements.expReward.textContent = `+${expReward} опыта`;
+            setTimeout(() => {
+                player.classList.remove('pulse');
+                player.style.boxShadow = '0 0 20px rgba(138, 43, 226, 0.7)';
+            }, 1000);
+        }
+
+        // Создать эффект огня
+        function createFireEffect(damage) {
+            const enemy = document.querySelector('.enemy');
+            enemy.classList.add('pulse');
+            enemy.style.boxShadow = '0 0 30px rgba(255, 100, 0, 0.9)';
             
-            // Проверка повышения уровня
-            if (gameState.playerExp >= gameState.expToNextLevel) {
+            // Эффект урона
+            createDamageEffect(damage, true);
+            
+            setTimeout(() => {
+                if (enemy) {
+                    enemy.classList.remove('pulse');
+                    enemy.style.boxShadow = '0 0 15px rgba(255, 75, 43, 0.7)';
+                }
+            }, 1000);
+        }
+
+        // Победа над врагом
+        function defeatEnemy() {
+            gameState.enemiesDefeated++;
+            
+            // Наградить опытом
+            const expGain = 20 + (gameState.enemy.level * 5);
+            gameState.player.exp += expGain;
+            
+            // Проверить повышение уровня
+            if (gameState.player.exp >= gameState.player.expToNextLevel) {
                 levelUp();
             }
             
+            // Создать нового врага
             setTimeout(() => {
-                showScreen('victory-screen');
+                if (gameState.gameActive) {
+                    createEnemy();
+                }
             }, 1500);
+            
+            updateUI();
         }
 
         // Повышение уровня
         function levelUp() {
-            gameState.playerLevel++;
-            gameState.playerExp = gameState.playerExp - gameState.expToNextLevel;
-            gameState.expToNextLevel = Math.floor(gameState.expToNextLevel * 1.5);
+            gameState.player.level++;
+            gameState.player.exp -= gameState.player.expToNextLevel;
+            gameState.player.expToNextLevel = Math.round(gameState.player.expToNextLevel * 1.5);
             
-            // Улучшение характеристик
-            gameState.playerMaxHealth = Math.floor(gameState.playerMaxHealth * 1.2);
-            gameState.playerHealth = gameState.playerMaxHealth;
-            gameState.playerDamage = Math.floor(gameState.playerDamage * 1.15);
-        }
-
-        // Переход на следующий уровень
-        function nextLevel() {
-            gameState.currentWave++;
+            // Улучшить характеристики
+            gameState.player.maxHealth = Math.round(gameState.player.maxHealth * 1.2);
+            gameState.player.health = gameState.player.maxHealth;
+            gameState.player.damage = Math.round(gameState.player.damage * 1.15);
+            gameState.player.defense = Math.round(gameState.player.defense * 1.1);
             
-            // Усиление врага
-            gameState.enemyMaxHealth = Math.floor(50 + gameState.currentWave * 20);
-            gameState.enemyHealth = gameState.enemyMaxHealth;
-            gameState.enemyDamage = Math.floor(5 + gameState.currentWave * 2);
-            
-            gameState.gameActive = true;
-            showScreen('game-screen');
-            updateUI();
-            startCombat();
-        }
-
-        // Игрок проиграл
-        function playerLose() {
-            gameState.gameActive = false;
-            
-            // Обновление рекорда
-            if (gameState.currentWave > gameState.highScore) {
-                gameState.highScore = gameState.currentWave;
-            }
-            
-            elements.reachedLevel.textContent = gameState.currentWave;
-            elements.highScoreElement.textContent = gameState.highScore;
+            // Эффект повышения уровня
+            const player = document.querySelector('.player');
+            player.classList.add('pulse');
+            player.style.boxShadow = '0 0 30px rgba(255, 215, 0, 0.8)';
             
             setTimeout(() => {
-                showScreen('defeat-screen');
-            }, 1500);
+                player.classList.remove('pulse');
+                player.style.boxShadow = '0 0 20px rgba(138, 43, 226, 0.7)';
+            }, 1000);
         }
 
-        // Перезапуск игры
-        function restartGame() {
-            resetGameState();
-            showScreen('game-screen');
+        // Игровой цикл
+        function gameLoop() {
+            if (!gameState.gameActive) return;
+            
+            // Обновить перезарядку способностей
+            updateCooldowns();
+            
+            // Атаковать игрока (случайный интервал)
+            if (Math.random() < 0.01) {
+                attackPlayer();
+            }
+            
+            // Продолжить цикл
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Атаковать игрока
+        function attackPlayer() {
+            if (!gameState.gameActive || gameState.enemy.health <= 0) return;
+            
+            // Рассчитать урон с учетом защиты
+            const damage = Math.max(1, gameState.enemy.damage - gameState.player.defense);
+            gameState.player.health -= damage;
+            
+            // Эффект урона
+            createDamageEffect(damage, false);
+            
+            // Обновить UI
             updateUI();
-            startCombat();
+            
+            // Проверить поражение
+            if (gameState.player.health <= 0) {
+                gameOver();
+            }
         }
 
-        // Вернуться в меню
-        function returnToMenu() {
-            showScreen('main-menu');
+        // Обновить перезарядку способностей
+        function updateCooldowns() {
+            const now = Date.now();
+            
+            for (const ability in gameState.abilities) {
+                if (!gameState.abilities[ability].ready) {
+                    gameState.abilities[ability].cooldown -= 16;
+                    
+                    if (gameState.abilities[ability].cooldown <= 0) {
+                        gameState.abilities[ability].ready = true;
+                        gameState.abilities[ability].cooldown = 0;
+                        
+                        const abilityElement = elements[`ability${ability === 'strike' ? 1 : ability === 'shield' ? 2 : 3}`];
+                        abilityElement.classList.remove('cooldown');
+                    }
+                }
+            }
         }
 
-        // Инициализация игры
-        function initGame() {
-            setupEventListeners();
-            showScreen('main-menu');
+        // Обновить интерфейс
+        function updateUI() {
+            // Информация о игроке
+            elements.level.textContent = gameState.player.level;
+            elements.health.textContent = `${gameState.player.health}/${gameState.player.maxHealth}`;
+            elements.exp.textContent = `${gameState.player.exp}/${gameState.player.expToNextLevel}`;
+            
+            // Полоса здоровья
+            const healthPercent = (gameState.player.health / gameState.player.maxHealth) * 100;
+            elements.healthBar.style.width = `${healthPercent}%`;
+            
+            // Изменение цвета полосы здоровья
+            if (healthPercent > 70) {
+                elements.healthBar.style.background = 'linear-gradient(90deg, #38ef7d, #11998e)';
+            } else if (healthPercent > 30) {
+                elements.healthBar.style.background = 'linear-gradient(90deg, #fbb040, #f9d423)';
+            } else {
+                elements.healthBar.style.background = 'linear-gradient(90deg, #ff416c, #ff4b2b)';
+            }
         }
 
-        // Запуск игры при загрузке страницы
-        window.addEventListener('DOMContentLoaded', initGame);
+        // Конец игры
+        function gameOver() {
+            gameState.gameActive = false;
+            
+            // Обновить рекорд
+            if (gameState.enemiesDefeated > gameState.highScore) {
+                gameState.highScore = gameState.enemiesDefeated;
+            }
+            
+            // Обновить экран окончания игры
+            elements.resultText.textContent = 'ПОРАЖЕНИЕ!';
+            elements.finalLevel.textContent = gameState.player.level;
+            elements.enemiesDefeated.textContent = gameState.enemiesDefeated;
+            elements.highScore.textContent = gameState.highScore;
+            
+            // Показать экран окончания игры
+            elements.gameOver.style.display = 'flex';
+        }
+
+        // Запуск игры при загрузке
+        window.onload = initGame;
     </script>
 </body>
 </html>
