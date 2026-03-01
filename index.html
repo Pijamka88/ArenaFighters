@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Disciples: Новая карта</title>
+    <title>Disciples: Умный ИИ</title>
     <!-- Telegram Web App -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -123,7 +123,7 @@
             gap: 3px;
         }
 
-        /* ГЛОБАЛЬНАЯ КАРТА - НОВЫЙ ДИЗАЙН ЯЧЕЕК ИЗ ФАЙЛА */
+        /* ГЛОБАЛЬНАЯ КАРТА - градиенты и цветные границы */
         .map-screen {
             display: none;
             flex-direction: column;
@@ -268,7 +268,7 @@
         }
         .tavern-footer button:active { transform: translateY(4px); box-shadow: 0 1px 0 #151c2b; }
 
-        /* ЭКРАН БИТВЫ - без прокрутки очереди */
+        /* ЭКРАН БИТВЫ */
         .battle-screen {
             display: none;
             flex-direction: column;
@@ -290,7 +290,7 @@
             border-radius: 20px;
             border: 1px solid #7a6e5b;
             max-width: 250px;
-            overflow: visible; /* Убрана прокрутка */
+            overflow: visible;
         }
         .queue-icon {
             font-size: 1.1rem;
@@ -384,7 +384,7 @@
     <!-- МЕНЮ -->
     <div id="menu-screen" class="menu-screen">
         <div class="title">DISCIPLES</div>
-        <div class="sub">НОВАЯ КАРТА</div>
+        <div class="sub">УМНЫЙ ИИ</div>
         <div class="class-cards">
             <div class="class-card" data-class="warrior">
                 <div class="card-icon">⚔️</div>
@@ -411,7 +411,7 @@
         <div style="text-align: center; color:#5f6b7a; font-size:0.8rem; margin-top: 12px;">выберите класс для битвы</div>
     </div>
 
-    <!-- Глобальная карта с новым дизайном ячеек -->
+    <!-- Глобальная карта -->
     <div id="map-screen" class="map-screen">
         <div class="map-header">
             <div class="income-timer">
@@ -530,7 +530,6 @@
         timerDisplay.innerText = `⏳ ${minutes}:${seconds.toString().padStart(2, '0')}`;
     }
 
-    // Генерация мира
     function generateWorld() {
         worldMap = [];
         for (let y = 0; y < MAP_SIZE; y++) {
@@ -601,6 +600,7 @@
             worldMap[y][x] = 0;
         });
 
+        // Генерируем шахты
         mines = [];
         for (let i = 0; i < 20; i++) {
             let x = Math.floor(Math.random() * MAP_SIZE);
@@ -672,7 +672,7 @@
         }
     }
 
-    // НОВЫЙ ДИЗАЙН ЯЧЕЕК ГЛОБАЛЬНОЙ КАРТЫ (из файла)
+    // Красивые градиенты для карты
     function drawMap() {
         checkIncome();
         updateTimer();
@@ -693,43 +693,52 @@
                 const x = j * cellSize;
                 const y = i * cellSize;
 
-                // Цвет в зависимости от типа (из файла)
+                // Градиент для каждого типа
+                const grad = ctxMap.createLinearGradient(x, y, x+cellSize, y+cellSize);
+                
                 if (cellType === 0) { // дорога
-                    ctxMap.fillStyle = '#3e2723';
+                    grad.addColorStop(0, '#c0a070');
+                    grad.addColorStop(1, '#8b6b4b');
                 } else if (cellType === 1) { // лес
-                    ctxMap.fillStyle = '#1a3a1a';
+                    grad.addColorStop(0, '#6f9e6f');
+                    grad.addColorStop(1, '#2f5a2f');
                 } else if (cellType === 2) { // вода
-                    ctxMap.fillStyle = '#1a3a5a';
+                    grad.addColorStop(0, '#7ab8d9');
+                    grad.addColorStop(1, '#2f5f9f');
                 } else { // трава
-                    ctxMap.fillStyle = '#2d4a2d';
+                    grad.addColorStop(0, '#9fbf8f');
+                    grad.addColorStop(1, '#5f7f4f');
                 }
                 
+                ctxMap.fillStyle = grad;
                 ctxMap.fillRect(x, y, cellSize, cellSize);
                 
-                // Тень и рамка как в файле
-                ctxMap.shadowColor = 'black';
-                ctxMap.shadowBlur = 15;
-                ctxMap.shadowOffsetY = 5;
-                ctxMap.strokeStyle = '#4f556b';
-                ctxMap.lineWidth = 1;
-                ctxMap.strokeRect(x+0.5, y+0.5, cellSize-1, cellSize-1);
-                ctxMap.shadowBlur = 0;
-                ctxMap.shadowOffsetY = 0;
+                // Цветная граница
+                if (cellType === 0) {
+                    ctxMap.strokeStyle = '#dbbc96';
+                } else if (cellType === 1) {
+                    ctxMap.strokeStyle = '#88ff88';
+                } else if (cellType === 2) {
+                    ctxMap.strokeStyle = '#aaddff';
+                } else {
+                    ctxMap.strokeStyle = '#ccffaa';
+                }
+                ctxMap.lineWidth = 2;
+                ctxMap.strokeRect(x+1, y+1, cellSize-2, cellSize-2);
 
-                // Эмодзи (уменьшенные)
+                // Эмодзи
                 ctxMap.font = `${cellSize-35}px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`;
                 ctxMap.textAlign = 'center';
                 ctxMap.textBaseline = 'middle';
 
-                // Эмодзи для разных типов
-                if (cellType === 1) { // лес
-                    ctxMap.fillStyle = '#aaffaa';
+                if (cellType === 1) {
+                    ctxMap.fillStyle = '#d4f0d4';
                     ctxMap.fillText('🌲', x + cellSize/2, y + cellSize/2);
-                } else if (cellType === 2) { // вода
-                    ctxMap.fillStyle = '#aaddff';
+                } else if (cellType === 2) {
+                    ctxMap.fillStyle = '#d4f0ff';
                     ctxMap.fillText('💧', x + cellSize/2, y + cellSize/2);
-                } else if (cellType === 3) { // трава
-                    ctxMap.fillStyle = '#ccffaa';
+                } else if (cellType === 3) {
+                    ctxMap.fillStyle = '#e0f0d0';
                     ctxMap.fillText('🌿', x + cellSize/2, y + cellSize/2);
                 }
 
@@ -879,6 +888,7 @@
     const BATTLE_HEIGHT = 11;
     let battlePlayerUnits = [];
     let battleEnemyUnits = [];
+    let obstacles = []; // непроходимые клетки
     let corpses = [];
     let currentTurn = 'player';
     let selectedUnitId = null;
@@ -888,6 +898,25 @@
     let isMineBattle = false;
     let animationInProgress = false;
     let turnOrder = [];
+
+    function generateObstacles() {
+        obstacles = [];
+        const count = 5 + Math.floor(Math.random() * 8);
+        for (let i = 0; i < count; i++) {
+            const x = Math.floor(Math.random() * BATTLE_WIDTH);
+            const y = Math.floor(Math.random() * BATTLE_HEIGHT);
+            // Не ставим препятствия на стартовые позиции игроков и врагов
+            const isPlayerStart = (y >= 6) && (x <= 1);
+            const isEnemyStart = (y < 5) && (x >= 5);
+            if (!isPlayerStart && !isEnemyStart) {
+                obstacles.push({ x, y });
+            }
+        }
+    }
+
+    function isObstacle(x, y) {
+        return obstacles.some(o => o.x === x && o.y === y);
+    }
 
     function updateTurnQueue() {
         const allAlive = [...battlePlayerUnits.filter(u => u.hp > 0), ...battleEnemyUnits.filter(u => u.hp > 0)];
@@ -904,7 +933,6 @@
         }
 
         turnQueue.innerHTML = '';
-        // Показываем только первые 6 иконок (без прокрутки)
         turnOrder.slice(0, 6).forEach((id, index) => {
             const unit = allAlive.find(u => u.id === id);
             if (!unit) return;
@@ -944,6 +972,7 @@
     function setupBattleUnits(enemyUnitsData) {
         battlePlayerUnits = [];
         battleEnemyUnits = [];
+        generateObstacles();
 
         const allPlayer = [playerHero, ...playerWarriors].filter(u => u.hp > 0);
         
@@ -995,17 +1024,29 @@
                 const xPos = x * cellSize;
                 const yPos = y * cellSize;
                 
-                ctxBattle.fillStyle = '#1b1f2b';
-                ctxBattle.fillRect(xPos, yPos, cellSize, cellSize);
-                
-                ctxBattle.shadowColor = 'black';
-                ctxBattle.shadowBlur = 25;
-                ctxBattle.shadowOffsetY = 12;
-                ctxBattle.strokeStyle = '#4f556b';
-                ctxBattle.lineWidth = 1;
-                ctxBattle.strokeRect(xPos, yPos, cellSize, cellSize);
-                ctxBattle.shadowBlur = 0;
-                ctxBattle.shadowOffsetY = 0;
+                // Препятствия
+                if (isObstacle(x, y)) {
+                    ctxBattle.fillStyle = '#4a4a5a';
+                    ctxBattle.fillRect(xPos, yPos, cellSize, cellSize);
+                    ctxBattle.strokeStyle = '#8a8a9a';
+                    ctxBattle.lineWidth = 2;
+                    ctxBattle.strokeRect(xPos+2, yPos+2, cellSize-4, cellSize-4);
+                    ctxBattle.font = `${cellSize-40}px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`;
+                    ctxBattle.fillStyle = '#a0a0b0';
+                    ctxBattle.fillText('🧱', xPos + cellSize/2, yPos + cellSize/2);
+                } else {
+                    ctxBattle.fillStyle = '#1b1f2b';
+                    ctxBattle.fillRect(xPos, yPos, cellSize, cellSize);
+                    
+                    ctxBattle.shadowColor = 'black';
+                    ctxBattle.shadowBlur = 25;
+                    ctxBattle.shadowOffsetY = 12;
+                    ctxBattle.strokeStyle = '#4f556b';
+                    ctxBattle.lineWidth = 1;
+                    ctxBattle.strokeRect(xPos, yPos, cellSize, cellSize);
+                    ctxBattle.shadowBlur = 0;
+                    ctxBattle.shadowOffsetY = 0;
+                }
             }
         }
 
@@ -1021,6 +1062,7 @@
                         const nx = selected.x + dx;
                         const ny = selected.y + dy;
                         if (nx < 0 || nx >= BATTLE_WIDTH || ny < 0 || ny >= BATTLE_HEIGHT) continue;
+                        if (isObstacle(nx, ny)) continue;
                         const occupiedByPlayer = battlePlayerUnits.some(u => u.x === nx && u.y === ny && u.hp > 0);
                         const occupiedByEnemy = battleEnemyUnits.some(u => u.x === nx && u.y === ny && u.hp > 0);
                         if (!occupiedByPlayer && !occupiedByEnemy) {
@@ -1036,6 +1078,7 @@
                         const nx = selected.x + dx;
                         const ny = selected.y + dy;
                         if (nx < 0 || nx >= BATTLE_WIDTH || ny < 0 || ny >= BATTLE_HEIGHT) continue;
+                        if (isObstacle(nx, ny)) continue;
                         const enemy = battleEnemyUnits.find(u => u.x === nx && u.y === ny && u.hp > 0);
                         if (enemy) {
                             ctxBattle.fillStyle = 'rgba(255, 80, 80, 0.35)';
@@ -1090,21 +1133,21 @@
         ctxBattle.fillStyle = isPlayer ? '#c3e3ff' : '#ffb6b6';
         ctxBattle.fillText(unit.icon || '❓', x + cellSize/2, y + cellSize/2);
 
-        // HP бар ниже иконки
-        const barWidth = 25;
-        const barHeight = 3;
+        // HP бар ниже иконки и увеличен
+        const barWidth = 35;
+        const barHeight = 5;
         const barX = x + (cellSize - barWidth) / 2;
-        const barY = y + cellSize/2 + 12;
+        const barY = y + cellSize/2 + 16;
         const hpPercent = unit.hp / unit.maxHp;
 
         ctxBattle.fillStyle = '#222';
         ctxBattle.beginPath();
-        ctxBattle.roundRect(barX, barY, barWidth, barHeight, 2);
+        ctxBattle.roundRect(barX, barY, barWidth, barHeight, 3);
         ctxBattle.fill();
 
         ctxBattle.fillStyle = hpPercent > 0.6 ? '#5ac46a' : (hpPercent > 0.3 ? '#efb15e' : '#d84f4f');
         ctxBattle.beginPath();
-        ctxBattle.roundRect(barX, barY, barWidth * hpPercent, barHeight, 2);
+        ctxBattle.roundRect(barX, barY, barWidth * hpPercent, barHeight, 3);
         ctxBattle.fill();
     }
 
@@ -1146,17 +1189,28 @@
                 const xPos = x * cellSize;
                 const yPos = y * cellSize;
                 
-                ctxBattle.fillStyle = '#1b1f2b';
-                ctxBattle.fillRect(xPos, yPos, cellSize, cellSize);
-                
-                ctxBattle.shadowColor = 'black';
-                ctxBattle.shadowBlur = 25;
-                ctxBattle.shadowOffsetY = 12;
-                ctxBattle.strokeStyle = '#4f556b';
-                ctxBattle.lineWidth = 1;
-                ctxBattle.strokeRect(xPos, yPos, cellSize, cellSize);
-                ctxBattle.shadowBlur = 0;
-                ctxBattle.shadowOffsetY = 0;
+                if (isObstacle(x, y)) {
+                    ctxBattle.fillStyle = '#4a4a5a';
+                    ctxBattle.fillRect(xPos, yPos, cellSize, cellSize);
+                    ctxBattle.strokeStyle = '#8a8a9a';
+                    ctxBattle.lineWidth = 2;
+                    ctxBattle.strokeRect(xPos+2, yPos+2, cellSize-4, cellSize-4);
+                    ctxBattle.font = `${cellSize-40}px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`;
+                    ctxBattle.fillStyle = '#a0a0b0';
+                    ctxBattle.fillText('🧱', xPos + cellSize/2, yPos + cellSize/2);
+                } else {
+                    ctxBattle.fillStyle = '#1b1f2b';
+                    ctxBattle.fillRect(xPos, yPos, cellSize, cellSize);
+                    
+                    ctxBattle.shadowColor = 'black';
+                    ctxBattle.shadowBlur = 25;
+                    ctxBattle.shadowOffsetY = 12;
+                    ctxBattle.strokeStyle = '#4f556b';
+                    ctxBattle.lineWidth = 1;
+                    ctxBattle.strokeRect(xPos, yPos, cellSize, cellSize);
+                    ctxBattle.shadowBlur = 0;
+                    ctxBattle.shadowOffsetY = 0;
+                }
             }
         }
 
@@ -1195,20 +1249,20 @@
         ctxBattle.fillStyle = movingUnit.team === 'player' ? '#c3e3ff' : '#ffb6b6';
         ctxBattle.fillText(movingUnit.icon || '❓', x + cellSize/2, y + cellSize/2);
 
-        const barWidth = 25;
-        const barHeight = 3;
+        const barWidth = 35;
+        const barHeight = 5;
         const barX = x + (cellSize - barWidth) / 2;
-        const barY = y + cellSize/2 + 12;
+        const barY = y + cellSize/2 + 16;
         const hpPercent = movingUnit.hp / movingUnit.maxHp;
 
         ctxBattle.fillStyle = '#222';
         ctxBattle.beginPath();
-        ctxBattle.roundRect(barX, barY, barWidth, barHeight, 2);
+        ctxBattle.roundRect(barX, barY, barWidth, barHeight, 3);
         ctxBattle.fill();
 
         ctxBattle.fillStyle = hpPercent > 0.6 ? '#5ac46a' : (hpPercent > 0.3 ? '#efb15e' : '#d84f4f');
         ctxBattle.beginPath();
-        ctxBattle.roundRect(barX, barY, barWidth * hpPercent, barHeight, 2);
+        ctxBattle.roundRect(barX, barY, barWidth * hpPercent, barHeight, 3);
         ctxBattle.fill();
     }
 
@@ -1281,6 +1335,11 @@
         const gridY = Math.floor(mouseY / cellSize);
         if (gridX < 0 || gridX >= BATTLE_WIDTH || gridY < 0 || gridY >= BATTLE_HEIGHT) return;
 
+        if (isObstacle(gridX, gridY)) {
+            battleLog.innerText = 'Это препятствие!';
+            return;
+        }
+
         const clickedPlayer = battlePlayerUnits.find(u => u.x === gridX && u.y === gridY && u.hp > 0);
         const clickedEnemy = battleEnemyUnits.find(u => u.x === gridX && u.y === gridY && u.hp > 0);
 
@@ -1344,7 +1403,7 @@
             const occupiedByPlayer = battlePlayerUnits.some(u => u.x === gridX && u.y === gridY && u.hp > 0);
             const occupiedByEnemy = battleEnemyUnits.some(u => u.x === gridX && u.y === gridY && u.hp > 0);
             
-            if (!occupiedByPlayer && !occupiedByEnemy) {
+            if (!occupiedByPlayer && !occupiedByEnemy && !isObstacle(gridX, gridY)) {
                 const corpseIndex = corpses.findIndex(c => c.x === gridX && c.y === gridY);
                 if (corpseIndex !== -1) {
                     corpses.splice(corpseIndex, 1);
@@ -1360,13 +1419,14 @@
                     moveToEndOfQueue(unit.id);
                 });
             } else {
-                battleLog.innerText = 'Клетка занята';
+                battleLog.innerText = 'Клетка занята или препятствие';
             }
         } else if (currentTurn === 'player') {
             battleLog.innerText = 'Выберите своего юнита';
         }
     }
 
+    // Улучшенный ИИ врагов
     function enemyTurn() {
         if (!battleActive || currentTurn !== 'enemy' || animationInProgress) return;
 
@@ -1395,24 +1455,31 @@
                 return;
             }
 
-            let closest = null;
-            let minDist = Infinity;
+            // Оценка угроз: выбираем наиболее опасного противника (по соотношению урон/здоровье)
+            let bestTarget = null;
+            let bestScore = -Infinity;
             players.forEach(p => {
-                const d = Math.abs(enemy.x - p.x) + Math.abs(enemy.y - p.y);
-                if (d < minDist) { minDist = d; closest = p; }
+                const threat = p.attack * (p.hp / p.maxHp);
+                if (threat > bestScore) {
+                    bestScore = threat;
+                    bestTarget = p;
+                }
             });
 
-            if (!closest) {
+            if (!bestTarget) {
                 endBattle(false);
                 return;
             }
 
-            if (minDist <= (enemy.attackRange || 1)) {
-                closest.hp = Math.max(0, closest.hp - enemy.attack);
-                if (closest.hp <= 0) {
-                    corpses.push({ x: closest.x, y: closest.y });
+            const dist = Math.abs(enemy.x - bestTarget.x) + Math.abs(enemy.y - bestTarget.y);
+            
+            if (dist <= (enemy.attackRange || 1)) {
+                // Атакуем
+                bestTarget.hp = Math.max(0, bestTarget.hp - enemy.attack);
+                if (bestTarget.hp <= 0) {
+                    corpses.push({ x: bestTarget.x, y: bestTarget.y });
                 }
-                battleLog.innerText = `${enemy.type} атакует!`;
+                battleLog.innerText = `${enemy.type} атакует ${bestTarget.type}!`;
                 drawBattle();
 
                 const end = checkBattleEnd();
@@ -1422,27 +1489,34 @@
                 moveToEndOfQueue(enemy.id);
                 setTimeout(processNextEnemy, 300);
             } else {
+                // Ищем лучший путь к цели
                 let moveRange = enemy.moveRange || 3;
-                let dx = 0, dy = 0;
-                if (Math.random() < 0.4) {
-                    const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
-                    const dir = dirs[Math.floor(Math.random() * 4)];
-                    dx = dir[0];
-                    dy = dir[1];
-                } else {
-                    if (enemy.x < closest.x) dx = 1;
-                    else if (enemy.x > closest.x) dx = -1;
-                    else if (enemy.y < closest.y) dy = 1;
-                    else if (enemy.y > closest.y) dy = -1;
+                let bestMove = null;
+                let bestDist = dist;
+                
+                for (let dy = -moveRange; dy <= moveRange; dy++) {
+                    for (let dx = -moveRange; dx <= moveRange; dx++) {
+                        if (Math.abs(dx) + Math.abs(dy) > moveRange) continue;
+                        const nx = enemy.x + dx;
+                        const ny = enemy.y + dy;
+                        if (nx < 0 || nx >= BATTLE_WIDTH || ny < 0 || ny >= BATTLE_HEIGHT) continue;
+                        if (isObstacle(nx, ny)) continue;
+                        
+                        const occupied = battleEnemyUnits.some(u => u.x === nx && u.y === ny && u.hp > 0) ||
+                                         battlePlayerUnits.some(u => u.x === nx && u.y === ny && u.hp > 0) ||
+                                         corpses.some(c => c.x === nx && c.y === ny);
+                        if (occupied) continue;
+                        
+                        const newDist = Math.abs(nx - bestTarget.x) + Math.abs(ny - bestTarget.y);
+                        if (newDist < bestDist) {
+                            bestDist = newDist;
+                            bestMove = { x: nx, y: ny };
+                        }
+                    }
                 }
 
-                const newX = Math.max(0, Math.min(BATTLE_WIDTH-1, enemy.x + dx));
-                const newY = Math.max(0, Math.min(BATTLE_HEIGHT-1, enemy.y + dy));
-                const occupied = battleEnemyUnits.some(u => u.x === newX && u.y === newY && u.hp > 0) ||
-                                 battlePlayerUnits.some(u => u.x === newX && u.y === newY && u.hp > 0) ||
-                                 corpses.some(c => c.x === newX && c.y === newY);
-                if (!occupied) {
-                    animateJump(enemy, enemy.x, enemy.y, newX, newY, () => {
+                if (bestMove) {
+                    animateJump(enemy, enemy.x, enemy.y, bestMove.x, bestMove.y, () => {
                         drawBattle();
                         const end = checkBattleEnd();
                         if (end === 'win') { setTimeout(() => endBattle(true), 200); return; }
@@ -1452,7 +1526,6 @@
                         setTimeout(processNextEnemy, 300);
                     });
                 } else {
-                    drawBattle();
                     moveToEndOfQueue(enemy.id);
                     setTimeout(processNextEnemy, 300);
                 }
