@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Disciples: Умный ИИ</title>
+    <title>Disciples: Реалистичный мир</title>
     <!-- Telegram Web App -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -123,7 +123,7 @@
             gap: 3px;
         }
 
-        /* ГЛОБАЛЬНАЯ КАРТА - градиенты и цветные границы */
+        /* ГЛОБАЛЬНАЯ КАРТА - реалистичные градиенты */
         .map-screen {
             display: none;
             flex-direction: column;
@@ -268,7 +268,7 @@
         }
         .tavern-footer button:active { transform: translateY(4px); box-shadow: 0 1px 0 #151c2b; }
 
-        /* ЭКРАН БИТВЫ */
+        /* ЭКРАН БИТВЫ - с пошаговым перемещением */
         .battle-screen {
             display: none;
             flex-direction: column;
@@ -384,7 +384,7 @@
     <!-- МЕНЮ -->
     <div id="menu-screen" class="menu-screen">
         <div class="title">DISCIPLES</div>
-        <div class="sub">УМНЫЙ ИИ</div>
+        <div class="sub">РЕАЛИСТИЧНЫЙ МИР</div>
         <div class="class-cards">
             <div class="class-card" data-class="warrior">
                 <div class="card-icon">⚔️</div>
@@ -672,7 +672,7 @@
         }
     }
 
-    // Красивые градиенты для карты
+    // Реалистичные градиенты для карты
     function drawMap() {
         checkIncome();
         updateTimer();
@@ -693,38 +693,30 @@
                 const x = j * cellSize;
                 const y = i * cellSize;
 
-                // Градиент для каждого типа
-                const grad = ctxMap.createLinearGradient(x, y, x+cellSize, y+cellSize);
+                // Реалистичные градиенты
+                const grad = ctxMap.createLinearGradient(x, y, x+cellSize*0.7, y+cellSize*0.7);
                 
                 if (cellType === 0) { // дорога
-                    grad.addColorStop(0, '#c0a070');
-                    grad.addColorStop(1, '#8b6b4b');
+                    grad.addColorStop(0, '#8B7355');
+                    grad.addColorStop(1, '#6B4F3F');
                 } else if (cellType === 1) { // лес
-                    grad.addColorStop(0, '#6f9e6f');
-                    grad.addColorStop(1, '#2f5a2f');
+                    grad.addColorStop(0, '#4A784A');
+                    grad.addColorStop(1, '#2D4A2D');
                 } else if (cellType === 2) { // вода
-                    grad.addColorStop(0, '#7ab8d9');
-                    grad.addColorStop(1, '#2f5f9f');
+                    grad.addColorStop(0, '#4A7B9A');
+                    grad.addColorStop(1, '#2A4F6A');
                 } else { // трава
-                    grad.addColorStop(0, '#9fbf8f');
-                    grad.addColorStop(1, '#5f7f4f');
+                    grad.addColorStop(0, '#6A8A5A');
+                    grad.addColorStop(1, '#4A6A3A');
                 }
                 
                 ctxMap.fillStyle = grad;
                 ctxMap.fillRect(x, y, cellSize, cellSize);
                 
-                // Цветная граница
-                if (cellType === 0) {
-                    ctxMap.strokeStyle = '#dbbc96';
-                } else if (cellType === 1) {
-                    ctxMap.strokeStyle = '#88ff88';
-                } else if (cellType === 2) {
-                    ctxMap.strokeStyle = '#aaddff';
-                } else {
-                    ctxMap.strokeStyle = '#ccffaa';
-                }
-                ctxMap.lineWidth = 2;
-                ctxMap.strokeRect(x+1, y+1, cellSize-2, cellSize-2);
+                // Натуральная граница
+                ctxMap.strokeStyle = 'rgba(255,255,255,0.1)';
+                ctxMap.lineWidth = 1;
+                ctxMap.strokeRect(x+0.5, y+0.5, cellSize-1, cellSize-1);
 
                 // Эмодзи
                 ctxMap.font = `${cellSize-35}px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`;
@@ -732,42 +724,42 @@
                 ctxMap.textBaseline = 'middle';
 
                 if (cellType === 1) {
-                    ctxMap.fillStyle = '#d4f0d4';
+                    ctxMap.fillStyle = '#B0D0B0';
                     ctxMap.fillText('🌲', x + cellSize/2, y + cellSize/2);
                 } else if (cellType === 2) {
-                    ctxMap.fillStyle = '#d4f0ff';
+                    ctxMap.fillStyle = '#B0D0F0';
                     ctxMap.fillText('💧', x + cellSize/2, y + cellSize/2);
                 } else if (cellType === 3) {
-                    ctxMap.fillStyle = '#e0f0d0';
+                    ctxMap.fillStyle = '#C0E0B0';
                     ctxMap.fillText('🌿', x + cellSize/2, y + cellSize/2);
                 }
 
                 const mineHere = mines.find(m => m.x === worldX && m.y === worldY);
                 if (mineHere) {
                     if (mineHere.owner === 'player') {
-                        ctxMap.fillStyle = '#ffd966';
+                        ctxMap.fillStyle = '#FFD966';
                         ctxMap.fillText('⛏️', x + cellSize/2 - 8, y + cellSize/2 - 5);
-                        ctxMap.fillStyle = '#a0f0c0';
+                        ctxMap.fillStyle = '#A0F0C0';
                         ctxMap.fillText('✔️', x + cellSize/2 + 8, y + cellSize/2 + 3);
                     } else {
-                        ctxMap.fillStyle = '#c0c0c0';
+                        ctxMap.fillStyle = '#C0C0C0';
                         ctxMap.fillText('⛏️', x + cellSize/2, y + cellSize/2);
                     }
                 }
 
                 if (worldX === CASTLE_POS.x && worldY === CASTLE_POS.y) {
-                    ctxMap.fillStyle = '#f5c99e';
+                    ctxMap.fillStyle = '#F5C99E';
                     ctxMap.fillText('🏰', x + cellSize/2, y + cellSize/2);
                 }
                 
                 const enemyHere = enemiesOnMap.find(e => e.x === worldX && e.y === worldY);
                 if (enemyHere) {
-                    ctxMap.fillStyle = '#d96f6f';
+                    ctxMap.fillStyle = '#D96F6F';
                     ctxMap.fillText('👹', x + cellSize/2, y + cellSize/2);
                 }
                 
                 if (playerPos.x === worldX && playerPos.y === worldY) {
-                    ctxMap.fillStyle = '#a0f0c0';
+                    ctxMap.fillStyle = '#A0F0C0';
                     ctxMap.fillText(playerHero.icon, x + cellSize/2, y + cellSize/2);
                 }
             }
@@ -918,6 +910,65 @@
         return obstacles.some(o => o.x === x && o.y === y);
     }
 
+    function isCellOccupied(x, y, excludeUnitId = null) {
+        const player = battlePlayerUnits.find(u => u.x === x && u.y === y && u.hp > 0 && u.id !== excludeUnitId);
+        const enemy = battleEnemyUnits.find(u => u.x === x && u.y === y && u.hp > 0 && u.id !== excludeUnitId);
+        return !!(player || enemy);
+    }
+
+    // Функция для проверки, можно ли пройти по прямой без препятствий и юнитов
+    function canMoveBetween(x1, y1, x2, y2) {
+        if (x1 === x2 && y1 === y2) return true;
+        
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        
+        if (Math.abs(dx) + Math.abs(dy) > 1) return false; // Только соседние клетки
+        
+        const nx = x1 + Math.sign(dx);
+        const ny = y1 + Math.sign(dy);
+        
+        if (isObstacle(nx, ny)) return false;
+        if (isCellOccupied(nx, ny)) return false;
+        
+        return true;
+    }
+
+    // Пошаговое перемещение
+    function moveUnitStep(unit, targetX, targetY, stepsLeft, callback) {
+        if (stepsLeft <= 0 || (unit.x === targetX && unit.y === targetY)) {
+            callback(true);
+            return;
+        }
+        
+        const dx = Math.sign(targetX - unit.x);
+        const dy = Math.sign(targetY - unit.y);
+        
+        if (dx !== 0) {
+            const newX = unit.x + dx;
+            const newY = unit.y;
+            if (canMoveBetween(unit.x, unit.y, newX, newY)) {
+                animateJump(unit, unit.x, unit.y, newX, newY, () => {
+                    moveUnitStep(unit, targetX, targetY, stepsLeft - 1, callback);
+                });
+                return;
+            }
+        }
+        
+        if (dy !== 0) {
+            const newX = unit.x;
+            const newY = unit.y + dy;
+            if (canMoveBetween(unit.x, unit.y, newX, newY)) {
+                animateJump(unit, unit.x, unit.y, newX, newY, () => {
+                    moveUnitStep(unit, targetX, targetY, stepsLeft - 1, callback);
+                });
+                return;
+            }
+        }
+        
+        callback(false); // Не можем двигаться дальше
+    }
+
     function updateTurnQueue() {
         const allAlive = [...battlePlayerUnits.filter(u => u.hp > 0), ...battleEnemyUnits.filter(u => u.hp > 0)];
         
@@ -1024,24 +1075,27 @@
                 const xPos = x * cellSize;
                 const yPos = y * cellSize;
                 
-                // Препятствия
+                // Препятствия - булыжники
                 if (isObstacle(x, y)) {
-                    ctxBattle.fillStyle = '#4a4a5a';
+                    ctxBattle.fillStyle = '#5A5A6A';
                     ctxBattle.fillRect(xPos, yPos, cellSize, cellSize);
-                    ctxBattle.strokeStyle = '#8a8a9a';
+                    
+                    // Текстура камня
+                    ctxBattle.strokeStyle = '#8A8A9A';
                     ctxBattle.lineWidth = 2;
                     ctxBattle.strokeRect(xPos+2, yPos+2, cellSize-4, cellSize-4);
+                    
                     ctxBattle.font = `${cellSize-40}px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`;
-                    ctxBattle.fillStyle = '#a0a0b0';
-                    ctxBattle.fillText('🧱', xPos + cellSize/2, yPos + cellSize/2);
+                    ctxBattle.fillStyle = '#AAAABB';
+                    ctxBattle.fillText('🪨', xPos + cellSize/2, yPos + cellSize/2);
                 } else {
-                    ctxBattle.fillStyle = '#1b1f2b';
+                    ctxBattle.fillStyle = '#1B1F2B';
                     ctxBattle.fillRect(xPos, yPos, cellSize, cellSize);
                     
                     ctxBattle.shadowColor = 'black';
                     ctxBattle.shadowBlur = 25;
                     ctxBattle.shadowOffsetY = 12;
-                    ctxBattle.strokeStyle = '#4f556b';
+                    ctxBattle.strokeStyle = '#4F556B';
                     ctxBattle.lineWidth = 1;
                     ctxBattle.strokeRect(xPos, yPos, cellSize, cellSize);
                     ctxBattle.shadowBlur = 0;
@@ -1063,9 +1117,30 @@
                         const ny = selected.y + dy;
                         if (nx < 0 || nx >= BATTLE_WIDTH || ny < 0 || ny >= BATTLE_HEIGHT) continue;
                         if (isObstacle(nx, ny)) continue;
-                        const occupiedByPlayer = battlePlayerUnits.some(u => u.x === nx && u.y === ny && u.hp > 0);
-                        const occupiedByEnemy = battleEnemyUnits.some(u => u.x === nx && u.y === ny && u.hp > 0);
-                        if (!occupiedByPlayer && !occupiedByEnemy) {
+                        if (isCellOccupied(nx, ny, selected.id)) continue;
+                        
+                        // Проверяем, можно ли построить путь
+                        let canReach = true;
+                        let cx = selected.x;
+                        let cy = selected.y;
+                        let stepsLeft = moveRange;
+                        
+                        while (stepsLeft > 0 && (cx !== nx || cy !== ny)) {
+                            if (cx < nx) cx++;
+                            else if (cx > nx) cx--;
+                            else if (cy < ny) cy++;
+                            else if (cy > ny) cy--;
+                            
+                            if (cx !== nx || cy !== ny) {
+                                if (isObstacle(cx, cy) || isCellOccupied(cx, cy, selected.id)) {
+                                    canReach = false;
+                                    break;
+                                }
+                            }
+                            stepsLeft--;
+                        }
+                        
+                        if (canReach) {
                             ctxBattle.fillStyle = 'rgba(100, 255, 100, 0.25)';
                             ctxBattle.fillRect(nx * cellSize, ny * cellSize, cellSize, cellSize);
                         }
@@ -1133,7 +1208,7 @@
         ctxBattle.fillStyle = isPlayer ? '#c3e3ff' : '#ffb6b6';
         ctxBattle.fillText(unit.icon || '❓', x + cellSize/2, y + cellSize/2);
 
-        // HP бар ниже иконки и увеличен
+        // HP бар
         const barWidth = 35;
         const barHeight = 5;
         const barX = x + (cellSize - barWidth) / 2;
@@ -1190,22 +1265,22 @@
                 const yPos = y * cellSize;
                 
                 if (isObstacle(x, y)) {
-                    ctxBattle.fillStyle = '#4a4a5a';
+                    ctxBattle.fillStyle = '#5A5A6A';
                     ctxBattle.fillRect(xPos, yPos, cellSize, cellSize);
-                    ctxBattle.strokeStyle = '#8a8a9a';
+                    ctxBattle.strokeStyle = '#8A8A9A';
                     ctxBattle.lineWidth = 2;
                     ctxBattle.strokeRect(xPos+2, yPos+2, cellSize-4, cellSize-4);
                     ctxBattle.font = `${cellSize-40}px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`;
-                    ctxBattle.fillStyle = '#a0a0b0';
-                    ctxBattle.fillText('🧱', xPos + cellSize/2, yPos + cellSize/2);
+                    ctxBattle.fillStyle = '#AAAABB';
+                    ctxBattle.fillText('🪨', xPos + cellSize/2, yPos + cellSize/2);
                 } else {
-                    ctxBattle.fillStyle = '#1b1f2b';
+                    ctxBattle.fillStyle = '#1B1F2B';
                     ctxBattle.fillRect(xPos, yPos, cellSize, cellSize);
                     
                     ctxBattle.shadowColor = 'black';
                     ctxBattle.shadowBlur = 25;
                     ctxBattle.shadowOffsetY = 12;
-                    ctxBattle.strokeStyle = '#4f556b';
+                    ctxBattle.strokeStyle = '#4F556B';
                     ctxBattle.lineWidth = 1;
                     ctxBattle.strokeRect(xPos, yPos, cellSize, cellSize);
                     ctxBattle.shadowBlur = 0;
@@ -1336,7 +1411,7 @@
         if (gridX < 0 || gridX >= BATTLE_WIDTH || gridY < 0 || gridY >= BATTLE_HEIGHT) return;
 
         if (isObstacle(gridX, gridY)) {
-            battleLog.innerText = 'Это препятствие!';
+            battleLog.innerText = 'Это булыжник!';
             return;
         }
 
@@ -1400,33 +1475,26 @@
                 return;
             }
 
-            const occupiedByPlayer = battlePlayerUnits.some(u => u.x === gridX && u.y === gridY && u.hp > 0);
-            const occupiedByEnemy = battleEnemyUnits.some(u => u.x === gridX && u.y === gridY && u.hp > 0);
-            
-            if (!occupiedByPlayer && !occupiedByEnemy && !isObstacle(gridX, gridY)) {
-                const corpseIndex = corpses.findIndex(c => c.x === gridX && c.y === gridY);
-                if (corpseIndex !== -1) {
-                    corpses.splice(corpseIndex, 1);
-                }
-
-                animateJump(unit, unit.x, unit.y, gridX, gridY, () => {
+            // Пошаговое перемещение
+            moveUnitStep(unit, gridX, gridY, unit.moveRange || 3, (success) => {
+                if (success) {
                     unit.actedThisTurn = true;
                     selectedUnitId = null;
                     showUnitDetails(null);
                     battleLog.innerText = `${unit.type} переместился`;
                     drawBattle();
-                    
                     moveToEndOfQueue(unit.id);
-                });
-            } else {
-                battleLog.innerText = 'Клетка занята или препятствие';
-            }
+                } else {
+                    battleLog.innerText = 'Путь заблокирован!';
+                    drawBattle();
+                }
+            });
         } else if (currentTurn === 'player') {
             battleLog.innerText = 'Выберите своего юнита';
         }
     }
 
-    // Улучшенный ИИ врагов
+    // Улучшенный ИИ врагов с пошаговым перемещением
     function enemyTurn() {
         if (!battleActive || currentTurn !== 'enemy' || animationInProgress) return;
 
@@ -1455,7 +1523,7 @@
                 return;
             }
 
-            // Оценка угроз: выбираем наиболее опасного противника (по соотношению урон/здоровье)
+            // Оценка угроз: выбираем наиболее опасного противника
             let bestTarget = null;
             let bestScore = -Infinity;
             players.forEach(p => {
@@ -1489,34 +1557,34 @@
                 moveToEndOfQueue(enemy.id);
                 setTimeout(processNextEnemy, 300);
             } else {
-                // Ищем лучший путь к цели
-                let moveRange = enemy.moveRange || 3;
-                let bestMove = null;
-                let bestDist = dist;
+                // Пошаговое движение к цели
+                const dx = Math.sign(bestTarget.x - enemy.x);
+                const dy = Math.sign(bestTarget.y - enemy.y);
                 
-                for (let dy = -moveRange; dy <= moveRange; dy++) {
-                    for (let dx = -moveRange; dx <= moveRange; dx++) {
-                        if (Math.abs(dx) + Math.abs(dy) > moveRange) continue;
-                        const nx = enemy.x + dx;
-                        const ny = enemy.y + dy;
-                        if (nx < 0 || nx >= BATTLE_WIDTH || ny < 0 || ny >= BATTLE_HEIGHT) continue;
-                        if (isObstacle(nx, ny)) continue;
-                        
-                        const occupied = battleEnemyUnits.some(u => u.x === nx && u.y === ny && u.hp > 0) ||
-                                         battlePlayerUnits.some(u => u.x === nx && u.y === ny && u.hp > 0) ||
-                                         corpses.some(c => c.x === nx && c.y === ny);
-                        if (occupied) continue;
-                        
-                        const newDist = Math.abs(nx - bestTarget.x) + Math.abs(ny - bestTarget.y);
-                        if (newDist < bestDist) {
-                            bestDist = newDist;
-                            bestMove = { x: nx, y: ny };
+                let targetX = enemy.x;
+                let targetY = enemy.y;
+                
+                if (dx !== 0 && canMoveBetween(enemy.x, enemy.y, enemy.x + dx, enemy.y)) {
+                    targetX = enemy.x + dx;
+                } else if (dy !== 0 && canMoveBetween(enemy.x, enemy.y, enemy.x, enemy.y + dy)) {
+                    targetY = enemy.y + dy;
+                } else {
+                    // Не можем двигаться к цели, пробуем случайное направление
+                    const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
+                    for (let dir of dirs) {
+                        const nx = enemy.x + dir[0];
+                        const ny = enemy.y + dir[1];
+                        if (nx >= 0 && nx < BATTLE_WIDTH && ny >= 0 && ny < BATTLE_HEIGHT &&
+                            !isObstacle(nx, ny) && !isCellOccupied(nx, ny, enemy.id)) {
+                            targetX = nx;
+                            targetY = ny;
+                            break;
                         }
                     }
                 }
-
-                if (bestMove) {
-                    animateJump(enemy, enemy.x, enemy.y, bestMove.x, bestMove.y, () => {
+                
+                if (targetX !== enemy.x || targetY !== enemy.y) {
+                    animateJump(enemy, enemy.x, enemy.y, targetX, targetY, () => {
                         drawBattle();
                         const end = checkBattleEnd();
                         if (end === 'win') { setTimeout(() => endBattle(true), 200); return; }
