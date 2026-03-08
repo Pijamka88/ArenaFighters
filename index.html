@@ -41,7 +41,6 @@
             padding: 20px;
         }
 
-        /* Header */
         .game-header {
             text-align: center;
             padding: 20px 0;
@@ -66,7 +65,6 @@
             margin-top: 8px;
         }
 
-        /* Resource Bar - Top UI */
         .resource-bar {
             display: flex;
             justify-content: center;
@@ -85,7 +83,6 @@
             align-items: center;
             gap: 8px;
             font-size: 1.1rem;
-            filter: grayscale(0%);
         }
 
         .resource-icon {
@@ -108,7 +105,6 @@
             cursor: pointer;
             border-radius: 8px;
             transition: all 0.3s ease;
-            filter: grayscale(0%);
             font-weight: 700;
         }
 
@@ -124,7 +120,6 @@
             transform: none;
         }
 
-        /* Main Menu Screen */
         .main-menu {
             display: flex;
             flex-direction: column;
@@ -176,7 +171,6 @@
             box-shadow: 0 10px 30px rgba(114, 47, 55, 0.6);
         }
 
-        /* Main Game Area */
         .main-game {
             display: none;
         }
@@ -185,7 +179,6 @@
             display: block;
         }
 
-        /* Map Screen */
         .map-viewport {
             position: relative;
             background: var(--bg-medium);
@@ -200,7 +193,6 @@
         .map-world {
             position: absolute;
             transition: transform 0.5s ease;
-            image-rendering: pixelated;
         }
 
         .map-image {
@@ -230,6 +222,11 @@
 
         .map-cell.walkable {
             background: rgba(100, 100, 100, 0.08);
+        }
+
+        .map-cell.walkable:hover:not(.castle) {
+            background: rgba(114, 47, 55, 0.2);
+            border: 2px solid var(--burgundy-light);
         }
 
         .map-cell.blocked {
@@ -265,7 +262,6 @@
             z-index: 100;
             box-shadow: 0 0 30px var(--gold), 0 0 60px var(--burgundy-light);
             animation: heroGlow 1.5s infinite;
-            filter: grayscale(0%);
         }
 
         .hero-sprite::before {
@@ -319,7 +315,6 @@
             transition: all 0.3s ease;
             animation: pulse 2s infinite;
             z-index: 50;
-            filter: grayscale(0%);
         }
 
         .map-enemy:hover {
@@ -349,7 +344,6 @@
             justify-content: center;
             font-size: 7rem;
             z-index: 60;
-            filter: grayscale(0%);
             animation: castleGlow 3s infinite;
             cursor: pointer;
             text-shadow: 0 0 30px var(--gold);
@@ -384,7 +378,6 @@
             justify-content: center;
             font-size: 2rem;
             z-index: 55;
-            filter: grayscale(0%);
             animation: mineGlow 3s infinite;
             cursor: pointer;
         }
@@ -404,13 +397,6 @@
         .map-mine.captured {
             border-color: var(--gold);
             animation: capturedMine 2s infinite;
-        }
-
-        .map-mine.defeated {
-            opacity: 0;
-            pointer-events: none;
-            animation: none;
-            transform: scale(0);
         }
 
         .map-mine .mine-guard {
@@ -449,7 +435,6 @@
             z-index: 80;
         }
 
-        /* Modal Windows */
         .modal-window {
             position: fixed;
             top: 0;
@@ -518,7 +503,6 @@
             margin-bottom: 25px;
         }
 
-        /* Class Selection - 3 in a row */
         .class-selection {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -594,7 +578,6 @@
             font-weight: 700;
         }
 
-        /* Tavern */
         .tavern-info {
             color: var(--gray);
             margin-top: 8px;
@@ -654,7 +637,6 @@
             border-radius: 5px;
             transition: all 0.3s ease;
             width: 100%;
-            filter: grayscale(0%);
         }
 
         .recruit-btn:hover:not(:disabled) {
@@ -666,7 +648,6 @@
             cursor: not-allowed;
         }
 
-        /* Army Panel */
         .army-panel {
             background: var(--bg-light);
             border: 1px solid var(--burgundy);
@@ -756,7 +737,6 @@
             border: 1px solid var(--white);
         }
 
-        /* Army Display Modal */
         .army-display-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -802,7 +782,6 @@
             font-size: 0.9rem;
         }
 
-        /* Combat Screen */
         .combat-container {
             padding: 20px;
         }
@@ -853,7 +832,6 @@
             filter: grayscale(0%);
             animation: turnPulse 1s infinite;
             transform: scale(1.2);
-            order: -1;
             box-shadow: 0 0 20px var(--gold);
         }
 
@@ -1100,7 +1078,6 @@
             padding-left: 10px;
         }
 
-        /* Menu Options */
         .menu-options {
             display: flex;
             flex-direction: column;
@@ -1117,7 +1094,6 @@
             text-align: center;
             font-family: 'MedievalSharp', cursive;
             font-size: 1.1rem;
-            filter: grayscale(0%);
             font-weight: 700;
         }
 
@@ -1136,7 +1112,6 @@
             background: var(--burgundy-light);
         }
 
-        /* Unit Stats */
         .unit-stats {
             background: var(--bg-light);
             border: 1px solid var(--burgundy);
@@ -1165,7 +1140,6 @@
             font-weight: 700;
         }
 
-        /* Notification */
         .notification {
             position: fixed;
             bottom: 30px;
@@ -1179,7 +1153,6 @@
             transform: translateX(150%);
             transition: transform 0.3s ease;
             z-index: 1001;
-            filter: grayscale(0%);
             font-weight: 700;
         }
 
@@ -1187,7 +1160,18 @@
             transform: translateX(0);
         }
 
-        /* Responsive */
+        .mine-timer {
+            display: inline-block;
+            width: 40px;
+            text-align: center;
+            font-family: monospace;
+            font-size: 1rem;
+            background: var(--bg-dark);
+            padding: 2px 5px;
+            border-radius: 4px;
+            border: 1px solid var(--burgundy);
+        }
+
         @media (max-width: 768px) {
             .game-title {
                 font-size: 1.8rem;
@@ -1220,7 +1204,6 @@
             }
         }
 
-        /* Attack Animations */
         @keyframes attackLunge {
             0% { transform: translateX(0); }
             50% { transform: translateX(30px) scale(1.1); }
@@ -1262,7 +1245,6 @@
             animation: damageFlash 0.4s ease;
         }
 
-        /* Damage Number */
         .damage-number {
             position: absolute;
             font-size: 1.5rem;
@@ -1289,7 +1271,6 @@
             100% { transform: translateY(-60px) scale(1.3); opacity: 0; }
         }
 
-        /* Action Button in Combat */
         .combat-action-btn {
             padding: 10px 20px;
             background: var(--burgundy);
@@ -1300,7 +1281,6 @@
             cursor: pointer;
             border-radius: 8px;
             transition: all 0.3s ease;
-            filter: grayscale(0%);
             font-weight: 700;
         }
 
@@ -1317,23 +1297,6 @@
         .combat-action-btn.active {
             background: var(--gold);
             border-color: var(--gold);
-        }
-
-        /* Click indicator */
-        .click-indicator {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            border: 2px solid var(--gold);
-            border-radius: 50%;
-            animation: clickRipple 0.6s ease-out forwards;
-            pointer-events: none;
-            z-index: 150;
-        }
-
-        @keyframes clickRipple {
-            0% { transform: scale(0.5); opacity: 1; }
-            100% { transform: scale(2); opacity: 0; }
         }
 
         .path-indicator {
@@ -1361,7 +1324,6 @@
             <p class="game-subtitle">ТЕНИ БИТВЫ</p>
         </header>
 
-        <!-- Main Menu Screen -->
         <div id="mainMenu" class="main-menu">
             <h1 class="main-menu-title">SHADOWS OF BATTLE</h1>
             <p class="main-menu-subtitle">ТЕНИ БИТВЫ</p>
@@ -1369,7 +1331,6 @@
             <button class="main-menu-btn" onclick="showHelpFromMenu()">❓ ПОМОЩЬ</button>
         </div>
 
-        <!-- Main Game Area -->
         <div id="mainGame" class="main-game">
             <div class="resource-bar">
                 <div class="resource">
@@ -1378,7 +1339,7 @@
                 </div>
                 <div class="resource">
                     <span class="resource-icon">⛏️</span>
-                    <span>ШАХТЫ: <span id="mineCount">0</span> (+<span id="mineIncome">0</span>/5мин)</span>
+                    <span>ШАХТЫ: <span id="mineCount">0</span> (+<span id="mineIncome">0</span>/<span id="mineTimerDisplay">5:00</span>)</span>
                 </div>
                 <div class="resource">
                     <span class="resource-icon">⏳</span>
@@ -1401,7 +1362,6 @@
         </div>
     </div>
 
-    <!-- Class Selection Window -->
     <div class="modal-window" id="classWindow">
         <div class="modal-content full-width">
             <button class="modal-close" onclick="closeWindow('classWindow')">✕</button>
@@ -1465,7 +1425,6 @@
         </div>
     </div>
 
-    <!-- Tavern Window -->
     <div class="modal-window" id="tavernWindow">
         <div class="modal-content">
             <button class="modal-close" onclick="closeWindow('tavernWindow')">✕</button>
@@ -1490,7 +1449,6 @@
         </div>
     </div>
 
-    <!-- Army Display Window -->
     <div class="modal-window" id="armyDisplayWindow">
         <div class="modal-content">
             <button class="modal-close" onclick="closeWindow('armyDisplayWindow')">✕</button>
@@ -1499,7 +1457,6 @@
         </div>
     </div>
 
-    <!-- Combat Window -->
     <div class="modal-window" id="combatWindow">
         <div class="modal-content combat-modal">
             <div class="combat-container">
@@ -1535,7 +1492,6 @@
         </div>
     </div>
 
-    <!-- Menu Window -->
     <div class="modal-window" id="menuWindow">
         <div class="modal-content">
             <button class="modal-close" onclick="closeWindow('menuWindow')">✕</button>
@@ -1548,7 +1504,6 @@
         </div>
     </div>
 
-    <!-- Stats Window -->
     <div class="modal-window" id="statsWindow">
         <div class="modal-content">
             <button class="modal-close" onclick="closeWindow('statsWindow')">✕</button>
@@ -1557,7 +1512,6 @@
         </div>
     </div>
 
-    <!-- Unit Stats Window -->
     <div class="modal-window" id="unitStatsWindow">
         <div class="modal-content">
             <button class="modal-close" onclick="closeWindow('unitStatsWindow')">✕</button>
@@ -1566,14 +1520,13 @@
         </div>
     </div>
 
-    <!-- Notification -->
     <div class="notification" id="notification"></div>
 
     <script>
-        // Game State
         const gameState = {
             gold: 200,
             timer: 300,
+            mineTimer: 300,
             selectedClass: null,
             hero: null,
             army: [],
@@ -1585,13 +1538,14 @@
             currentTurnIndex: 0,
             combatInProgress: false,
             combatPaused: false,
+            combatWaitingForNext: false,
             defeatedEnemies: [],
             capturedMines: [],
             heroPosition: { x: 18, y: 15 },
             mapWidth: 36,
             mapHeight: 30,
             cellSize: 100,
-            viewportWidth: 800,
+            viewportWidth: 1400,
             viewportHeight: 600,
             inTavern: false,
             inCastle: false,
@@ -1602,7 +1556,6 @@
             ]
         };
 
-        // Mine positions with guarding enemies
         const minePositions = [
             {x: 6, y: 6, id: 'mine_0', enemyId: 'enemy_0'},
             {x: 11, y: 9, id: 'mine_1', enemyId: 'enemy_1'},
@@ -1611,75 +1564,12 @@
             {x: 26, y: 8, id: 'mine_4', enemyId: 'enemy_4'}
         ];
 
-        // Generate blocked cells (mountains, water, etc.)
-        function generateBlockedCells() {
-            const blocked = [];
-            
-            // Add mountain ranges
-            for (let i = 0; i < 80; i++) {
-                blocked.push({
-                    x: Math.floor(Math.random() * gameState.mapWidth),
-                    y: Math.floor(Math.random() * gameState.mapHeight)
-                });
-            }
-            
-            // Add mountain chains
-            for (let i = 0; i < 10; i++) {
-                const startX = Math.floor(Math.random() * (gameState.mapWidth - 5));
-                const startY = Math.floor(Math.random() * (gameState.mapHeight - 5));
-                for (let j = 0; j < 5; j++) {
-                    blocked.push({ x: startX + j, y: startY + Math.floor(j/2) });
-                }
-            }
-            
-            // Add water bodies
-            for (let i = 0; i < 5; i++) {
-                const centerX = Math.floor(Math.random() * gameState.mapWidth);
-                const centerY = Math.floor(Math.random() * gameState.mapHeight);
-                for (let dx = -2; dx <= 2; dx++) {
-                    for (let dy = -2; dy <= 2; dy++) {
-                        if (Math.random() > 0.3) {
-                            blocked.push({ x: centerX + dx, y: centerY + dy });
-                        }
-                    }
-                }
-            }
-            
-            // Mark castle cells as walkable (not blocked)
-            gameState.castleCells.forEach(cell => {
-                const index = blocked.findIndex(c => c.x === cell.x && c.y === cell.y);
-                if (index !== -1) {
-                    blocked.splice(index, 1);
-                }
-            });
-            
-            gameState.blockedCells = blocked;
-        }
-
-        function isCellBlocked(x, y) {
-            return gameState.blockedCells.some(cell => cell.x === x && cell.y === y);
-        }
-
-        function isCastleCell(x, y) {
-            return gameState.castleCells.some(cell => cell.x === x && cell.y === y);
-        }
-
-        function isMineCell(x, y) {
-            return minePositions.some(mine => mine.x === x && mine.y === y);
-        }
-
-        function getMineAtPosition(x, y) {
-            return minePositions.find(mine => mine.x === x && mine.y === y);
-        }
-
-        // Class Stats
         const classStats = {
             warrior: { name: 'ВОИН', health: 35, attack: 7, motivation: 5, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1c0f9d6e8-e7ba-4ac5-b938-4076e6ecd9fb.png' },
             mage: { name: 'МАГ', health: 24, attack: 12, motivation: 7, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1ea8a0891-9507-4ba9-8b8e-035b383e1562.png' },
             archer: { name: 'ЛУЧНИК', health: 28, attack: 9, motivation: 8, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1b312ad06-e731-4a5b-8838-d05120d7367a.png' }
         };
 
-        // Recruitable Units
         const recruitUnits = [
             { type: 'warrior', name: 'Воин', health: 35, attack: 7, motivation: 5, cost: 50, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1c0f9d6e8-e7ba-4ac5-b938-4076e6ecd9fb.png' },
             { type: 'mage', name: 'Маг', health: 24, attack: 12, motivation: 7, cost: 60, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1ea8a0891-9507-4ba9-8b8e-035b383e1562.png' },
@@ -1689,7 +1579,6 @@
             { type: 'assassin', name: 'Ассасин', health: 22, attack: 15, motivation: 10, cost: 75, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1a2647fdf-3af2-4269-a9bb-0caa78c218df.png' }
         ];
 
-        // Enemy Stats with NEW images - REDUCED gold rewards
         const enemyStats = {
             skeleton: { name: 'СКЕЛЕТ', health: 30, maxHealth: 30, attack: 5, motivation: 3, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/11c1a2fef-8573-40d3-9d89-1b26a9f78866.png', reward: 10, count: 3, emoji: '💀' },
             knight: { name: 'ТЁМНЫЙ РЫЦАРЬ', health: 50, maxHealth: 50, attack: 8, motivation: 4, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1f928062f-840f-4558-b52f-efb5079ae6c4.png', reward: 15, count: 2, emoji: '🛡️' },
@@ -1712,20 +1601,115 @@
             {x: 15, y: 12, type: 'boss1', id: 'enemy_18'}, {x: 25, y: 12, type: 'boss2', id: 'enemy_19'}, {x: 20, y: 20, type: 'boss3', id: 'enemy_20'}
         ];
 
-        // Start Game
+        function generateBlockedCells() {
+            const blocked = [];
+            
+            // Горы на севере
+            for (let x = 0; x < 10; x++) {
+                for (let y = 0; y < 5; y++) {
+                    if (Math.random() > 0.3) {
+                        blocked.push({x: x + 5, y: y + 2});
+                    }
+                }
+            }
+            
+            // Лес на востоке
+            for (let x = 25; x < 35; x++) {
+                for (let y = 5; y < 20; y++) {
+                    if (Math.random() > 0.4) {
+                        blocked.push({x: x, y: y});
+                    }
+                }
+            }
+            
+            // Болота на юге
+            for (let x = 10; x < 25; x++) {
+                for (let y = 20; y < 28; y++) {
+                    if (Math.random() > 0.5) {
+                        blocked.push({x: x, y: y});
+                    }
+                }
+            }
+            
+            // Река через центр
+            for (let i = 0; i < 15; i++) {
+                blocked.push({x: 15 + i, y: 12});
+                blocked.push({x: 15 + i, y: 13});
+            }
+            
+            // Озеро
+            for (let dx = -3; dx <= 3; dx++) {
+                for (let dy = -3; dy <= 3; dy++) {
+                    if (Math.abs(dx) + Math.abs(dy) <= 4) {
+                        blocked.push({x: 8 + dx, y: 22 + dy});
+                    }
+                }
+            }
+            
+            // Убираем блокировку с клеток замка
+            gameState.castleCells.forEach(cell => {
+                const index = blocked.findIndex(c => c.x === cell.x && c.y === cell.y);
+                if (index !== -1) {
+                    blocked.splice(index, 1);
+                }
+            });
+            
+            // Убираем блокировку с позиций врагов и шахт
+            enemyPositions.forEach(enemy => {
+                const index = blocked.findIndex(c => c.x === enemy.x && c.y === enemy.y);
+                if (index !== -1) {
+                    blocked.splice(index, 1);
+                }
+            });
+            
+            minePositions.forEach(mine => {
+                const index = blocked.findIndex(c => c.x === mine.x && c.y === mine.y);
+                if (index !== -1) {
+                    blocked.splice(index, 1);
+                }
+            });
+            
+            gameState.blockedCells = blocked;
+        }
+
+        function isCellBlocked(x, y) {
+            return gameState.blockedCells.some(cell => cell.x === x && cell.y === y);
+        }
+
+        function isCastleCell(x, y) {
+            return gameState.castleCells.some(cell => cell.x === x && cell.y === y);
+        }
+
         function startGame() {
             document.getElementById('mainMenu').style.display = 'none';
             document.getElementById('mainGame').classList.add('active');
             openWindow('classWindow');
             init();
-            // Start mine income timer
+            
+            // Запускаем таймер дохода с шахт
             setInterval(() => {
                 if (gameState.capturedMines.length > 0) {
                     gameState.gold += gameState.capturedMines.length;
                     updateGold();
                     showNotification(`+${gameState.capturedMines.length}💰 от шахт!`);
                 }
-            }, 300000); // 5 minutes
+            }, 300000); // 5 минут = 300000 мс
+            
+            // Таймер для отображения обратного отсчета
+            setInterval(() => {
+                if (gameState.mineTimer > 0) {
+                    gameState.mineTimer--;
+                    updateMineTimer();
+                } else {
+                    gameState.mineTimer = 300;
+                }
+            }, 1000);
+        }
+
+        function updateMineTimer() {
+            const minutes = Math.floor(gameState.mineTimer / 60);
+            const seconds = gameState.mineTimer % 60;
+            document.getElementById('mineTimerDisplay').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
         }
 
         function returnToMainMenu() {
@@ -1735,10 +1719,9 @@
         }
 
         function showHelpFromMenu() {
-            alert('🎮 Как играть:\n\n1. Выберите класс героя\n2. Кликните на соседнюю клетку для перемещения\n3. Посетите таверну в городе для найма (макс. 6)\n4. Сражайтесь с врагами (авто-бой)\n5. Захватывайте шахты после победы над врагами\n6. Каждая шахта приносит +1💰 каждые 5 минут\n\n⚔️ В бою:\n• Очередность хода зависит от мотивации\n• Герой помечен короной 👑\n• Можно поставить на паузу\n• Можно сбежать за 50 золота\n• При поражении мотивация героя падает');
+            alert('🎮 Как играть:\n\n1. Выберите класс героя\n2. Кликните на соседнюю клетку для перемещения\n3. Посетите таверну в городе для найма (макс. 6)\n4. Сражайтесь с врагами (пошаговый бой)\n5. Захватывайте шахты после победы над врагами\n6. Каждая шахта приносит +1💰 каждые 5 минут\n\n⚔️ В бою:\n• Очередность хода зависит от мотивации\n• Герой помечен короной 👑\n• Можно поставить на паузу\n• Можно сбежать за 50 золота\n• При поражении мотивация героя падает');
         }
 
-        // Initialize Game
         function init() {
             generateBlockedCells();
             updateGold();
@@ -1748,13 +1731,12 @@
             createMapGrid();
             updateHeroPosition();
             populateTavern();
-            setupMapClick();
             renderEnemyEmojis();
             renderMines();
             updateTavernButton();
+            updateMineTimer();
         }
 
-        // Window Management
         function openWindow(windowId) {
             if (gameState.inCombat && windowId !== 'combatWindow') return;
             document.querySelectorAll('.modal-window').forEach(w => w.classList.remove('active'));
@@ -1778,7 +1760,6 @@
             const grid = document.getElementById('armyDisplayGrid');
             grid.innerHTML = '';
             
-            // Add hero
             if (gameState.hero) {
                 const heroCard = document.createElement('div');
                 heroCard.className = 'army-unit-card hero';
@@ -1794,7 +1775,6 @@
                 grid.appendChild(heroCard);
             }
             
-            // Add army units
             gameState.army.forEach((unit, index) => {
                 const unitCard = document.createElement('div');
                 unitCard.className = 'army-unit-card';
@@ -1833,13 +1813,14 @@
         function onCellClick(x, y) {
             if (gameState.inCombat) return;
             
-            // Check if cell is adjacent (one cell movement)
             const dx = Math.abs(x - gameState.heroPosition.x);
             const dy = Math.abs(y - gameState.heroPosition.y);
             
             if (dx <= 1 && dy <= 1 && (dx > 0 || dy > 0)) {
                 if (!isCellBlocked(x, y)) {
                     moveHeroTo(x, y);
+                } else {
+                    showNotification('Путь прегражден!');
                 }
             }
         }
@@ -1849,9 +1830,6 @@
             world.querySelectorAll('.map-enemy-marker').forEach(el => el.remove());
             
             enemyPositions.forEach(pos => {
-                // Skip if enemy is on blocked cell
-                if (isCellBlocked(pos.x, pos.y)) return;
-                
                 if (gameState.defeatedEnemies.includes(pos.id)) return;
                 
                 const marker = document.createElement('div');
@@ -1879,7 +1857,6 @@
                 marker.style.top = (mine.y * gameState.cellSize + 15) + 'px';
                 marker.textContent = '⛏️';
                 
-                // Add enemy guard emoji if enemy is still alive
                 if (!gameState.defeatedEnemies.includes(mine.enemyId)) {
                     const enemy = enemyPositions.find(e => e.id === mine.enemyId);
                     if (enemy) {
@@ -1919,15 +1896,11 @@
                 const marker = document.querySelector(`.map-enemy-marker[data-id="${enemyId}"]`);
                 if (marker) {
                     marker.classList.add('defeated');
-                    marker.onclick = null;
+                    marker.style.opacity = '0';
+                    marker.style.pointerEvents = 'none';
+                    setTimeout(() => marker.remove(), 500);
                 }
             });
-            renderEnemyEmojis();
-            renderMines();
-        }
-
-        function setupMapClick() {
-            // Map click is handled by individual cells now
         }
 
         function selectClass(className) {
@@ -1958,7 +1931,7 @@
 
         function startTimer() {
             const timerElement = document.getElementById('timer');
-            const interval = setInterval(() => {
+            setInterval(() => {
                 if (gameState.timer > 0) {
                     gameState.timer--;
                     const minutes = Math.floor(gameState.timer / 60);
@@ -1972,7 +1945,10 @@
             x = Math.max(0, Math.min(gameState.mapWidth - 1, x));
             y = Math.max(0, Math.min(gameState.mapHeight - 1, y));
             
-            if (isCellBlocked(x, y)) return;
+            if (isCellBlocked(x, y)) {
+                showNotification('Путь прегражден!');
+                return;
+            }
             
             showPathIndicator(x, y);
             gameState.heroPosition = { x, y };
@@ -1995,11 +1971,18 @@
             const hero = document.getElementById('heroSprite');
             const world = document.getElementById('mapWorld');
             
-            // Center viewport on hero
+            hero.style.left = (gameState.heroPosition.x * gameState.cellSize + 15) + 'px';
+            hero.style.top = (gameState.heroPosition.y * gameState.cellSize + 15) + 'px';
+            
+            const viewport = document.getElementById('mapViewport');
+            const viewportRect = viewport.getBoundingClientRect();
+            
+            gameState.viewportWidth = viewportRect.width;
+            gameState.viewportHeight = viewportRect.height;
+            
             const offsetX = (gameState.viewportWidth / 2) - (gameState.heroPosition.x * gameState.cellSize) - (gameState.cellSize / 2);
             const offsetY = (gameState.viewportHeight / 2) - (gameState.heroPosition.y * gameState.cellSize) - (gameState.cellSize / 2);
             
-            // Clamp to map bounds
             const maxX = 0;
             const minX = -(gameState.mapWidth * gameState.cellSize - gameState.viewportWidth);
             const maxY = 0;
@@ -2009,24 +1992,30 @@
             const clampedY = Math.max(minY, Math.min(maxY, offsetY));
             
             world.style.transform = `translate(${clampedX}px, ${clampedY}px)`;
-            hero.style.left = (gameState.heroPosition.x * gameState.cellSize + 15) + 'px';
-            hero.style.top = (gameState.heroPosition.y * gameState.cellSize + 15) + 'px';
         }
+
+        window.addEventListener('resize', () => {
+            if (gameState.hero) {
+                updateHeroPosition();
+            }
+        });
 
         function updateTavernButton() {
             const tavernBtn = document.getElementById('tavernBtn');
-            // Check if hero is in castle (any of the 4 castle cells)
             const inCastle = isCastleCell(gameState.heroPosition.x, gameState.heroPosition.y);
             gameState.inCastle = inCastle;
             tavernBtn.disabled = !inCastle;
-            tavernBtn.title = inCastle ? 'Открыть таверну' : 'Перейдите в замок (ячейки города) для доступа к таверне';
+            tavernBtn.title = inCastle ? 'Открыть таверну' : 'Перейдите в замок для доступа к таверне';
+            
+            if (inCastle) {
+                showNotification('Вы вошли в город! Можно нанять воинов в таверне.');
+            }
         }
 
         function updateArmyButton() {
             const armyBtn = document.getElementById('armyBtn');
             const totalCount = gameState.army.length + (gameState.hero ? 1 : 0);
             document.getElementById('armyCountDisplay').textContent = totalCount;
-            armyBtn.textContent = `АРМИЯ (${totalCount})`;
         }
 
         function checkEnemyEncounter() {
@@ -2167,7 +2156,6 @@
             showNotification('Юнит уволен');
         }
 
-        // Combat System - Turn order by motivation (hero NOT always first)
         function startCombat(enemyType, enemyId) {
             if (!gameState.selectedClass) {
                 showNotification('Выберите класс сначала!');
@@ -2177,8 +2165,8 @@
             gameState.inCombat = true;
             gameState.combatInProgress = true;
             gameState.combatPaused = false;
+            gameState.combatWaitingForNext = false;
             
-            // Setup player units (hero + army, max 6)
             gameState.playerUnits = [
                 { ...gameState.hero, id: 'hero', isHero: true, side: 'player' }
             ];
@@ -2188,7 +2176,6 @@
                 }
             });
             
-            // Setup enemy units
             const enemyData = enemyStats[enemyType];
             gameState.enemyUnits = [];
             const enemyCount = Math.min(enemyData.count || 1, 6);
@@ -2213,7 +2200,6 @@
         }
 
         function createTurnQueue() {
-            // ALL units sorted by motivation (hero NOT always first)
             const allUnits = [...gameState.playerUnits, ...gameState.enemyUnits]
                 .filter(u => u.currentHealth > 0)
                 .sort((a, b) => b.motivation - a.motivation);
@@ -2281,17 +2267,9 @@
             const turnOrderEl = document.getElementById('turnOrder');
             turnOrderEl.innerHTML = '';
             
-            // Reorder queue - current unit first
-            const reorderedQueue = [...gameState.turnQueue];
-            const currentUnit = reorderedQueue[gameState.currentTurnIndex];
-            if (currentUnit && gameState.currentTurnIndex > 0) {
-                reorderedQueue.splice(gameState.currentTurnIndex, 1);
-                reorderedQueue.unshift(currentUnit);
-            }
-            
-            reorderedQueue.forEach((unit, index) => {
+            gameState.turnQueue.forEach((unit, index) => {
                 const unitEl = document.createElement('div');
-                unitEl.className = `turn-order-unit ${index === 0 ? 'current' : ''} ${unit.isHero ? 'hero' : ''}`;
+                unitEl.className = `turn-order-unit ${index === gameState.currentTurnIndex ? 'current' : ''} ${unit.isHero ? 'hero' : ''}`;
                 
                 const actualUnit = unit.side === 'player' 
                     ? gameState.playerUnits.find(u => u.id === unit.id)
@@ -2301,7 +2279,6 @@
                     unitEl.classList.add('dead');
                 }
                 
-                // Show unit image/icon instead of name
                 unitEl.innerHTML = `<img src="${unit.image}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">`;
                 turnOrderEl.appendChild(unitEl);
             });
@@ -2330,7 +2307,6 @@
                         el.classList.add('current-turn');
                     }
                     
-                    // Update turn info display
                     const turnInfo = document.getElementById('combatTurnInfo');
                     const unitName = currentUnit.name;
                     const isHero = currentUnitData.isHero;
@@ -2341,21 +2317,19 @@
             const pauseBtn = document.getElementById('pauseBtn');
             pauseBtn.textContent = gameState.combatPaused ? '▶️ ПРОДОЛЖИТЬ' : '⏸️ ПАУЗА';
             pauseBtn.classList.toggle('active', gameState.combatPaused);
-            
-            renderTurnOrder();
         }
 
         function togglePause() {
             gameState.combatPaused = !gameState.combatPaused;
             updateCombatUI();
             
-            if (!gameState.combatPaused && gameState.combatInProgress) {
-                setTimeout(() => processNextTurn(), 500);
+            if (!gameState.combatPaused && gameState.combatInProgress && !gameState.combatWaitingForNext) {
+                processNextTurn();
             }
         }
 
         function processNextTurn() {
-            if (!gameState.combatInProgress || gameState.combatPaused) return;
+            if (!gameState.combatInProgress || gameState.combatPaused || gameState.combatWaitingForNext) return;
             
             const playerAlive = gameState.playerUnits.filter(u => u.currentHealth > 0).length;
             const enemyAlive = gameState.enemyUnits.filter(u => u.currentHealth > 0).length;
@@ -2369,12 +2343,19 @@
                 return;
             }
             
-            // Rebuild turn queue with alive units (sorted by motivation)
-            createTurnQueue();
+            gameState.turnQueue = gameState.turnQueue.filter(unitData => {
+                const unit = unitData.side === 'player'
+                    ? gameState.playerUnits.find(u => u.id === unitData.id)
+                    : gameState.enemyUnits.find(u => u.id === unitData.id);
+                return unit && unit.currentHealth > 0;
+            });
+            
+            if (gameState.turnQueue.length === 0) {
+                createTurnQueue();
+            }
             
             if (gameState.currentTurnIndex >= gameState.turnQueue.length) {
                 gameState.currentTurnIndex = 0;
-                createTurnQueue();
             }
             
             const currentUnitData = gameState.turnQueue[gameState.currentTurnIndex];
@@ -2383,34 +2364,40 @@
                 : gameState.enemyUnits.find(u => u.id === currentUnitData.id);
             
             if (!currentUnit || currentUnit.currentHealth <= 0) {
-                gameState.currentTurnIndex++;
+                gameState.currentTurnIndex = (gameState.currentTurnIndex + 1) % gameState.turnQueue.length;
                 setTimeout(() => processNextTurn(), 500);
                 return;
             }
             
             updateCombatUI();
             
-            // Find targets from opposite side
             const targets = currentUnit.side === 'player' 
                 ? gameState.enemyUnits.filter(u => u.currentHealth > 0)
                 : gameState.playerUnits.filter(u => u.currentHealth > 0);
             
             if (targets.length === 0) {
-                gameState.currentTurnIndex++;
+                gameState.currentTurnIndex = (gameState.currentTurnIndex + 1) % gameState.turnQueue.length;
                 setTimeout(() => processNextTurn(), 500);
                 return;
             }
             
             const target = targets[Math.floor(Math.random() * targets.length)];
             
+            gameState.combatWaitingForNext = true;
             performAttackWithAnimation(currentUnit, target, currentUnitData.isHero, () => {
-                // Move current unit to end of queue
-                const currentUnitData = gameState.turnQueue[gameState.currentTurnIndex];
-                gameState.turnQueue.splice(gameState.currentTurnIndex, 1);
-                gameState.turnQueue.push(currentUnitData);
-                gameState.currentTurnIndex = 0;
+                gameState.currentTurnIndex = (gameState.currentTurnIndex + 1) % gameState.turnQueue.length;
+                gameState.combatWaitingForNext = false;
                 
-                setTimeout(() => processNextTurn(), 1500);
+                const stillPlayerAlive = gameState.playerUnits.filter(u => u.currentHealth > 0).length;
+                const stillEnemyAlive = gameState.enemyUnits.filter(u => u.currentHealth > 0).length;
+                
+                if (stillEnemyAlive > 0 && stillPlayerAlive > 0) {
+                    setTimeout(() => processNextTurn(), 1000);
+                } else if (stillEnemyAlive === 0) {
+                    winCombat();
+                } else if (stillPlayerAlive === 0) {
+                    loseCombat();
+                }
             });
         }
 
@@ -2435,7 +2422,6 @@
                 const isCrit = Math.random() < 0.15;
                 const finalDamage = isCrit ? Math.floor(damage * 2) : damage;
                 
-                // Apply damage to target
                 target.currentHealth = Math.max(0, target.currentHealth - finalDamage);
                 
                 if (targetEl) {
@@ -2480,8 +2466,8 @@
         function winCombat() {
             gameState.combatInProgress = false;
             gameState.inCombat = false;
+            gameState.combatWaitingForNext = false;
             
-            // Mark enemy as defeated
             if (gameState.enemyUnits[0] && gameState.enemyUnits[0].enemyId) {
                 const enemyId = gameState.enemyUnits[0].enemyId;
                 if (!gameState.defeatedEnemies.includes(enemyId)) {
@@ -2499,20 +2485,28 @@
             gameState.gold += totalReward;
             updateGold();
             
-            gameState.playerUnits.forEach(unit => {
-                if (unit.currentHealth > 0) {
-                    unit.currentHealth = Math.min(unit.maxHealth, unit.currentHealth + Math.floor(unit.maxHealth * 0.3));
+            // Обновляем героя
+            const heroUnit = gameState.playerUnits.find(u => u.isHero);
+            if (heroUnit) {
+                gameState.hero.currentHealth = heroUnit.currentHealth;
+            }
+            
+            // Обновляем выживших юнитов в армии и удаляем мертвых
+            const survivingUnits = [];
+            gameState.playerUnits.forEach((unit, i) => {
+                if (i > 0 && unit.currentHealth > 0) { // Пропускаем героя (i=0)
+                    survivingUnits.push({
+                        ...unit,
+                        currentHealth: unit.currentHealth,
+                        maxHealth: unit.maxHealth
+                    });
                 }
             });
+            gameState.army = survivingUnits;
             
-            gameState.playerUnits.forEach((unit, i) => {
-                if (i === 0) {
-                    gameState.hero.currentHealth = unit.currentHealth;
-                    gameState.hero.maxHealth = unit.maxHealth;
-                } else if (i - 1 < gameState.army.length) {
-                    gameState.army[i - 1].currentHealth = unit.currentHealth;
-                    gameState.army[i - 1].maxHealth = unit.maxHealth;
-                }
+            // Лечение выживших
+            gameState.army.forEach(unit => {
+                unit.currentHealth = Math.min(unit.maxHealth, unit.currentHealth + Math.floor(unit.maxHealth * 0.3));
             });
             
             addCombatLog(`🏆 ПОБЕДА! Вы получили ${totalReward} золота!`, 'heal');
@@ -2530,15 +2524,14 @@
         function loseCombat() {
             gameState.combatInProgress = false;
             gameState.inCombat = false;
+            gameState.combatWaitingForNext = false;
             addCombatLog('💀 ПОРАЖЕНИЕ! Ваша армия погибла...', 'damage');
             
-            // Decrease hero motivation on loss
             if (gameState.hero && gameState.hero.motivation > 1) {
                 gameState.hero.motivation = Math.max(1, gameState.hero.motivation - 1);
                 showNotification('Мотивация героя упала!');
             }
             
-            // Return hero to city without army
             gameState.hero.currentHealth = gameState.hero.maxHealth;
             gameState.army = [];
             gameState.heroPosition = { x: 18, y: 15 };
@@ -2563,6 +2556,7 @@
             updateGold();
             gameState.combatInProgress = false;
             gameState.inCombat = false;
+            gameState.combatWaitingForNext = false;
             addCombatLog('Вы сбежали с поля боя! (-50💰)', 'info');
             
             setTimeout(() => {
@@ -2614,7 +2608,7 @@
                 <p>1. Выберите класс героя</p>
                 <p>2. Кликните на соседнюю клетку для перемещения</p>
                 <p>3. Посетите таверну в городе для найма (макс. 6)</p>
-                <p>4. Сражайтесь с врагами (авто-бой)</p>
+                <p>4. Сражайтесь с врагами (пошаговый бой)</p>
                 <p>5. Захватывайте шахты после победы</p>
                 <p>6. Каждая шахта: +1💰 каждые 5 мин</p>
                 <br>
