@@ -6,7 +6,7 @@
     <title>SHADOWS OF BATTLE - Тени Битвы</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -39,11 +39,12 @@
         }
 
         body {
-            font-family: 'MedievalSharp', cursive;
+            font-family: 'Cormorant Garamond', serif;
             background: var(--bg-dark);
             color: var(--white);
             min-height: 100vh;
             overflow: hidden;
+            font-weight: 600;
         }
 
         .game-container {
@@ -66,9 +67,9 @@
         }
 
         .game-title {
-            font-family: 'Cinzel', serif;
+            font-family: 'Cormorant Garamond', serif;
             font-size: clamp(1.2rem, 5vw, 2.5rem);
-            font-weight: 900;
+            font-weight: 700;
             color: var(--white);
             text-shadow: 0 0 10px var(--burgundy);
             letter-spacing: 2px;
@@ -80,6 +81,7 @@
             color: var(--burgundy-light);
             letter-spacing: 2px;
             margin-top: 4px;
+            font-weight: 600;
         }
 
         .resource-bar {
@@ -94,17 +96,47 @@
             flex-wrap: wrap;
             box-shadow: 0 2px 8px rgba(114, 47, 55, 0.4);
             flex-shrink: 0;
+            position: relative;
         }
 
         .resource {
             display: flex;
             align-items: center;
             gap: 4px;
-            font-size: clamp(0.7rem, 3vw, 1.1rem);
             background: var(--bg-dark);
             padding: 4px 8px;
             border-radius: 6px;
             border: 1px solid var(--burgundy);
+            position: relative;
+            cursor: help;
+        }
+
+        .resource[data-tooltip]:hover::after,
+        .resource[data-tooltip]:active::after {
+            content: attr(data-tooltip);
+            position: fixed;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-dark);
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            z-index: 9999;
+            font-weight: 600;
+            font-family: 'Cormorant Garamond', serif;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.7);
+            text-shadow: 0 0 5px var(--burgundy);
+            pointer-events: none;
+            animation: tooltipFade 0.2s ease;
+        }
+
+        @keyframes tooltipFade {
+            from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
 
         .resource-icon {
@@ -122,14 +154,18 @@
             background: var(--burgundy);
             border: 2px solid var(--burgundy-light);
             color: var(--white);
-            font-family: 'MedievalSharp', cursive;
+            font-family: 'Cormorant Garamond', serif;
             font-size: clamp(0.7rem, 3vw, 1rem);
             cursor: pointer;
             border-radius: 8px;
             transition: all 0.2s ease;
-            font-weight: 700;
-            min-width: 70px;
+            font-weight: 600;
+            min-width: 50px;
             touch-action: manipulation;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
         }
 
         .resource-btn:active:not(:disabled) {
@@ -153,12 +189,13 @@
         }
 
         .main-menu-title {
-            font-family: 'Cinzel', serif;
+            font-family: 'Cormorant Garamond', serif;
             font-size: clamp(2rem, 8vw, 4rem);
             color: var(--gold);
             text-shadow: 0 0 20px var(--burgundy);
             margin-bottom: 15px;
             animation: titleGlow 3s infinite;
+            font-weight: 700;
         }
 
         @keyframes titleGlow {
@@ -171,6 +208,7 @@
             color: var(--burgundy-light);
             margin-bottom: 30px;
             letter-spacing: 3px;
+            font-weight: 600;
         }
 
         .main-menu-btn {
@@ -178,7 +216,7 @@
             background: linear-gradient(180deg, var(--burgundy) 0%, var(--burgundy-dark) 100%);
             border: 3px solid var(--burgundy-light);
             color: var(--white);
-            font-family: 'Cinzel', serif;
+            font-family: 'Cormorant Garamond', serif;
             font-size: clamp(1.2rem, 5vw, 1.5rem);
             cursor: pointer;
             border-radius: 12px;
@@ -200,7 +238,6 @@
         .main-game {
             display: none;
             height: 100%;
-            display: flex;
             flex-direction: column;
             overflow: hidden;
         }
@@ -283,15 +320,15 @@
 
         .hero-sprite {
             position: absolute;
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             background: radial-gradient(circle, var(--gold) 0%, var(--burgundy) 100%);
-            border: 3px solid var(--white);
+            border: 4px solid var(--white);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.8rem;
+            font-size: 2.2rem;
             transition: all 0.3s ease;
             z-index: 100;
             box-shadow: 0 0 20px var(--gold), 0 0 40px var(--burgundy-light);
@@ -302,17 +339,18 @@
         .hero-sprite::before {
             content: '👑';
             position: absolute;
-            top: -12px;
-            font-size: 1.2rem;
+            top: -25px;
+            font-size: 1.8rem;
             animation: crownBounce 2s infinite;
+            filter: drop-shadow(0 0 5px var(--gold));
         }
 
         .hero-sprite::after {
             content: 'ГЕРОЙ';
             position: absolute;
-            bottom: -18px;
-            font-size: 0.6rem;
-            font-family: 'Cinzel', serif;
+            bottom: -20px;
+            font-size: 0.7rem;
+            font-family: 'Cormorant Garamond', serif;
             font-weight: 700;
             color: var(--gold);
             text-shadow: 0 0 5px var(--burgundy);
@@ -332,7 +370,7 @@
 
         @keyframes crownBounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
+            50% { transform: translateY(-5px); }
         }
 
         .map-enemy {
@@ -342,7 +380,6 @@
             background: var(--burgundy) !important;
             border: 2px solid var(--white);
             border-radius: 50%;
-            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -350,19 +387,7 @@
             transition: all 0.2s ease;
             animation: pulse 2s infinite;
             z-index: 50;
-            touch-action: manipulation;
-        }
-
-        .map-enemy:active {
-            transform: scale(1.15);
-            box-shadow: 0 0 25px var(--burgundy-light);
-        }
-
-        .map-enemy.defeated {
-            opacity: 0;
             pointer-events: none;
-            animation: none;
-            transform: scale(0);
         }
 
         @keyframes pulse {
@@ -370,37 +395,44 @@
             50% { box-shadow: 0 0 20px var(--burgundy-light); }
         }
 
+        .map-enemy.defeated {
+            opacity: 0;
+            animation: none;
+            transform: scale(0);
+        }
+
         .map-castle {
             position: absolute;
-            width: 150px;
-            height: 150px;
+            width: 250px;
+            height: 250px;
             background: transparent;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 5rem;
+            font-size: 8rem;
             z-index: 60;
-            animation: castleGlow 3s infinite;
-            cursor: pointer;
-            text-shadow: 0 0 20px var(--gold);
-            touch-action: manipulation;
+            text-shadow: 0 0 20px var(--burgundy);
+            pointer-events: none;
+            filter: drop-shadow(0 0 10px var(--burgundy-dark));
+            transition: all 0.3s ease;
+        }
+
+        .map-castle.castle-glow {
+            text-shadow: 0 0 40px var(--gold), 0 0 80px var(--burgundy-light);
+            filter: drop-shadow(0 0 20px var(--gold));
         }
 
         .map-castle::after {
             content: 'ГОРОД';
             position: absolute;
-            bottom: -20px;
-            font-size: 0.7rem;
-            font-family: 'Cinzel', serif;
+            bottom: -25px;
+            font-size: 0.9rem;
+            font-family: 'Cormorant Garamond', serif;
             font-weight: 700;
             color: var(--gold);
-            text-shadow: 0 0 5px var(--burgundy);
+            text-shadow: 0 0 8px var(--burgundy);
             white-space: nowrap;
-        }
-
-        @keyframes castleGlow {
-            0%, 100% { text-shadow: 0 0 20px var(--gold); }
-            50% { text-shadow: 0 0 40px var(--gold); }
+            letter-spacing: 2px;
         }
 
         .map-mine {
@@ -416,8 +448,7 @@
             font-size: 1.6rem;
             z-index: 55;
             animation: mineGlow 3s infinite;
-            cursor: pointer;
-            touch-action: manipulation;
+            pointer-events: none;
         }
 
         .map-mine::after {
@@ -425,7 +456,7 @@
             position: absolute;
             bottom: -16px;
             font-size: 0.5rem;
-            font-family: 'Cinzel', serif;
+            font-family: 'Cormorant Garamond', serif;
             font-weight: 700;
             color: var(--gold);
             text-shadow: 0 0 5px var(--burgundy);
@@ -468,7 +499,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at center, transparent 120px, rgba(0,0,0,0.9) 250px);
+            background: radial-gradient(circle at center, transparent 100px, rgba(0,0,0,0.95) 200px);
             pointer-events: none;
             z-index: 80;
         }
@@ -528,7 +559,7 @@
             border-radius: 8px;
             cursor: pointer;
             z-index: 10;
-            font-family: 'MedievalSharp', cursive;
+            font-family: 'Cormorant Garamond', serif;
             font-weight: 700;
             transition: all 0.2s ease;
             touch-action: manipulation;
@@ -541,12 +572,13 @@
         }
 
         .modal-title {
-            font-family: 'Cinzel', serif;
+            font-family: 'Cormorant Garamond', serif;
             font-size: clamp(1.2rem, 5vw, 1.8rem);
             color: var(--burgundy-light);
             text-align: center;
             margin-bottom: 15px;
             clear: both;
+            font-weight: 700;
         }
 
         .class-selection {
@@ -581,9 +613,9 @@
 
         .class-image {
             width: 100%;
-            height: 160px;
+            aspect-ratio: 1/1;
             object-fit: cover;
-            border-radius: 8px;
+            border-radius: 12px;
             margin-bottom: 10px;
             border: 2px solid var(--burgundy);
             filter: grayscale(60%);
@@ -595,10 +627,11 @@
         }
 
         .class-name {
-            font-family: 'Cinzel', serif;
+            font-family: 'Cormorant Garamond', serif;
             font-size: clamp(1.2rem, 4vw, 1.5rem);
             color: var(--white);
             margin-bottom: 8px;
+            font-weight: 700;
         }
 
         .class-stats {
@@ -630,69 +663,96 @@
             font-style: italic;
             text-align: center;
             font-size: clamp(0.7rem, 3vw, 0.9rem);
-        }
-
-        .recruit-section {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+            font-weight: 600;
             margin-bottom: 15px;
         }
 
-        @media (min-width: 600px) {
-            .recruit-section {
-                grid-template-columns: repeat(3, 1fr);
-            }
+        .recruit-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .recruit-section::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .recruit-section::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+            border-radius: 2px;
+        }
+
+        .recruit-section::-webkit-scrollbar-thumb {
+            background: var(--burgundy);
+            border-radius: 2px;
         }
 
         .recruit-card {
             background: var(--bg-light);
             border: 1px solid var(--burgundy);
             border-radius: 8px;
-            padding: 10px;
-            text-align: center;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
         }
 
         .recruit-image {
             width: 50px;
             height: 50px;
-            border-radius: 50%;
+            border-radius: 8px;
             border: 2px solid var(--burgundy);
-            margin-bottom: 8px;
             object-fit: cover;
             filter: grayscale(80%);
+            flex-shrink: 0;
+        }
+
+        .recruit-info {
+            flex: 1;
+            min-width: 120px;
         }
 
         .recruit-name {
-            font-size: clamp(0.8rem, 3vw, 1rem);
-            margin-bottom: 5px;
+            font-size: clamp(0.9rem, 3vw, 1.1rem);
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .recruit-stats {
+            font-size: clamp(0.7rem, 2.5vw, 0.85rem);
+            color: var(--gray);
+            font-weight: 600;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .recruit-cost {
             color: var(--gold);
             font-weight: 700;
-            margin-bottom: 5px;
-            font-size: clamp(0.7rem, 2.5vw, 0.9rem);
-        }
-
-        .recruit-stats {
-            font-size: clamp(0.6rem, 2.5vw, 0.8rem);
-            color: var(--gray);
-            margin-bottom: 5px;
+            font-size: clamp(0.8rem, 2.8vw, 1rem);
+            white-space: nowrap;
         }
 
         .recruit-btn {
-            padding: 6px 12px;
+            padding: 8px 20px;
             background: var(--burgundy);
-            border: none;
+            border: 2px solid var(--burgundy-light);
             color: var(--white);
-            font-family: 'MedievalSharp', cursive;
+            font-family: 'Cormorant Garamond', serif;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 6px;
             transition: all 0.2s ease;
-            width: 100%;
-            font-size: clamp(0.7rem, 2.5vw, 0.9rem);
+            font-size: clamp(0.8rem, 2.8vw, 1rem);
+            font-weight: 600;
             touch-action: manipulation;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .recruit-btn:active:not(:disabled) {
@@ -710,14 +770,15 @@
             border: 1px solid var(--burgundy);
             border-radius: 8px;
             padding: 10px;
-            margin-top: 15px;
+            margin-top: 10px;
         }
 
         .army-title {
-            font-family: 'Cinzel', serif;
+            font-family: 'Cormorant Garamond', serif;
             font-size: clamp(1rem, 4vw, 1.2rem);
             margin-bottom: 10px;
             color: var(--burgundy-light);
+            font-weight: 700;
         }
 
         .army-slots {
@@ -794,7 +855,7 @@
             background: var(--gold);
             color: var(--bg-dark);
             font-size: 0.5rem;
-            font-family: 'Cinzel', serif;
+            font-family: 'Cormorant Garamond', serif;
             font-weight: 700;
             padding: 2px 4px;
             border-radius: 4px;
@@ -830,7 +891,7 @@
         .army-unit-image {
             width: 50px;
             height: 50px;
-            border-radius: 50%;
+            border-radius: 8px;
             border: 2px solid var(--burgundy);
             margin: 0 auto 8px;
             object-fit: cover;
@@ -851,6 +912,7 @@
             justify-content: center;
             gap: 8px;
             font-size: clamp(0.6rem, 2.5vw, 0.8rem);
+            font-weight: 600;
         }
 
         .combat-container {
@@ -869,7 +931,7 @@
         }
 
         .combat-turn-info {
-            font-family: 'Cinzel', serif;
+            font-family: 'Cormorant Garamond', serif;
             font-size: clamp(1rem, 4vw, 1.3rem);
             color: var(--gold);
             font-weight: 700;
@@ -922,7 +984,7 @@
         .turn-order-unit img {
             width: 25px;
             height: 25px;
-            border-radius: 50%;
+            border-radius: 6px;
             object-fit: cover;
         }
 
@@ -963,12 +1025,13 @@
         }
 
         .combat-team-title {
-            font-family: 'Cinzel', serif;
+            font-family: 'Cormorant Garamond', serif;
             font-size: clamp(0.9rem, 3.5vw, 1.1rem);
             text-align: center;
             margin-bottom: 10px;
             padding-bottom: 5px;
             border-bottom: 1px solid var(--burgundy);
+            font-weight: 700;
         }
 
         .combat-units {
@@ -1014,11 +1077,12 @@
         .combat-unit.hero::before {
             content: '👑';
             position: absolute;
-            top: -6px;
+            top: -10px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 1rem;
+            font-size: 1.2rem;
             z-index: 10;
+            filter: drop-shadow(0 0 3px var(--gold));
         }
 
         .combat-unit.dead {
@@ -1053,6 +1117,7 @@
             gap: 5px;
             margin-bottom: 4px;
             font-size: clamp(0.5rem, 2vw, 0.6rem);
+            font-weight: 600;
         }
 
         .combat-unit-stat {
@@ -1079,13 +1144,14 @@
         .combat-unit-hp-text {
             font-size: clamp(0.5rem, 2vw, 0.6rem);
             color: var(--gray);
+            font-weight: 600;
         }
 
         .vs-divider {
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Cinzel', serif;
+            font-family: 'Cormorant Garamond', serif;
             font-size: 1.2rem;
             color: var(--burgundy-light);
             font-weight: 900;
@@ -1102,6 +1168,7 @@
             scroll-behavior: smooth;
             font-size: clamp(0.6rem, 2.5vw, 0.8rem);
             -webkit-overflow-scrolling: touch;
+            font-weight: 600;
         }
 
         .combat-log::-webkit-scrollbar {
@@ -1121,6 +1188,10 @@
         .combat-log-entry {
             padding: 4px 0;
             border-bottom: 1px solid var(--bg-light);
+        }
+
+        .combat-log-entry:last-child {
+            border-bottom: none;
         }
 
         .combat-log-entry.damage {
@@ -1161,7 +1232,7 @@
             cursor: pointer;
             transition: all 0.2s ease;
             text-align: center;
-            font-family: 'MedievalSharp', cursive;
+            font-family: 'Cormorant Garamond', serif;
             font-size: clamp(0.9rem, 3.5vw, 1.1rem);
             font-weight: 700;
             touch-action: manipulation;
@@ -1196,6 +1267,7 @@
             padding: 5px 0;
             border-bottom: 1px solid var(--bg-medium);
             font-size: clamp(0.8rem, 3vw, 1rem);
+            font-weight: 600;
         }
 
         .stat-row:last-child {
@@ -1221,7 +1293,7 @@
             padding: 15px 20px;
             border-radius: 8px;
             border: 2px solid var(--burgundy-light);
-            font-family: 'MedievalSharp', cursive;
+            font-family: 'Cormorant Garamond', serif;
             transform: translateY(150%);
             transition: transform 0.3s ease;
             z-index: 1001;
@@ -1235,16 +1307,19 @@
             transform: translateY(0);
         }
 
-        .mine-timer {
-            display: inline-block;
-            width: 35px;
-            text-align: center;
-            font-family: monospace;
-            font-size: clamp(0.7rem, 2.5vw, 0.9rem);
-            background: var(--bg-dark);
-            padding: 2px 4px;
-            border-radius: 4px;
-            border: 1px solid var(--burgundy);
+        @media (max-width: 600px) {
+            .recruit-card {
+                flex-wrap: wrap;
+            }
+            
+            .recruit-info {
+                min-width: 100%;
+                order: -1;
+            }
+            
+            .recruit-btn {
+                width: 100%;
+            }
         }
 
         @media (max-width: 480px) {
@@ -1264,23 +1339,23 @@
 
             .resource-btn {
                 padding: 6px 8px;
-                min-width: 60px;
+                min-width: 45px;
             }
 
             .hero-sprite {
-                width: 50px;
-                height: 50px;
-                font-size: 1.5rem;
+                width: 60px;
+                height: 60px;
+                font-size: 1.8rem;
             }
 
             .hero-sprite::before {
-                font-size: 1rem;
-                top: -10px;
+                font-size: 1.5rem;
+                top: -22px;
             }
 
             .hero-sprite::after {
-                font-size: 0.5rem;
-                bottom: -16px;
+                font-size: 0.6rem;
+                bottom: -18px;
             }
 
             .map-enemy {
@@ -1301,14 +1376,14 @@
             }
 
             .map-castle {
-                width: 120px;
-                height: 120px;
-                font-size: 4rem;
+                width: 200px;
+                height: 200px;
+                font-size: 6rem;
             }
 
             .map-castle::after {
-                font-size: 0.6rem;
-                bottom: -18px;
+                font-size: 0.8rem;
+                bottom: -22px;
             }
 
             .turn-order-unit {
@@ -1399,7 +1474,7 @@
             background: var(--burgundy);
             border: 2px solid var(--burgundy-light);
             color: var(--white);
-            font-family: 'MedievalSharp', cursive;
+            font-family: 'Cormorant Garamond', serif;
             font-size: clamp(0.7rem, 3vw, 0.9rem);
             cursor: pointer;
             border-radius: 8px;
@@ -1449,6 +1524,7 @@
             <p class="game-subtitle">ТЕНИ БИТВЫ</p>
         </header>
 
+        <!-- Главное меню -->
         <div id="mainMenu" class="main-menu">
             <h1 class="main-menu-title">SHADOWS OF BATTLE</h1>
             <p class="main-menu-subtitle">ТЕНИ БИТВЫ</p>
@@ -1456,21 +1532,20 @@
             <button class="main-menu-btn" onclick="showHelpFromMenu()">❓ ПОМОЩЬ</button>
         </div>
 
+        <!-- Основная игра -->
         <div id="mainGame" class="main-game">
             <div class="resource-bar">
-                <div class="resource">
+                <div class="resource" data-tooltip="Доход от шахт каждые 5 минут">
                     <span class="resource-icon">💰</span>
                     <span class="resource-value" id="gold">200</span>
                 </div>
                 <div class="resource">
                     <span class="resource-icon">⛏️</span>
-                    <span><span id="mineCount">0</span>/<span id="mineTimerDisplay">5:00</span></span>
+                    <span><span id="mineCount">0</span></span>
                 </div>
-                <div class="resource">
-                    <span class="resource-icon">⏳</span>
-                    <span class="resource-value" id="timer">5:00</span>
-                </div>
-                <button class="resource-btn" id="armyBtn" onclick="showArmyDisplay()"><span id="armyCountDisplay">0</span></button>
+                <button class="resource-btn" id="armyBtn" onclick="showArmyDisplay()">
+                    <span>⚔️</span> <span id="armyCountDisplay">0</span>
+                </button>
                 <button class="resource-btn" id="tavernBtn" onclick="openWindow('tavernWindow')" disabled>🍺</button>
                 <button class="resource-btn" onclick="openWindow('menuWindow')">⚙️</button>
             </div>
@@ -1480,16 +1555,16 @@
                     <img src="https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/175c3f3ff-9149-46ce-b0f2-ecfa34cbb3c0.png" alt="Карта мира" class="map-image" loading="lazy">
                     <div class="map-grid" id="mapGrid"></div>
                     <div class="hero-sprite" id="heroSprite">⚔️</div>
-                    <div class="map-castle" id="mapCastle" style="left: 1700px; top: 1400px;">🏰</div>
+                    <div class="map-castle" id="mapCastle" style="left: 1650px; top: 1350px;">🏰</div>
                 </div>
                 <div class="fog-of-war"></div>
             </div>
         </div>
     </div>
 
+    <!-- Окно выбора класса (без крестика) -->
     <div class="modal-window" id="classWindow">
         <div class="modal-content full-width">
-            <button class="modal-close" onclick="closeWindow('classWindow')">✕</button>
             <h2 class="modal-title">🎭 ВЫБЕРИТЕ КЛАСС</h2>
             <div class="class-selection">
                 <div class="class-card" onclick="selectClass('warrior')">
@@ -1523,11 +1598,12 @@
         </div>
     </div>
 
+    <!-- Остальные модальные окна (с крестиками) -->
     <div class="modal-window" id="tavernWindow">
         <div class="modal-content">
             <button class="modal-close" onclick="closeWindow('tavernWindow')">✕</button>
             <h2 class="modal-title">🍺 ТАВЕРНА</h2>
-            <p class="tavern-info">Наймите воинов (макс. 6)</p>
+            <p class="tavern-info">Наймите воинов в свою армию (макс. 6)</p>
 
             <div class="recruit-section" id="recruitSection"></div>
 
@@ -1555,6 +1631,7 @@
 
     <div class="modal-window" id="combatWindow">
         <div class="modal-content combat-modal">
+            <button class="modal-close" onclick="closeWindow('combatWindow')">✕</button>
             <div class="combat-container">
                 <div class="combat-info-bar">
                     <div class="combat-turn-info" id="combatTurnInfo">⚔️ ХОД: ГЕРОЙ 👑</div>
@@ -1618,10 +1695,8 @@
 
     <script>
         // Game State
-        const gameState = {
+        let gameState = {
             gold: 200,
-            timer: 300,
-            mineTimer: 300,
             selectedClass: null,
             hero: null,
             army: [],
@@ -1696,9 +1771,47 @@
             {x: 15, y: 12, type: 'boss1', id: 'enemy_18'}, {x: 25, y: 12, type: 'boss2', id: 'enemy_19'}, {x: 20, y: 20, type: 'boss3', id: 'enemy_20'}
         ];
 
+        let mineInterval = null;
+
+        function resetGame() {
+            if (mineInterval) clearInterval(mineInterval);
+            
+            gameState = {
+                gold: 200,
+                selectedClass: null,
+                hero: null,
+                army: [],
+                maxArmySize: 6,
+                inCombat: false,
+                playerUnits: [],
+                enemyUnits: [],
+                turnQueue: [],
+                currentTurnIndex: 0,
+                combatInProgress: false,
+                combatPaused: false,
+                combatWaitingForNext: false,
+                defeatedEnemies: [],
+                capturedMines: [],
+                heroPosition: { x: 18, y: 15 },
+                mapWidth: 36,
+                mapHeight: 30,
+                cellSize: 100,
+                viewportWidth: 0,
+                viewportHeight: 0,
+                inTavern: false,
+                inCastle: false,
+                blockedCells: [],
+                castleCells: [
+                    {x: 17, y: 14}, {x: 18, y: 14},
+                    {x: 17, y: 15}, {x: 18, y: 15}
+                ]
+            };
+        }
+
         function generateBlockedCells() {
             const blocked = [];
             
+            // Горы на севере
             for (let x = 0; x < 10; x++) {
                 for (let y = 0; y < 5; y++) {
                     if (Math.random() > 0.3) {
@@ -1707,6 +1820,7 @@
                 }
             }
             
+            // Лес на востоке
             for (let x = 25; x < 35; x++) {
                 for (let y = 5; y < 20; y++) {
                     if (Math.random() > 0.4) {
@@ -1715,6 +1829,7 @@
                 }
             }
             
+            // Болота на юге
             for (let x = 10; x < 25; x++) {
                 for (let y = 20; y < 28; y++) {
                     if (Math.random() > 0.5) {
@@ -1723,11 +1838,13 @@
                 }
             }
             
+            // Река через центр
             for (let i = 0; i < 15; i++) {
                 blocked.push({x: 15 + i, y: 12});
                 blocked.push({x: 15 + i, y: 13});
             }
             
+            // Озеро
             for (let dx = -3; dx <= 3; dx++) {
                 for (let dy = -3; dy <= 3; dy++) {
                     if (Math.abs(dx) + Math.abs(dy) <= 4) {
@@ -1736,16 +1853,13 @@
                 }
             }
             
+            // Убираем блокировку с клеток замка
             gameState.castleCells.forEach(cell => {
                 const index = blocked.findIndex(c => c.x === cell.x && c.y === cell.y);
                 if (index !== -1) blocked.splice(index, 1);
             });
             
-            enemyPositions.forEach(enemy => {
-                const index = blocked.findIndex(c => c.x === enemy.x && c.y === enemy.y);
-                if (index !== -1) blocked.splice(index, 1);
-            });
-            
+            // Убираем блокировку с позиций шахт
             minePositions.forEach(mine => {
                 const index = blocked.findIndex(c => c.x === mine.x && c.y === mine.y);
                 if (index !== -1) blocked.splice(index, 1);
@@ -1763,36 +1877,24 @@
         }
 
         function startGame() {
+            resetGame();
             document.getElementById('mainMenu').style.display = 'none';
             document.getElementById('mainGame').classList.add('active');
             openWindow('classWindow');
             init();
             
-            setInterval(() => {
+            // Доход с шахт каждые 5 минут
+            mineInterval = setInterval(() => {
                 if (gameState.capturedMines.length > 0) {
                     gameState.gold += gameState.capturedMines.length;
                     updateGold();
-                    showNotification(`+${gameState.capturedMines.length}💰`);
+                    showNotification(`+${gameState.capturedMines.length}💰 от шахт!`);
                 }
             }, 300000);
-            
-            setInterval(() => {
-                if (gameState.mineTimer > 0) {
-                    gameState.mineTimer--;
-                    updateMineTimer();
-                } else {
-                    gameState.mineTimer = 300;
-                }
-            }, 1000);
-        }
-
-        function updateMineTimer() {
-            const minutes = Math.floor(gameState.mineTimer / 60);
-            const seconds = gameState.mineTimer % 60;
-            document.getElementById('mineTimerDisplay').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
         }
 
         function returnToMainMenu() {
+            if (mineInterval) clearInterval(mineInterval);
             closeWindow('menuWindow');
             document.getElementById('mainGame').classList.remove('active');
             document.getElementById('mainMenu').style.display = 'flex';
@@ -1807,14 +1909,12 @@
             updateGold();
             updateMineCount();
             updateArmyButton();
-            startTimer();
             createMapGrid();
             updateHeroPosition();
             populateTavern();
             renderEnemyEmojis();
             renderMines();
             updateTavernButton();
-            updateMineTimer();
         }
 
         function openWindow(windowId) {
@@ -1911,6 +2011,9 @@
             world.querySelectorAll('.map-enemy-marker').forEach(el => el.remove());
             
             enemyPositions.forEach(pos => {
+                // Пропускаем врагов на заблокированных клетках
+                if (isCellBlocked(pos.x, pos.y)) return;
+                
                 if (gameState.defeatedEnemies.includes(pos.id)) return;
                 
                 const marker = document.createElement('div');
@@ -1920,11 +2023,6 @@
                 marker.style.top = (pos.y * gameState.cellSize + 25) + 'px';
                 const enemyData = enemyStats[pos.type];
                 marker.textContent = enemyData ? enemyData.emoji : '💀';
-                marker.ontouchstart = (e) => {
-                    e.preventDefault();
-                    startCombat(pos.type, pos.id);
-                };
-                marker.onclick = () => startCombat(pos.type, pos.id);
                 world.appendChild(marker);
             });
         }
@@ -1934,6 +2032,9 @@
             world.querySelectorAll('.map-mine-marker').forEach(el => el.remove());
             
             minePositions.forEach(mine => {
+                // Пропускаем шахты на заблокированных клетках
+                if (isCellBlocked(mine.x, mine.y)) return;
+                
                 const marker = document.createElement('div');
                 marker.className = `map-mine map-mine-marker ${gameState.capturedMines.includes(mine.id) ? 'captured' : ''}`;
                 marker.dataset.id = mine.id;
@@ -1952,11 +2053,6 @@
                     }
                 }
                 
-                marker.ontouchstart = (e) => {
-                    e.preventDefault();
-                    tryCaptureMine(mine);
-                };
-                marker.onclick = () => tryCaptureMine(mine);
                 world.appendChild(marker);
             });
         }
@@ -1967,7 +2063,7 @@
                     gameState.capturedMines.push(mine.id);
                     updateMineCount();
                     renderMines();
-                    showNotification(`Шахта захвачена!`);
+                    showNotification(`Шахта захвачена! +1💰/5мин`);
                 }
             } else {
                 showNotification('Сначала победите врага!');
@@ -2006,18 +2102,6 @@
             document.getElementById('gold').textContent = gameState.gold;
         }
 
-        function startTimer() {
-            const timerElement = document.getElementById('timer');
-            setInterval(() => {
-                if (gameState.timer > 0) {
-                    gameState.timer--;
-                    const minutes = Math.floor(gameState.timer / 60);
-                    const seconds = gameState.timer % 60;
-                    timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-                }
-            }, 1000);
-        }
-
         function moveHeroTo(x, y) {
             x = Math.max(0, Math.min(gameState.mapWidth - 1, x));
             y = Math.max(0, Math.min(gameState.mapHeight - 1, y));
@@ -2032,6 +2116,24 @@
             updateHeroPosition();
             checkEnemyEncounter();
             updateTavernButton();
+            checkMineCapture();
+            updateCastleGlow();
+        }
+
+        function updateCastleGlow() {
+            const castle = document.getElementById('mapCastle');
+            if (isCastleCell(gameState.heroPosition.x, gameState.heroPosition.y)) {
+                castle.classList.add('castle-glow');
+            } else {
+                castle.classList.remove('castle-glow');
+            }
+        }
+
+        function checkMineCapture() {
+            const mine = minePositions.find(m => m.x === gameState.heroPosition.x && m.y === gameState.heroPosition.y);
+            if (mine) {
+                tryCaptureMine(mine);
+            }
         }
 
         function showPathIndicator(x, y) {
@@ -2080,7 +2182,7 @@
             const inCastle = isCastleCell(gameState.heroPosition.x, gameState.heroPosition.y);
             gameState.inCastle = inCastle;
             tavernBtn.disabled = !inCastle;
-            if (inCastle) showNotification('Вы в городе!');
+            updateCastleGlow();
         }
 
         function updateArmyButton() {
@@ -2107,9 +2209,15 @@
                 card.className = 'recruit-card';
                 card.innerHTML = `
                     <img src="${unit.image}" alt="${unit.name}" class="recruit-image" loading="lazy">
-                    <h3 class="recruit-name">${unit.name}</h3>
-                    <p class="recruit-cost">💰 ${unit.cost}</p>
-                    <p class="recruit-stats">❤️ ${unit.health} ⚔️ ${unit.attack} 🎯 ${unit.motivation}</p>
+                    <div class="recruit-info">
+                        <div class="recruit-name">${unit.name}</div>
+                        <div class="recruit-stats">
+                            <span>❤️ ${unit.health}</span>
+                            <span>⚔️ ${unit.attack}</span>
+                            <span>🎯 ${unit.motivation}</span>
+                            <span class="recruit-cost">💰 ${unit.cost}</span>
+                        </div>
+                    </div>
                     <button class="recruit-btn" onclick="recruitUnit('${unit.type}', ${unit.cost})">НАНЯТЬ</button>
                 `;
                 section.appendChild(card);
@@ -2562,7 +2670,6 @@
                 <div class="stat-row"><span class="stat-label">Золото:</span><span class="stat-value-display">${gameState.gold} 💰</span></div>
                 <div class="stat-row"><span class="stat-label">Шахты:</span><span class="stat-value-display">${gameState.capturedMines.length}/${minePositions.length}</span></div>
                 <div class="stat-row"><span class="stat-label">Армия:</span><span class="stat-value-display">${gameState.army.length + 1}/6</span></div>
-                <div class="stat-row"><span class="stat-label">Время:</span><span class="stat-value-display">${document.getElementById('timer').textContent}</span></div>
                 <div class="stat-row"><span class="stat-label">Позиция:</span><span class="stat-value-display">(${gameState.heroPosition.x}, ${gameState.heroPosition.y})</span></div>
                 <div class="stat-row"><span class="stat-label">Побеждено врагов:</span><span class="stat-value-display">${gameState.defeatedEnemies.length}/${enemyPositions.length}</span></div>
             `;
