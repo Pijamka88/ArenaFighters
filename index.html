@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>DISCIPLES: ROADS ONLY</title>
+    <title>DISCIPLES: SQUARE MAP</title>
     <!-- Telegram Web App -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -178,7 +178,7 @@
             gap: 5px;
         }
 
-        /* ГЛОБАЛЬНАЯ КАРТА - квадратные ячейки */
+        /* ГЛОБАЛЬНАЯ КАРТА - строго квадратные ячейки */
         .map-screen {
             display: none;
             flex-direction: column;
@@ -684,7 +684,7 @@
     <!-- МЕНЮ - монохром с красным -->
     <div id="menu-screen" class="menu-screen">
         <div class="title">DISCIPLES</div>
-        <div class="sub">ROADS ONLY</div>
+        <div class="sub">SQUARE MAP</div>
         <div class="class-cards">
             <div class="class-card" data-class="warrior">
                 <div class="card-icon">⚔️</div>
@@ -711,7 +711,7 @@
         <div style="text-align: center; color:#555555; font-size:0.7rem; letter-spacing:2px;">[ SELECT YOUR CLASS ]</div>
     </div>
 
-    <!-- Глобальная карта - квадратные ячейки -->
+    <!-- Глобальная карта - строго квадратные ячейки -->
     <div id="map-screen" class="map-screen">
         <div class="map-header">
             <div class="income-timer">
@@ -916,9 +916,6 @@
 
     function generateEnemies() {
         enemiesOnMap = [];
-        // Новые эмодзи для врагов
-        const enemyIcons = ['⚔️', '🗡️', '🛡️', '🏹', '🔮', '👑', '🐉', '🐺', '🐗', '🦇'];
-        
         const enemyTemplates = [
             { type: 'SKELETON', hp: 18, maxHp: 18, attack: 5, icon: '💀', moveRange: 3, attackRange: 1 },
             { type: 'SHADE', hp: 16, maxHp: 16, attack: 6, icon: '👤', moveRange: 4, attackRange: 1 },
@@ -933,7 +930,6 @@
         const occupied = new Set([`${CASTLE_POS.x},${CASTLE_POS.y}`]);
         mines.forEach(m => occupied.add(`${m.x},${m.y}`));
         
-        // Увеличиваем количество врагов до 80
         for (let i = 0; i < 80; i++) {
             let attempts = 0;
             while (attempts < 500) {
@@ -943,7 +939,6 @@
                 if (!occupied.has(key) && worldMap[y][x] === 0) {
                     occupied.add(key);
                     const units = [];
-                    // Случайный отряд из 3-5 врагов
                     const unitCount = 3 + Math.floor(Math.random() * 3);
                     for (let j = 0; j < unitCount; j++) {
                         const tmpl = enemyTemplates[Math.floor(Math.random() * enemyTemplates.length)];
@@ -985,7 +980,30 @@
         }
     }
 
-    // Монохромный дизайн карты с квадратными ячейками
+    // Функция для получения мировых координат по клику
+    function getWorldCoordsFromClick(e) {
+        const rect = mapCanvas.getBoundingClientRect();
+        const scale = mapCanvas.width / rect.width;
+        const mouseX = (e.clientX - rect.left) * scale;
+        const mouseY = (e.clientY - rect.top) * scale;
+        const cellSize = mapCanvas.width / CAMERA_SIZE;
+        
+        const col = Math.floor(mouseX / cellSize);
+        const row = Math.floor(mouseY / cellSize);
+        
+        if (col < 0 || col >= CAMERA_SIZE || row < 0 || row >= CAMERA_SIZE) return null;
+        
+        let startX = playerPos.x - Math.floor(CAMERA_SIZE/2);
+        let startY = playerPos.y - Math.floor(CAMERA_SIZE/2);
+        startX = Math.max(0, Math.min(MAP_SIZE - CAMERA_SIZE, startX));
+        startY = Math.max(0, Math.min(MAP_SIZE - CAMERA_SIZE, startY));
+        
+        const worldX = startX + col;
+        const worldY = startY + row;
+        
+        return { x: worldX, y: worldY, col, row };
+    }
+
     function drawMap() {
         checkIncome();
         updateTimer();
@@ -1024,12 +1042,11 @@
                 ctxMap.lineWidth = 1;
                 ctxMap.strokeRect(x + 0.5, y + 0.5, cellSize - 1, cellSize - 1);
 
-                // Эмодзи (все черно-белые через оттенки серого)
+                // Эмодзи
                 ctxMap.font = `${cellSize-35}px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`;
                 ctxMap.textAlign = 'center';
                 ctxMap.textBaseline = 'middle';
 
-                // Рисуем эмодзи в оттенках серого
                 ctxMap.fillStyle = '#aaaaaa';
 
                 if (cellType === 1) {
@@ -1043,7 +1060,7 @@
                 const mineHere = mines.find(m => m.x === worldX && m.y === worldY);
                 if (mineHere) {
                     if (mineHere.owner === 'player') {
-                        ctxMap.fillStyle = '#ff0000'; // Красный для захваченных шахт
+                        ctxMap.fillStyle = '#ff0000';
                         ctxMap.fillText('⛏️', x + cellSize/2 - 8, y + cellSize/2 - 5);
                         ctxMap.fillText('✔️', x + cellSize/2 + 8, y + cellSize/2 + 3);
                     } else {
@@ -1053,34 +1070,33 @@
                 }
 
                 if (worldX === CASTLE_POS.x && worldY === CASTLE_POS.y) {
-                    ctxMap.fillStyle = '#ff0000'; // Красный для замка
+                    ctxMap.fillStyle = '#ff0000';
                     ctxMap.fillText('🏰', x + cellSize/2, y + cellSize/2);
                 }
                 
                 const enemyHere = enemiesOnMap.find(e => e.x === worldX && e.y === worldY);
                 if (enemyHere) {
-                    ctxMap.fillStyle = '#ff0000'; // Красный для врагов
-                    // Используем иконку из первого юнита в отряде
+                    ctxMap.fillStyle = '#ff0000';
                     const enemyIcon = enemyHere.units[0]?.icon || '⚔️';
                     ctxMap.fillText(enemyIcon, x + cellSize/2, y + cellSize/2);
                 }
                 
                 if (playerPos.x === worldX && playerPos.y === worldY) {
-                    ctxMap.fillStyle = '#ffffff'; // Белый для игрока
+                    ctxMap.fillStyle = '#ffffff';
                     ctxMap.fillText(playerHero.icon, x + cellSize/2, y + cellSize/2);
                 }
             }
         }
     }
 
-    // Функция для проверки, можно ли переместиться на клетку (только по дорогам)
+    // Функция проверки возможности перемещения
     function canMoveTo(worldX, worldY) {
         if (worldX < 0 || worldX >= MAP_SIZE || worldY < 0 || worldY >= MAP_SIZE) return false;
         
-        // Проверяем тип клетки: можно ходить ТОЛЬКО по дорогам (0)
+        // Можно ходить только по дорогам (0)
         if (worldMap[worldY][worldX] !== 0) return false;
         
-        // Проверяем, нет ли врага на клетке
+        // Нельзя ходить на клетку с врагом
         const enemyHere = enemiesOnMap.find(e => e.x === worldX && e.y === worldY);
         if (enemyHere) return false;
         
@@ -1088,29 +1104,21 @@
     }
 
     function handleMapClick(e) {
-        const rect = mapCanvas.getBoundingClientRect();
-        const scale = mapCanvas.width / rect.width;
-        const mouseX = (e.clientX - rect.left) * scale;
-        const mouseY = (e.clientY - rect.top) * scale;
-        const cellSize = mapCanvas.width / CAMERA_SIZE;
-        const col = Math.floor(mouseX / cellSize);
-        const row = Math.floor(mouseY / cellSize);
-        if (col < 0 || col >= CAMERA_SIZE || row < 0 || row >= CAMERA_SIZE) return;
-
-        let startX = playerPos.x - Math.floor(CAMERA_SIZE/2);
-        let startY = playerPos.y - Math.floor(CAMERA_SIZE/2);
-        startX = Math.max(0, Math.min(MAP_SIZE - CAMERA_SIZE, startX));
-        startY = Math.max(0, Math.min(MAP_SIZE - CAMERA_SIZE, startY));
-        const worldX = startX + col;
-        const worldY = startY + row;
+        const coords = getWorldCoordsFromClick(e);
+        if (!coords) return;
+        
+        const { x: worldX, y: worldY } = coords;
 
         // Проверяем, что клетка соседняя (манхэттенское расстояние 1)
-        if (Math.abs(worldX - playerPos.x) + Math.abs(worldY - playerPos.y) !== 1) {
+        const dx = Math.abs(worldX - playerPos.x);
+        const dy = Math.abs(worldY - playerPos.y);
+        
+        if (dx + dy !== 1) {
             battleLog.innerText = 'YOU CAN ONLY MOVE TO ADJACENT CELLS!';
             return;
         }
 
-        // Проверяем, можно ли переместиться (только по дорогам)
+        // Проверяем, можно ли переместиться
         if (!canMoveTo(worldX, worldY)) {
             battleLog.innerText = 'YOU CAN ONLY MOVE ON ROADS!';
             return;
@@ -1204,7 +1212,7 @@
         openTavern();
     }
 
-    // ---------- ТАКТИЧЕСКИЙ БОЙ ----------
+    // ---------- ТАКТИЧЕСКИЙ БОЙ (без изменений) ----------
     const BATTLE_WIDTH = 7;
     const BATTLE_HEIGHT = 11;
     let battlePlayerUnits = [];
