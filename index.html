@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Disciples: Реалистичный мир</title>
+    <title>DISCIPLES: ROADS ONLY</title>
     <!-- Telegram Web App -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -11,458 +11,758 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
             user-select: none;
         }
+
         body {
             min-height: 100vh;
-            background: #0b0d15;
+            background: #000000;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 0;
         }
+
         #game-container {
             width: 100%;
             height: 100vh;
             max-width: 600px;
-            background: rgba(10, 13, 20, 0.95);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 215, 150, 0.15);
+            background: #0a0a0a;
+            border-left: 1px solid #ff0000;
+            border-right: 1px solid #ff0000;
             overflow: hidden;
             display: flex;
             flex-direction: column;
+            position: relative;
         }
 
-        /* МЕНЮ */
+        /* Красные акценты */
+        .red-border {
+            border-color: #ff0000 !important;
+        }
+
+        .red-text {
+            color: #ff0000 !important;
+        }
+
+        .red-bg {
+            background: #ff0000 !important;
+            color: #000000 !important;
+        }
+
+        .red-shadow {
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        /* МЕНЮ - монохром с красным */
         .menu-screen {
             display: flex;
             flex-direction: column;
-            gap: 24px;
-            padding: 20px 16px;
+            gap: 30px;
+            padding: 30px 20px;
             height: 100%;
             justify-content: center;
-            background: radial-gradient(circle at 20% 30%, #1a1f2e, #0b0d15);
+            background: #0a0a0a;
+            position: relative;
+        }
+
+        .menu-screen::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(45deg, rgba(255,0,0,0.05) 0%, transparent 70%);
+            pointer-events: none;
         }
 
         .title {
-            font-size: 2.2rem;
-            font-weight: 800;
-            letter-spacing: 2px;
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: 4px;
             text-align: center;
-            background: linear-gradient(135deg, #f5e6d3, #dbbf9e);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 10px #bf9e6b80;
-            margin-bottom: 8px;
+            color: #ffffff;
+            text-shadow: 3px 3px 0 #ff0000;
+            margin-bottom: 10px;
+            text-transform: uppercase;
         }
 
         .sub {
             text-align: center;
-            color: #a89f91;
+            color: #888888;
             font-size: 0.9rem;
             text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-top: -10px;
+            letter-spacing: 4px;
+            margin-top: -15px;
         }
 
         .class-cards {
             display: flex;
             flex-direction: column;
-            gap: 16px;
-            margin: 16px 0 8px;
+            gap: 15px;
+            margin: 20px 0;
+            z-index: 2;
         }
 
         .class-card {
-            background: linear-gradient(145deg, #262d3e, #1b212f);
-            border-radius: 30px;
-            padding: 18px 20px;
-            border: 1px solid rgba(230, 200, 150, 0.15);
-            box-shadow: 0 8px 0 #0f121b, 0 12px 30px rgba(0, 0, 0, 0.6);
+            background: #1a1a1a;
+            border: 2px solid #333333;
+            border-radius: 0;
+            padding: 20px 25px;
             display: flex;
             align-items: center;
-            gap: 18px;
-            transition: 0.1s ease;
+            gap: 20px;
+            transition: all 0.2s ease;
             cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .class-card:hover {
+            border-color: #ff0000;
+            background: #222222;
         }
 
         .class-card:active {
-            transform: translateY(4px);
-            box-shadow: 0 4px 0 #0f121b, 0 12px 30px rgba(0, 0, 0, 0.6);
+            transform: scale(0.98);
+        }
+
+        .class-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,0,0,0.2), transparent);
+            transition: left 0.3s ease;
+        }
+
+        .class-card:hover::after {
+            left: 100%;
         }
 
         .card-icon {
             width: 60px;
             height: 60px;
-            background: #2f3a4f;
-            border-radius: 40px;
+            background: #000000;
+            border: 2px solid #ff0000;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
-            border: 2px solid #bfa07e;
-            box-shadow: 0 0 0 2px #1e2533;
+            font-size: 2.2rem;
+            filter: grayscale(100%);
+        }
+
+        .card-icon.red-icon {
+            filter: grayscale(0%);
         }
 
         .card-info h3 {
-            color: #eedcc7;
+            color: #ffffff;
             font-size: 1.5rem;
             font-weight: 600;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
         }
 
         .card-info p {
-            color: #9b8f7c;
+            color: #aaaaaa;
             font-size: 0.9rem;
             display: flex;
-            gap: 10px;
+            gap: 15px;
+            margin-top: 5px;
         }
+
         .card-info p span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* ГЛОБАЛЬНАЯ КАРТА - квадратные ячейки */
+        .map-screen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            background: #0a0a0a;
+        }
+
+        .map-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #000000;
+            padding: 10px 15px;
+            border-bottom: 2px solid #ff0000;
+            color: #ffffff;
+            font-size: 0.9rem;
+        }
+
+        .income-timer {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .income-display {
+            background: #1a1a1a;
+            padding: 5px 12px;
+            border: 1px solid #333333;
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .castle-buttons {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .gold-display {
+            background: #1a1a1a;
+            padding: 5px 12px;
+            border: 1px solid #ff0000;
+            color: #ff0000;
+            font-weight: bold;
+        }
+
+        .castle-btn {
+            background: #1a1a1a;
+            border: 1px solid #333333;
+            color: #ffffff;
+            padding: 5px 10px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .castle-btn:hover {
+            border-color: #ff0000;
+            color: #ff0000;
+        }
+
+        .castle-btn:active {
+            transform: translateY(2px);
+        }
+
+        .map-canvas-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000000;
+            padding: 10px;
+        }
+
+        #mapCanvas {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1/1;
+            background: #0a0a0a;
+            border: 2px solid #333333;
+            cursor: pointer;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        .map-footer {
+            display: flex;
+            gap: 10px;
+            padding: 10px 15px;
+            background: #000000;
+            border-top: 1px solid #333333;
+        }
+
+        .map-footer button {
+            flex: 1;
+            background: #1a1a1a;
+            border: 1px solid #333333;
+            padding: 10px 0;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .map-footer button:hover {
+            border-color: #ff0000;
+            color: #ff0000;
+        }
+
+        .map-footer button:active {
+            transform: translateY(3px);
+        }
+
+        /* ТАВЕРНА - монохром */
+        .tavern-screen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+            background: #0a0a0a;
+            padding: 15px;
+        }
+
+        .tavern-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ff0000;
+            padding-bottom: 10px;
+        }
+
+        .tavern-title {
+            font-size: 1.8rem;
+            color: #ffffff;
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        .tavern-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex: 3;
+            overflow-y: auto;
+            margin-bottom: 15px;
+        }
+
+        .tavern-item {
+            background: #1a1a1a;
+            border: 1px solid #333333;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tavern-item:hover {
+            border-color: #ff0000;
+            background: #222222;
+        }
+
+        .tavern-item:active {
+            transform: scale(0.99);
+        }
+
+        .tavern-icon {
+            font-size: 3rem;
+            width: 60px;
+            height: 60px;
+            background: #000000;
+            border: 2px solid #ff0000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: grayscale(100%);
+        }
+
+        .tavern-info {
+            flex: 1;
+        }
+
+        .tavern-info h3 {
+            color: #ffffff;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .tavern-info p {
+            color: #aaaaaa;
+            font-size: 0.9rem;
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+        }
+
+        .tavern-info p span {
             display: flex;
             align-items: center;
             gap: 3px;
         }
 
-        /* ГЛОБАЛЬНАЯ КАРТА - реалистичные градиенты */
-        .map-screen {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-            background: #0f121b;
-        }
-        .map-header {
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(0,0,0,0.6); padding: 6px 10px;
-            border-bottom: 1px solid #4a3f33; color: #f0dcc0;
-            font-size: 0.9rem;
-        }
-        .income-timer {
-            display: flex; gap: 10px; align-items: center;
-        }
-        .income-display {
-            background: #2c3349; padding: 3px 8px; border-radius: 20px;
-            color: #ffd966; font-weight: bold;
-        }
-        .castle-buttons {
-            display: flex; gap: 4px; align-items: center;
-        }
-        .gold-display {
-            background: #2c3349; padding: 4px 8px; border-radius: 20px;
-            color: #ffd966; font-weight: bold; margin-right: 4px;
-        }
-        .castle-btn {
-            background: #2f354a; border: none; color: #ebd5b0; padding: 4px 8px;
-            border-radius: 40px; font-weight: 600; font-size: 0.7rem;
-            box-shadow: 0 4px 0 #161c29; cursor: pointer; border: 1px solid #7a6e5b;
-        }
-        .castle-btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #161c29; }
-        .map-canvas-container {
-            flex: 1; display: flex; align-items: center; justify-content: center;
-            background: #1a1f2e; padding: 8px;
-        }
-        #mapCanvas {
-            display: block; width: 100%; aspect-ratio: 1/1;
-            background: transparent;
-            border-radius: 16px; box-shadow: 0 0 0 2px #4f556b; cursor: pointer;
-        }
-        .map-footer {
-            display: flex; gap: 10px; padding: 8px 16px;
-            background: #0f121b; border-top: 1px solid #2f354a;
-        }
-        .map-footer button {
-            flex: 1; background: #2c3349; border: none; padding: 8px 0;
-            border-radius: 36px; color: #f8e5cf; font-weight: 700; font-size: 0.9rem;
-            box-shadow: 0 5px 0 #151c2b; cursor: pointer; border: 1px solid #7a715e;
-        }
-        .map-footer button:active { transform: translateY(4px); box-shadow: 0 1px 0 #151c2b; }
-
-        /* ТАВЕРНА */
-        .tavern-screen {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-            background: #0c0f18;
-            padding: 8px;
-        }
-        .tavern-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 8px;
-        }
-        .tavern-title {
-            font-size: 1.4rem; color: #eedcc7;
-        }
-        .tavern-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            flex: 3;
-            overflow-y: auto;
-            margin-bottom: 8px;
-        }
-        .tavern-item {
-            background: linear-gradient(145deg, #2f3a4f, #1e2636);
-            border-radius: 16px;
-            padding: 8px;
-            border: 2px solid #bfa07e;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            transition: 0.1s;
-        }
-        .tavern-item:active { transform: scale(0.98); }
-        .tavern-icon {
-            font-size: 2.5rem;
-            width: 50px; height: 50px;
-            background: #1b212f;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            border: 2px solid gold;
-        }
-        .tavern-info {
-            flex: 1;
-        }
-        .tavern-info h3 { color: #ffd966; font-size: 1.1rem; }
-        .tavern-info p { color: #c5bba8; font-size: 0.9rem; display: flex; gap: 10px; }
         .tavern-cost {
-            font-size: 1.1rem; color: gold; font-weight: bold;
+            font-size: 1.3rem;
+            color: #ff0000;
+            font-weight: bold;
         }
+
         .army-preview {
-            background: #1a1f2e;
-            border-radius: 12px;
-            padding: 8px;
-            border: 1px solid #7a6e5b;
-            margin-bottom: 8px;
+            background: #1a1a1a;
+            border: 1px solid #333333;
+            padding: 15px;
+            margin-bottom: 15px;
             flex: 2;
-            min-height: 100px;
+            min-height: 120px;
             overflow-y: auto;
         }
+
         .army-title {
-            color: #eedcc7; font-size: 0.9rem; margin-bottom: 5px;
+            color: #ffffff;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
         }
+
         .army-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
+            gap: 8px;
         }
+
         .army-unit {
-            background: #2c3349;
-            border-radius: 10px;
-            padding: 5px;
+            background: #000000;
+            border: 1px solid #ff0000;
+            padding: 8px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-width: 55px;
-            border: 1px solid #bfa07e;
+            min-width: 60px;
         }
-        .army-unit span { font-size: 2rem; }
-        .army-unit small { color: #c5bba8; font-size: 0.7rem; }
-        .tavern-footer {
-            display: flex; gap: 6px;
-        }
-        .tavern-footer button {
-            flex: 1; background: #2c3349; border: none; padding: 8px 0;
-            border-radius: 24px; color: #f8e5cf; font-weight: 700;
-            box-shadow: 0 4px 0 #151c2b; cursor: pointer; border: 1px solid #7a715e;
-            font-size: 0.9rem;
-        }
-        .tavern-footer button:active { transform: translateY(4px); box-shadow: 0 1px 0 #151c2b; }
 
-        /* ЭКРАН БИТВЫ - с пошаговым перемещением */
+        .army-unit span {
+            font-size: 2rem;
+            filter: grayscale(100%);
+        }
+
+        .army-unit small {
+            color: #aaaaaa;
+            font-size: 0.6rem;
+        }
+
+        .tavern-footer {
+            display: flex;
+            gap: 10px;
+        }
+
+        .tavern-footer button {
+            flex: 1;
+            background: #1a1a1a;
+            border: 1px solid #333333;
+            padding: 12px 0;
+            color: #ffffff;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tavern-footer button:hover {
+            border-color: #ff0000;
+            color: #ff0000;
+        }
+
+        .tavern-footer button:active {
+            transform: translateY(3px);
+        }
+
+        /* ЭКРАН БИТВЫ - монохром с красным */
         .battle-screen {
             display: none;
             flex-direction: column;
             height: 100%;
-            background: #0c0f18;
+            background: #0a0a0a;
         }
+
         .battle-header {
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(0,0,0,0.7); padding: 4px 8px;
-            border-bottom: 2px solid #7a6953; color: #f0e0ca;
-            font-weight: bold; font-size: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #000000;
+            padding: 8px 12px;
+            border-bottom: 2px solid #ff0000;
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 0.8rem;
         }
+
         .turn-queue {
             display: flex;
             align-items: center;
             gap: 4px;
-            background: #1a1f2e;
-            padding: 3px 8px;
-            border-radius: 20px;
-            border: 1px solid #7a6e5b;
-            max-width: 250px;
-            overflow: visible;
+            background: #1a1a1a;
+            padding: 5px 10px;
+            border: 1px solid #333333;
         }
+
         .queue-icon {
-            font-size: 1.1rem;
-            width: 24px;
-            height: 24px;
+            font-size: 1.2rem;
+            width: 26px;
+            height: 26px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #2c3349;
-            border-radius: 50%;
-            border: 1px solid gold;
+            background: #000000;
+            border: 1px solid #ff0000;
+            color: #ffffff;
             flex-shrink: 0;
+            filter: grayscale(100%);
         }
+
         .queue-icon.next {
             border-width: 2px;
-            border-color: #7df0a2;
-            box-shadow: 0 0 8px #7df0a2;
+            border-color: #ff0000;
+            box-shadow: 0 0 8px #ff0000;
+            background: #222222;
         }
+
         .turn-text {
             font-weight: bold;
-            color: #ffd966;
+            color: #ff0000;
             margin-left: 5px;
         }
+
         .btn-menu {
-            background: #2f354a; border: none; color: #ebd5b0; padding: 4px 8px;
-            border-radius: 40px; font-weight: 600; font-size: 0.7rem;
-            box-shadow: 0 4px 0 #161c29; cursor: pointer; border: 1px solid #7a6e5b;
+            background: #1a1a1a;
+            border: 1px solid #333333;
+            color: #ffffff;
+            padding: 5px 12px;
+            font-weight: 600;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
         }
-        .btn-menu:active { transform: translateY(4px); box-shadow: 0 1px 0 #161c29; }
+
+        .btn-menu:hover {
+            border-color: #ff0000;
+            color: #ff0000;
+        }
+
+        .btn-menu:active {
+            transform: translateY(2px);
+        }
+
         .battle-canvas-wrapper {
-            flex: 4; display: flex; align-items: center; justify-content: center;
-            background: #131725; padding: 2px;
+            flex: 4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000000;
+            padding: 5px;
         }
+
         #battleCanvas {
-            display: block; width: 100%; height: auto;
+            display: block;
+            width: 100%;
+            height: auto;
             aspect-ratio: 7/11;
-            background: #1b1f2b;
-            box-shadow: 0 0 0 1px #4f556b, 0 12px 25px black;
-            border-radius: 16px; cursor: pointer;
+            background: #0a0a0a;
+            border: 2px solid #333333;
+            cursor: pointer;
         }
+
         .unit-details {
-            background: #0d101a;
-            border-radius: 20px;
-            margin: 2px 8px;
-            padding: 4px 8px;
-            color: #f2dbbd;
-            border: 1px solid #8f7b64;
-            min-height: 40px;
+            background: #1a1a1a;
+            border: 1px solid #333333;
+            margin: 5px 12px;
+            padding: 8px 12px;
+            color: #ffffff;
+            min-height: 45px;
             font-size: 0.8rem;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
+
         .unit-details span {
-            color: #ffd966;
-            font-size: 1.2rem;
+            color: #ff0000;
+            font-size: 1.3rem;
+            filter: grayscale(100%);
         }
+
         .log-message {
-            background: #0d101a;
-            border-radius: 30px;
-            margin: 2px 8px;
-            padding: 4px 8px;
+            background: #1a1a1a;
+            border: 1px solid #333333;
+            margin: 5px 12px;
+            padding: 8px 12px;
             font-size: 0.8rem;
-            color: #f2dbbd;
+            color: #ffffff;
             text-align: center;
-            border: 1px solid #8f7b64;
-            min-height: 2rem;
+            min-height: 2.5rem;
         }
+
         .battle-footer {
-            display: flex; gap: 4px; padding: 2px 8px 4px;
-            background: #0f121b; border-top: 1px solid #3a3f52;
+            display: flex;
+            gap: 5px;
+            padding: 5px 12px 10px;
+            background: #000000;
+            border-top: 1px solid #333333;
         }
+
         .battle-footer button {
-            flex: 1; background: #2c3349; border: none; padding: 6px 0;
-            border-radius: 24px; color: #f8e5cf; font-weight: 700;
-            box-shadow: 0 4px 0 #151c2b; cursor: pointer; border: 1px solid #7a715e;
+            flex: 1;
+            background: #1a1a1a;
+            border: 1px solid #333333;
+            padding: 8px 0;
+            color: #ffffff;
+            font-weight: 700;
             font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
         }
-        .battle-footer button:active { transform: translateY(4px); box-shadow: 0 1px 0 #151c2b; }
+
+        .battle-footer button:hover {
+            border-color: #ff0000;
+            color: #ff0000;
+        }
+
+        .battle-footer button:active {
+            transform: translateY(3px);
+        }
+
         .flee-btn {
-            background: #6b3f3f !important;
-            border-color: #b35f5f !important;
+            border-color: #ff0000 !important;
+            color: #ff0000 !important;
         }
+
+        .flee-btn:hover {
+            background: #ff0000 !important;
+            color: #000000 !important;
+        }
+
         .hourglass-btn {
             font-size: 1rem;
+        }
+
+        /* Препятствия в бою */
+        .obstacle {
+            background: #2a2a2a;
+            border: 2px solid #ff0000;
+            position: relative;
+        }
+
+        .obstacle::after {
+            content: '🪨';
+            font-size: 1.5rem;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            filter: grayscale(100%);
+            opacity: 0.7;
+        }
+
+        /* Анимации */
+        @keyframes pulse-red {
+            0%, 100% { border-color: #333333; }
+            50% { border-color: #ff0000; }
+        }
+
+        .pulse-red {
+            animation: pulse-red 1.5s infinite;
+        }
+
+        /* Стили для Canvas */
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Скроллбары */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ff0000;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ffffff;
         }
     </style>
 </head>
 <body>
 <div id="game-container">
-    <!-- МЕНЮ -->
+    <!-- МЕНЮ - монохром с красным -->
     <div id="menu-screen" class="menu-screen">
         <div class="title">DISCIPLES</div>
-        <div class="sub">РЕАЛИСТИЧНЫЙ МИР</div>
+        <div class="sub">ROADS ONLY</div>
         <div class="class-cards">
             <div class="class-card" data-class="warrior">
                 <div class="card-icon">⚔️</div>
                 <div class="card-info">
-                    <h3>ВОИН</h3>
+                    <h3>WARRIOR</h3>
                     <p><span>❤️ 35</span> <span>⚔️ 7</span> <span>🦶 3</span></p>
                 </div>
             </div>
             <div class="class-card" data-class="mage">
                 <div class="card-icon">🔮</div>
                 <div class="card-info">
-                    <h3>МАГ</h3>
+                    <h3>MAGE</h3>
                     <p><span>❤️ 24</span> <span>⚡ 12</span> <span>🦶 3</span></p>
                 </div>
             </div>
             <div class="class-card" data-class="archer">
                 <div class="card-icon">🏹</div>
                 <div class="card-info">
-                    <h3>ЛУЧНИК</h3>
+                    <h3>ARCHER</h3>
                     <p><span>❤️ 28</span> <span>🏹 9</span> <span>🦶 3</span></p>
                 </div>
             </div>
         </div>
-        <div style="text-align: center; color:#5f6b7a; font-size:0.8rem; margin-top: 12px;">выберите класс для битвы</div>
+        <div style="text-align: center; color:#555555; font-size:0.7rem; letter-spacing:2px;">[ SELECT YOUR CLASS ]</div>
     </div>
 
-    <!-- Глобальная карта -->
+    <!-- Глобальная карта - квадратные ячейки -->
     <div id="map-screen" class="map-screen">
         <div class="map-header">
             <div class="income-timer">
-                <span class="income-display" id="incomePerMin">💰 +<span id="incomeRate">1</span>/мин</span>
+                <span class="income-display" id="incomePerMin">💰 +<span id="incomeRate">1</span>/5m</span>
                 <span class="income-display" id="timerDisplay">⏳ 5:00</span>
             </div>
             <div class="castle-buttons">
                 <span class="gold-display" id="goldDisplay">💰 200</span>
-                <button class="castle-btn" id="tavernBtn" style="display:none;">🍺 ТАВЕРНА</button>
-                <button class="castle-btn" id="teleportBtn">🏰 ТЕЛЕПОРТ</button>
+                <button class="castle-btn" id="tavernBtn" style="display:none;">🍺 TAVERN</button>
+                <button class="castle-btn" id="teleportBtn">🏰 CASTLE</button>
             </div>
         </div>
         <div class="map-canvas-container">
             <canvas id="mapCanvas" width="600" height="600"></canvas>
         </div>
         <div class="map-footer">
-            <button id="menuFromMapBtn">⚙️ МЕНЮ</button>
+            <button id="menuFromMapBtn">⚙️ MENU</button>
         </div>
     </div>
 
-    <!-- Таверна -->
+    <!-- Таверна - монохром -->
     <div id="tavern-screen" class="tavern-screen">
         <div class="tavern-header">
-            <span class="tavern-title">🍺 ТАВЕРНА</span>
+            <span class="tavern-title">TAVERN</span>
             <span class="gold-display" id="tavernGold">💰 200</span>
         </div>
         <div class="tavern-grid" id="tavernGrid"></div>
         <div class="army-preview">
-            <div class="army-title">⚔️ ТВОЯ АРМИЯ (<span id="armyCount">0</span>/6)</div>
+            <div class="army-title">⚔️ YOUR ARMY (<span id="armyCount">0</span>/6)</div>
             <div class="army-grid" id="armyGrid"></div>
         </div>
         <div class="tavern-footer">
-            <button id="closeTavernBtn">↩️ ЗАКРЫТЬ</button>
+            <button id="closeTavernBtn">↩️ CLOSE</button>
         </div>
     </div>
 
-    <!-- Экран битвы -->
+    <!-- Экран битвы - монохром с красным -->
     <div id="battle-screen" class="battle-screen">
         <div class="battle-header">
             <div class="turn-queue" id="turnQueue"></div>
-            <span class="turn-text" id="turnText">Ход игрока</span>
-            <button class="btn-menu" id="menuFromBattleBtn">⚙️ МЕНЮ</button>
+            <span class="turn-text" id="turnText">PLAYER TURN</span>
+            <button class="btn-menu" id="menuFromBattleBtn">⚙️ MENU</button>
         </div>
         <div class="battle-canvas-wrapper">
             <canvas id="battleCanvas" width="700" height="1100"></canvas>
         </div>
-        <div class="unit-details" id="unitDetails">Выберите юнита для просмотра характеристик</div>
-        <div class="log-message" id="battleLog">Ваш ход. Выберите юнита</div>
+        <div class="unit-details" id="unitDetails">[ SELECT UNIT ]</div>
+        <div class="log-message" id="battleLog">YOUR TURN. CHOOSE A UNIT.</div>
         <div class="battle-footer">
-            <button id="fleeBtn" class="flee-btn">🏃 СБЕЖАТЬ (-50💰)</button>
-            <button id="endTurnBtn" class="hourglass-btn">⌛ ЗАВЕРШИТЬ</button>
+            <button id="fleeBtn" class="flee-btn">🏃 FLEE (-50💰)</button>
+            <button id="endTurnBtn" class="hourglass-btn">⌛ END TURN</button>
         </div>
     </div>
 </div>
@@ -470,7 +770,11 @@
 <script>
 (function() {
     const tg = window.Telegram?.WebApp;
-    if (tg) { tg.expand(); tg.backgroundColor = '#0b0d15'; tg.setHeaderColor('#1a1f2e'); }
+    if (tg) {
+        tg.expand();
+        tg.backgroundColor = '#000000';
+        tg.setHeaderColor('#000000');
+    }
 
     // --- DOM элементы ---
     const menuScreen = document.getElementById('menu-screen');
@@ -600,7 +904,6 @@
             worldMap[y][x] = 0;
         });
 
-        // Генерируем шахты
         mines = [];
         for (let i = 0; i < 20; i++) {
             let x = Math.floor(Math.random() * MAP_SIZE);
@@ -613,17 +916,25 @@
 
     function generateEnemies() {
         enemiesOnMap = [];
+        // Новые эмодзи для врагов
+        const enemyIcons = ['⚔️', '🗡️', '🛡️', '🏹', '🔮', '👑', '🐉', '🐺', '🐗', '🦇'];
+        
         const enemyTemplates = [
-            { type: 'Скелет', hp: 18, maxHp: 18, attack: 5, icon: '💀', moveRange: 3, attackRange: 1 },
-            { type: 'Тень', hp: 16, maxHp: 16, attack: 6, icon: '👤', moveRange: 4, attackRange: 1 },
-            { type: 'Рыцарь смерти', hp: 24, maxHp: 24, attack: 7, icon: '⚔️', moveRange: 3, attackRange: 1 },
-            { type: 'Гоблин', hp: 14, maxHp: 14, attack: 4, icon: '👺', moveRange: 4, attackRange: 1 },
-            { type: 'Орк', hp: 22, maxHp: 22, attack: 6, icon: '👹', moveRange: 3, attackRange: 1 }
+            { type: 'SKELETON', hp: 18, maxHp: 18, attack: 5, icon: '💀', moveRange: 3, attackRange: 1 },
+            { type: 'SHADE', hp: 16, maxHp: 16, attack: 6, icon: '👤', moveRange: 4, attackRange: 1 },
+            { type: 'DEATH KNIGHT', hp: 24, maxHp: 24, attack: 7, icon: '⚔️', moveRange: 3, attackRange: 1 },
+            { type: 'GOBLIN', hp: 14, maxHp: 14, attack: 4, icon: '👺', moveRange: 4, attackRange: 1 },
+            { type: 'ORC', hp: 22, maxHp: 22, attack: 6, icon: '👹', moveRange: 3, attackRange: 1 },
+            { type: 'WOLF', hp: 12, maxHp: 12, attack: 8, icon: '🐺', moveRange: 5, attackRange: 1 },
+            { type: 'DRAGON', hp: 40, maxHp: 40, attack: 15, icon: '🐉', moveRange: 2, attackRange: 2 },
+            { type: 'BOAR', hp: 20, maxHp: 20, attack: 7, icon: '🐗', moveRange: 3, attackRange: 1 },
+            { type: 'BAT', hp: 10, maxHp: 10, attack: 4, icon: '🦇', moveRange: 4, attackRange: 1 }
         ];
         const occupied = new Set([`${CASTLE_POS.x},${CASTLE_POS.y}`]);
         mines.forEach(m => occupied.add(`${m.x},${m.y}`));
         
-        for (let i = 0; i < 40; i++) {
+        // Увеличиваем количество врагов до 80
+        for (let i = 0; i < 80; i++) {
             let attempts = 0;
             while (attempts < 500) {
                 const x = Math.floor(Math.random() * MAP_SIZE);
@@ -632,7 +943,9 @@
                 if (!occupied.has(key) && worldMap[y][x] === 0) {
                     occupied.add(key);
                     const units = [];
-                    for (let j = 0; j < 5; j++) {
+                    // Случайный отряд из 3-5 врагов
+                    const unitCount = 3 + Math.floor(Math.random() * 3);
+                    for (let j = 0; j < unitCount; j++) {
                         const tmpl = enemyTemplates[Math.floor(Math.random() * enemyTemplates.length)];
                         units.push({ ...tmpl, hp: tmpl.maxHp, team: 'enemy' });
                     }
@@ -648,9 +961,9 @@
     let playerWarriors = [];
 
     const heroByClass = {
-        warrior: { type: 'Герой-воин', hp: 35, maxHp: 35, attack: 7, team: 'player', icon: '⚔️', moveRange: 3, attackRange: 1 },
-        mage: { type: 'Герой-маг', hp: 24, maxHp: 24, attack: 12, team: 'player', icon: '🔮', moveRange: 3, attackRange: 3 },
-        archer: { type: 'Герой-лучник', hp: 28, maxHp: 28, attack: 9, team: 'player', icon: '🏹', moveRange: 3, attackRange: 4 }
+        warrior: { type: 'WARRIOR', hp: 35, maxHp: 35, attack: 7, team: 'player', icon: '⚔️', moveRange: 3, attackRange: 1 },
+        mage: { type: 'MAGE', hp: 24, maxHp: 24, attack: 12, team: 'player', icon: '🔮', moveRange: 3, attackRange: 3 },
+        archer: { type: 'ARCHER', hp: 28, maxHp: 28, attack: 9, team: 'player', icon: '🏹', moveRange: 3, attackRange: 4 }
     };
 
     let playerPos = { x: CASTLE_POS.x, y: CASTLE_POS.y };
@@ -666,13 +979,13 @@
                 gold += income;
                 updateGoldDisplay();
                 lastIncomeTime += intervals * INCOME_INTERVAL;
-                battleLog.innerText = `Доход: +${income}💰`;
+                battleLog.innerText = `INCOME: +${income}💰`;
                 updateIncomeRate();
             }
         }
     }
 
-    // Реалистичные градиенты для карты
+    // Монохромный дизайн карты с квадратными ячейками
     function drawMap() {
         checkIncome();
         updateTimer();
@@ -693,77 +1006,85 @@
                 const x = j * cellSize;
                 const y = i * cellSize;
 
-                // Реалистичные градиенты
-                const grad = ctxMap.createLinearGradient(x, y, x+cellSize*0.7, y+cellSize*0.7);
-                
+                // Монохромные цвета для фона
                 if (cellType === 0) { // дорога
-                    grad.addColorStop(0, '#8B7355');
-                    grad.addColorStop(1, '#6B4F3F');
+                    ctxMap.fillStyle = '#333333';
                 } else if (cellType === 1) { // лес
-                    grad.addColorStop(0, '#4A784A');
-                    grad.addColorStop(1, '#2D4A2D');
+                    ctxMap.fillStyle = '#222222';
                 } else if (cellType === 2) { // вода
-                    grad.addColorStop(0, '#4A7B9A');
-                    grad.addColorStop(1, '#2A4F6A');
+                    ctxMap.fillStyle = '#111111';
                 } else { // трава
-                    grad.addColorStop(0, '#6A8A5A');
-                    grad.addColorStop(1, '#4A6A3A');
+                    ctxMap.fillStyle = '#2a2a2a';
                 }
                 
-                ctxMap.fillStyle = grad;
                 ctxMap.fillRect(x, y, cellSize, cellSize);
                 
-                // Натуральная граница
-                ctxMap.strokeStyle = 'rgba(255,255,255,0.1)';
+                // Квадратная сетка
+                ctxMap.strokeStyle = '#444444';
                 ctxMap.lineWidth = 1;
-                ctxMap.strokeRect(x+0.5, y+0.5, cellSize-1, cellSize-1);
+                ctxMap.strokeRect(x + 0.5, y + 0.5, cellSize - 1, cellSize - 1);
 
-                // Эмодзи
+                // Эмодзи (все черно-белые через оттенки серого)
                 ctxMap.font = `${cellSize-35}px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`;
                 ctxMap.textAlign = 'center';
                 ctxMap.textBaseline = 'middle';
 
+                // Рисуем эмодзи в оттенках серого
+                ctxMap.fillStyle = '#aaaaaa';
+
                 if (cellType === 1) {
-                    ctxMap.fillStyle = '#B0D0B0';
                     ctxMap.fillText('🌲', x + cellSize/2, y + cellSize/2);
                 } else if (cellType === 2) {
-                    ctxMap.fillStyle = '#B0D0F0';
                     ctxMap.fillText('💧', x + cellSize/2, y + cellSize/2);
                 } else if (cellType === 3) {
-                    ctxMap.fillStyle = '#C0E0B0';
                     ctxMap.fillText('🌿', x + cellSize/2, y + cellSize/2);
                 }
 
                 const mineHere = mines.find(m => m.x === worldX && m.y === worldY);
                 if (mineHere) {
                     if (mineHere.owner === 'player') {
-                        ctxMap.fillStyle = '#FFD966';
+                        ctxMap.fillStyle = '#ff0000'; // Красный для захваченных шахт
                         ctxMap.fillText('⛏️', x + cellSize/2 - 8, y + cellSize/2 - 5);
-                        ctxMap.fillStyle = '#A0F0C0';
                         ctxMap.fillText('✔️', x + cellSize/2 + 8, y + cellSize/2 + 3);
                     } else {
-                        ctxMap.fillStyle = '#C0C0C0';
+                        ctxMap.fillStyle = '#888888';
                         ctxMap.fillText('⛏️', x + cellSize/2, y + cellSize/2);
                     }
                 }
 
                 if (worldX === CASTLE_POS.x && worldY === CASTLE_POS.y) {
-                    ctxMap.fillStyle = '#F5C99E';
+                    ctxMap.fillStyle = '#ff0000'; // Красный для замка
                     ctxMap.fillText('🏰', x + cellSize/2, y + cellSize/2);
                 }
                 
                 const enemyHere = enemiesOnMap.find(e => e.x === worldX && e.y === worldY);
                 if (enemyHere) {
-                    ctxMap.fillStyle = '#D96F6F';
-                    ctxMap.fillText('👹', x + cellSize/2, y + cellSize/2);
+                    ctxMap.fillStyle = '#ff0000'; // Красный для врагов
+                    // Используем иконку из первого юнита в отряде
+                    const enemyIcon = enemyHere.units[0]?.icon || '⚔️';
+                    ctxMap.fillText(enemyIcon, x + cellSize/2, y + cellSize/2);
                 }
                 
                 if (playerPos.x === worldX && playerPos.y === worldY) {
-                    ctxMap.fillStyle = '#A0F0C0';
+                    ctxMap.fillStyle = '#ffffff'; // Белый для игрока
                     ctxMap.fillText(playerHero.icon, x + cellSize/2, y + cellSize/2);
                 }
             }
         }
+    }
+
+    // Функция для проверки, можно ли переместиться на клетку (только по дорогам)
+    function canMoveTo(worldX, worldY) {
+        if (worldX < 0 || worldX >= MAP_SIZE || worldY < 0 || worldY >= MAP_SIZE) return false;
+        
+        // Проверяем тип клетки: можно ходить ТОЛЬКО по дорогам (0)
+        if (worldMap[worldY][worldX] !== 0) return false;
+        
+        // Проверяем, нет ли врага на клетке
+        const enemyHere = enemiesOnMap.find(e => e.x === worldX && e.y === worldY);
+        if (enemyHere) return false;
+        
+        return true;
     }
 
     function handleMapClick(e) {
@@ -783,15 +1104,23 @@
         const worldX = startX + col;
         const worldY = startY + row;
 
-        if (Math.abs(worldX - playerPos.x) + Math.abs(worldY - playerPos.y) !== 1) return;
-        if (worldMap[worldY][worldX] !== 0) {
-            battleLog.innerText = 'Можно ходить только по дорогам!';
+        // Проверяем, что клетка соседняя (манхэттенское расстояние 1)
+        if (Math.abs(worldX - playerPos.x) + Math.abs(worldY - playerPos.y) !== 1) {
+            battleLog.innerText = 'YOU CAN ONLY MOVE TO ADJACENT CELLS!';
             return;
         }
 
+        // Проверяем, можно ли переместиться (только по дорогам)
+        if (!canMoveTo(worldX, worldY)) {
+            battleLog.innerText = 'YOU CAN ONLY MOVE ON ROADS!';
+            return;
+        }
+
+        // Перемещаем игрока
         playerPos = { x: worldX, y: worldY };
         drawMap();
 
+        // Проверяем шахты
         const mineHere = mines.find(m => m.x === worldX && m.y === worldY);
         if (mineHere && mineHere.owner !== 'player') {
             const mineGuard = enemiesOnMap.find(e => e.x === worldX && e.y === worldY);
@@ -800,7 +1129,7 @@
             } else {
                 mineHere.owner = 'player';
                 updateIncomeRate();
-                battleLog.innerText = 'Шахта захвачена! +1💰 каждые 5 мин';
+                battleLog.innerText = 'MINE CAPTURED! +1💰/5min';
                 drawMap();
             }
         } else {
@@ -825,13 +1154,13 @@
     function openTavern() {
         updateArmyDisplay();
         const templates = [
-            { type: 'Мечник', hp: 20, maxHp: 20, attack: 5, icon: '⚔️', moveRange: 3, attackRange: 1, cost: 40 },
-            { type: 'Копейщик', hp: 18, maxHp: 18, attack: 6, icon: '🔱', moveRange: 3, attackRange: 2, cost: 45 },
-            { type: 'Лучник', hp: 16, maxHp: 16, attack: 7, icon: '🏹', moveRange: 3, attackRange: 4, cost: 50 },
-            { type: 'Маг', hp: 14, maxHp: 14, attack: 8, icon: '🔮', moveRange: 3, attackRange: 3, cost: 55 },
-            { type: 'Целитель', hp: 15, maxHp: 15, attack: 4, icon: '💊', moveRange: 3, attackRange: 1, cost: 35 },
-            { type: 'Берсерк', hp: 22, maxHp: 22, attack: 5, icon: '🪓', moveRange: 4, attackRange: 1, cost: 50 },
-            { type: 'Страж', hp: 24, maxHp: 24, attack: 4, icon: '🛡️', moveRange: 2, attackRange: 1, cost: 45 }
+            { type: 'SWORDSMAN', hp: 20, maxHp: 20, attack: 5, icon: '⚔️', moveRange: 3, attackRange: 1, cost: 40 },
+            { type: 'SPEARMAN', hp: 18, maxHp: 18, attack: 6, icon: '🔱', moveRange: 3, attackRange: 2, cost: 45 },
+            { type: 'ARCHER', hp: 16, maxHp: 16, attack: 7, icon: '🏹', moveRange: 3, attackRange: 4, cost: 50 },
+            { type: 'MAGE', hp: 14, maxHp: 14, attack: 8, icon: '🔮', moveRange: 3, attackRange: 3, cost: 55 },
+            { type: 'HEALER', hp: 15, maxHp: 15, attack: 4, icon: '💊', moveRange: 3, attackRange: 1, cost: 35 },
+            { type: 'BERSERKER', hp: 22, maxHp: 22, attack: 5, icon: '🪓', moveRange: 4, attackRange: 1, cost: 50 },
+            { type: 'GUARDIAN', hp: 24, maxHp: 24, attack: 4, icon: '🛡️', moveRange: 2, attackRange: 1, cost: 45 }
         ];
 
         tavernGrid.innerHTML = '';
@@ -856,12 +1185,12 @@
 
     function hireUnit(tmpl) {
         if (gold < tmpl.cost) {
-            battleLog.innerText = `Не хватает золота! Нужно ${tmpl.cost}`;
+            battleLog.innerText = `NOT ENOUGH GOLD! NEED ${tmpl.cost}`;
             return;
         }
         const aliveWarriors = playerWarriors.filter(w => w.hp > 0);
         if (aliveWarriors.length >= 5) {
-            battleLog.innerText = 'В отряде уже 5 воинов! (максимум 5 + герой)';
+            battleLog.innerText = 'MAX 5 MERCENARIES!';
             return;
         }
 
@@ -869,7 +1198,7 @@
         updateGoldDisplay();
         const newWarrior = { ...tmpl, hp: tmpl.maxHp, team: 'player' };
         playerWarriors.push(newWarrior);
-        battleLog.innerText = `Нанят ${newWarrior.type}`;
+        battleLog.innerText = `HIRED ${newWarrior.type}`;
         
         updateArmyDisplay();
         openTavern();
@@ -880,7 +1209,7 @@
     const BATTLE_HEIGHT = 11;
     let battlePlayerUnits = [];
     let battleEnemyUnits = [];
-    let obstacles = []; // непроходимые клетки
+    let obstacles = [];
     let corpses = [];
     let currentTurn = 'player';
     let selectedUnitId = null;
@@ -897,7 +1226,6 @@
         for (let i = 0; i < count; i++) {
             const x = Math.floor(Math.random() * BATTLE_WIDTH);
             const y = Math.floor(Math.random() * BATTLE_HEIGHT);
-            // Не ставим препятствия на стартовые позиции игроков и врагов
             const isPlayerStart = (y >= 6) && (x <= 1);
             const isEnemyStart = (y < 5) && (x >= 5);
             if (!isPlayerStart && !isEnemyStart) {
@@ -916,14 +1244,13 @@
         return !!(player || enemy);
     }
 
-    // Функция для проверки, можно ли пройти по прямой без препятствий и юнитов
     function canMoveBetween(x1, y1, x2, y2) {
         if (x1 === x2 && y1 === y2) return true;
         
         const dx = x2 - x1;
         const dy = y2 - y1;
         
-        if (Math.abs(dx) + Math.abs(dy) > 1) return false; // Только соседние клетки
+        if (Math.abs(dx) + Math.abs(dy) > 1) return false;
         
         const nx = x1 + Math.sign(dx);
         const ny = y1 + Math.sign(dy);
@@ -934,7 +1261,6 @@
         return true;
     }
 
-    // Пошаговое перемещение
     function moveUnitStep(unit, targetX, targetY, stepsLeft, callback) {
         if (stepsLeft <= 0 || (unit.x === targetX && unit.y === targetY)) {
             callback(true);
@@ -966,7 +1292,7 @@
             }
         }
         
-        callback(false); // Не можем двигаться дальше
+        callback(false);
     }
 
     function updateTurnQueue() {
@@ -991,24 +1317,20 @@
             icon.className = 'queue-icon';
             icon.textContent = unit.icon;
             if (unit.team === 'player') {
-                icon.style.borderColor = '#7df0a2';
+                icon.style.borderColor = '#ffffff';
             } else {
-                icon.style.borderColor = '#f07d7d';
+                icon.style.borderColor = '#ff0000';
             }
             if (index === 0) {
                 icon.classList.add('next');
             }
             if (unit.id === selectedUnitId) {
-                icon.style.boxShadow = '0 0 10px gold';
+                icon.style.boxShadow = '0 0 10px #ff0000';
             }
             turnQueue.appendChild(icon);
         });
 
-        if (currentTurn === 'player') {
-            turnText.innerText = 'Ход игрока';
-        } else {
-            turnText.innerText = 'Ход врага';
-        }
+        turnText.innerText = currentTurn === 'player' ? 'PLAYER TURN' : 'ENEMY TURN';
     }
 
     function moveToEndOfQueue(unitId) {
@@ -1075,31 +1397,24 @@
                 const xPos = x * cellSize;
                 const yPos = y * cellSize;
                 
-                // Препятствия - булыжники
                 if (isObstacle(x, y)) {
-                    ctxBattle.fillStyle = '#5A5A6A';
+                    ctxBattle.fillStyle = '#2a2a2a';
                     ctxBattle.fillRect(xPos, yPos, cellSize, cellSize);
                     
-                    // Текстура камня
-                    ctxBattle.strokeStyle = '#8A8A9A';
+                    ctxBattle.strokeStyle = '#ff0000';
                     ctxBattle.lineWidth = 2;
                     ctxBattle.strokeRect(xPos+2, yPos+2, cellSize-4, cellSize-4);
                     
                     ctxBattle.font = `${cellSize-40}px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`;
-                    ctxBattle.fillStyle = '#AAAABB';
+                    ctxBattle.fillStyle = '#666666';
                     ctxBattle.fillText('🪨', xPos + cellSize/2, yPos + cellSize/2);
                 } else {
-                    ctxBattle.fillStyle = '#1B1F2B';
+                    ctxBattle.fillStyle = '#1a1a1a';
                     ctxBattle.fillRect(xPos, yPos, cellSize, cellSize);
                     
-                    ctxBattle.shadowColor = 'black';
-                    ctxBattle.shadowBlur = 25;
-                    ctxBattle.shadowOffsetY = 12;
-                    ctxBattle.strokeStyle = '#4F556B';
+                    ctxBattle.strokeStyle = '#333333';
                     ctxBattle.lineWidth = 1;
                     ctxBattle.strokeRect(xPos, yPos, cellSize, cellSize);
-                    ctxBattle.shadowBlur = 0;
-                    ctxBattle.shadowOffsetY = 0;
                 }
             }
         }
@@ -1119,31 +1434,8 @@
                         if (isObstacle(nx, ny)) continue;
                         if (isCellOccupied(nx, ny, selected.id)) continue;
                         
-                        // Проверяем, можно ли построить путь
-                        let canReach = true;
-                        let cx = selected.x;
-                        let cy = selected.y;
-                        let stepsLeft = moveRange;
-                        
-                        while (stepsLeft > 0 && (cx !== nx || cy !== ny)) {
-                            if (cx < nx) cx++;
-                            else if (cx > nx) cx--;
-                            else if (cy < ny) cy++;
-                            else if (cy > ny) cy--;
-                            
-                            if (cx !== nx || cy !== ny) {
-                                if (isObstacle(cx, cy) || isCellOccupied(cx, cy, selected.id)) {
-                                    canReach = false;
-                                    break;
-                                }
-                            }
-                            stepsLeft--;
-                        }
-                        
-                        if (canReach) {
-                            ctxBattle.fillStyle = 'rgba(100, 255, 100, 0.25)';
-                            ctxBattle.fillRect(nx * cellSize, ny * cellSize, cellSize, cellSize);
-                        }
+                        ctxBattle.fillStyle = 'rgba(255, 255, 255, 0.2)';
+                        ctxBattle.fillRect(nx * cellSize, ny * cellSize, cellSize, cellSize);
                     }
                 }
                 
@@ -1156,7 +1448,7 @@
                         if (isObstacle(nx, ny)) continue;
                         const enemy = battleEnemyUnits.find(u => u.x === nx && u.y === ny && u.hp > 0);
                         if (enemy) {
-                            ctxBattle.fillStyle = 'rgba(255, 80, 80, 0.35)';
+                            ctxBattle.fillStyle = 'rgba(255, 0, 0, 0.3)';
                             ctxBattle.fillRect(nx * cellSize, ny * cellSize, cellSize, cellSize);
                         }
                     }
@@ -1164,14 +1456,14 @@
             }
         }
 
-        ctxBattle.shadowBlur = 0;
         ctxBattle.font = `${cellSize-56}px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`;
         ctxBattle.textAlign = 'center';
         ctxBattle.textBaseline = 'middle';
+        
         corpses.forEach(corpse => {
             const x = corpse.x * cellSize;
             const y = corpse.y * cellSize;
-            ctxBattle.fillStyle = 'rgba(255,255,255,0.5)';
+            ctxBattle.fillStyle = 'rgba(255,255,255,0.3)';
             ctxBattle.fillText('💀', x + cellSize/2, y + cellSize/2);
         });
 
@@ -1187,43 +1479,33 @@
         
         ctxBattle.beginPath();
         ctxBattle.arc(x + cellSize/2, y + cellSize/2, cellSize/2 - 10, 0, 2 * Math.PI);
-        ctxBattle.strokeStyle = isPlayer ? '#7df0a2' : '#f07d7d';
-        ctxBattle.lineWidth = 4;
-        ctxBattle.shadowColor = isPlayer ? '#7df0a2' : '#f07d7d';
-        ctxBattle.shadowBlur = 15;
+        ctxBattle.strokeStyle = isPlayer ? '#ffffff' : '#ff0000';
+        ctxBattle.lineWidth = 3;
         ctxBattle.stroke();
         
         if (unit.id === selectedUnitId && currentTurn === 'player' && isPlayer) {
             ctxBattle.beginPath();
             ctxBattle.arc(x + cellSize/2, y + cellSize/2, cellSize/2 - 8, 0, 2 * Math.PI);
-            ctxBattle.strokeStyle = 'gold';
-            ctxBattle.lineWidth = 3;
-            ctxBattle.shadowColor = 'gold';
-            ctxBattle.shadowBlur = 20;
+            ctxBattle.strokeStyle = '#ff0000';
+            ctxBattle.lineWidth = 2;
             ctxBattle.stroke();
         }
         
-        ctxBattle.shadowBlur = 0;
         ctxBattle.font = `${cellSize-56}px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`;
-        ctxBattle.fillStyle = isPlayer ? '#c3e3ff' : '#ffb6b6';
-        ctxBattle.fillText(unit.icon || '❓', x + cellSize/2, y + cellSize/2);
+        ctxBattle.fillStyle = isPlayer ? '#ffffff' : '#ff0000';
+        ctxBattle.fillText(unit.icon, x + cellSize/2, y + cellSize/2);
 
-        // HP бар
         const barWidth = 35;
-        const barHeight = 5;
+        const barHeight = 4;
         const barX = x + (cellSize - barWidth) / 2;
-        const barY = y + cellSize/2 + 16;
+        const barY = y + cellSize/2 + 18;
         const hpPercent = unit.hp / unit.maxHp;
 
-        ctxBattle.fillStyle = '#222';
-        ctxBattle.beginPath();
-        ctxBattle.roundRect(barX, barY, barWidth, barHeight, 3);
-        ctxBattle.fill();
+        ctxBattle.fillStyle = '#333333';
+        ctxBattle.fillRect(barX, barY, barWidth, barHeight);
 
-        ctxBattle.fillStyle = hpPercent > 0.6 ? '#5ac46a' : (hpPercent > 0.3 ? '#efb15e' : '#d84f4f');
-        ctxBattle.beginPath();
-        ctxBattle.roundRect(barX, barY, barWidth * hpPercent, barHeight, 3);
-        ctxBattle.fill();
+        ctxBattle.fillStyle = isPlayer ? '#ffffff' : '#ff0000';
+        ctxBattle.fillRect(barX, barY, barWidth * hpPercent, barHeight);
     }
 
     function animateJump(unit, fromX, fromY, toX, toY, callback) {
@@ -1265,37 +1547,29 @@
                 const yPos = y * cellSize;
                 
                 if (isObstacle(x, y)) {
-                    ctxBattle.fillStyle = '#5A5A6A';
+                    ctxBattle.fillStyle = '#2a2a2a';
                     ctxBattle.fillRect(xPos, yPos, cellSize, cellSize);
-                    ctxBattle.strokeStyle = '#8A8A9A';
+                    ctxBattle.strokeStyle = '#ff0000';
                     ctxBattle.lineWidth = 2;
                     ctxBattle.strokeRect(xPos+2, yPos+2, cellSize-4, cellSize-4);
                     ctxBattle.font = `${cellSize-40}px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`;
-                    ctxBattle.fillStyle = '#AAAABB';
+                    ctxBattle.fillStyle = '#666666';
                     ctxBattle.fillText('🪨', xPos + cellSize/2, yPos + cellSize/2);
                 } else {
-                    ctxBattle.fillStyle = '#1B1F2B';
+                    ctxBattle.fillStyle = '#1a1a1a';
                     ctxBattle.fillRect(xPos, yPos, cellSize, cellSize);
-                    
-                    ctxBattle.shadowColor = 'black';
-                    ctxBattle.shadowBlur = 25;
-                    ctxBattle.shadowOffsetY = 12;
-                    ctxBattle.strokeStyle = '#4F556B';
+                    ctxBattle.strokeStyle = '#333333';
                     ctxBattle.lineWidth = 1;
                     ctxBattle.strokeRect(xPos, yPos, cellSize, cellSize);
-                    ctxBattle.shadowBlur = 0;
-                    ctxBattle.shadowOffsetY = 0;
                 }
             }
         }
 
         ctxBattle.font = `${cellSize-56}px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`;
-        ctxBattle.textAlign = 'center';
-        ctxBattle.textBaseline = 'middle';
         corpses.forEach(corpse => {
             const x = corpse.x * cellSize;
             const y = corpse.y * cellSize;
-            ctxBattle.fillStyle = 'rgba(255,255,255,0.5)';
+            ctxBattle.fillStyle = 'rgba(255,255,255,0.3)';
             ctxBattle.fillText('💀', x + cellSize/2, y + cellSize/2);
         });
 
@@ -1313,48 +1587,26 @@
         
         ctxBattle.beginPath();
         ctxBattle.arc(x + cellSize/2, y + cellSize/2, cellSize/2 - 10, 0, 2 * Math.PI);
-        ctxBattle.strokeStyle = movingUnit.team === 'player' ? '#7df0a2' : '#f07d7d';
-        ctxBattle.lineWidth = 4;
-        ctxBattle.shadowColor = movingUnit.team === 'player' ? '#7df0a2' : '#f07d7d';
-        ctxBattle.shadowBlur = 15;
+        ctxBattle.strokeStyle = movingUnit.team === 'player' ? '#ffffff' : '#ff0000';
+        ctxBattle.lineWidth = 3;
         ctxBattle.stroke();
-        ctxBattle.shadowBlur = 0;
         
         ctxBattle.font = `${cellSize-56}px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`;
-        ctxBattle.fillStyle = movingUnit.team === 'player' ? '#c3e3ff' : '#ffb6b6';
-        ctxBattle.fillText(movingUnit.icon || '❓', x + cellSize/2, y + cellSize/2);
+        ctxBattle.fillStyle = movingUnit.team === 'player' ? '#ffffff' : '#ff0000';
+        ctxBattle.fillText(movingUnit.icon, x + cellSize/2, y + cellSize/2);
 
         const barWidth = 35;
-        const barHeight = 5;
+        const barHeight = 4;
         const barX = x + (cellSize - barWidth) / 2;
-        const barY = y + cellSize/2 + 16;
+        const barY = y + cellSize/2 + 18;
         const hpPercent = movingUnit.hp / movingUnit.maxHp;
 
-        ctxBattle.fillStyle = '#222';
-        ctxBattle.beginPath();
-        ctxBattle.roundRect(barX, barY, barWidth, barHeight, 3);
-        ctxBattle.fill();
+        ctxBattle.fillStyle = '#333333';
+        ctxBattle.fillRect(barX, barY, barWidth, barHeight);
 
-        ctxBattle.fillStyle = hpPercent > 0.6 ? '#5ac46a' : (hpPercent > 0.3 ? '#efb15e' : '#d84f4f');
-        ctxBattle.beginPath();
-        ctxBattle.roundRect(barX, barY, barWidth * hpPercent, barHeight, 3);
-        ctxBattle.fill();
+        ctxBattle.fillStyle = movingUnit.team === 'player' ? '#ffffff' : '#ff0000';
+        ctxBattle.fillRect(barX, barY, barWidth * hpPercent, barHeight);
     }
-
-    CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
-        if (w < 2 * r) r = w / 2;
-        if (h < 2 * r) r = h / 2;
-        this.moveTo(x + r, y);
-        this.lineTo(x + w - r, y);
-        this.quadraticCurveTo(x + w, y, x + w, y + r);
-        this.lineTo(x + w, y + h - r);
-        this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-        this.lineTo(x + r, y + h);
-        this.quadraticCurveTo(x, y + h, x, y + h - r);
-        this.lineTo(x, y + r);
-        this.quadraticCurveTo(x, y, x + r, y);
-        return this;
-    };
 
     function checkBattleEnd() {
         const playerAlive = battlePlayerUnits.some(u => u.hp > 0);
@@ -1372,8 +1624,8 @@
                 updateIncomeRate();
             }
             enemiesOnMap = enemiesOnMap.filter(e => !(e.x === currentEnemyPos.x && e.y === currentEnemyPos.y));
-            playerHero = battlePlayerUnits.find(u => u.type.includes('Герой')) || playerHero;
-            playerWarriors = battlePlayerUnits.filter(u => !u.type.includes('Герой'));
+            playerHero = battlePlayerUnits.find(u => u.type.includes('HERO') || u.type.includes('WARRIOR') || u.type.includes('MAGE') || u.type.includes('ARCHER')) || playerHero;
+            playerWarriors = battlePlayerUnits.filter(u => !u.type.includes('HERO') && !u.type.includes('WARRIOR') && !u.type.includes('MAGE') && !u.type.includes('ARCHER'));
         } else {
             playerPos = { x: CASTLE_POS.x, y: CASTLE_POS.y };
             playerHero.hp = playerHero.maxHp;
@@ -1388,7 +1640,7 @@
 
     function showUnitDetails(unit) {
         if (!unit) {
-            unitDetails.innerHTML = 'Выберите юнита для просмотра характеристик';
+            unitDetails.innerHTML = '[ SELECT UNIT ]';
             return;
         }
         unitDetails.innerHTML = `
@@ -1411,7 +1663,7 @@
         if (gridX < 0 || gridX >= BATTLE_WIDTH || gridY < 0 || gridY >= BATTLE_HEIGHT) return;
 
         if (isObstacle(gridX, gridY)) {
-            battleLog.innerText = 'Это булыжник!';
+            battleLog.innerText = 'OBSTACLE!';
             return;
         }
 
@@ -1423,7 +1675,7 @@
             if (currentTurn === 'player') {
                 selectedUnitId = clickedPlayer.id;
                 drawBattle();
-                battleLog.innerText = `Выбран ${clickedPlayer.type}`;
+                battleLog.innerText = `SELECTED: ${clickedPlayer.type}`;
             }
             return;
         }
@@ -1439,7 +1691,7 @@
                         if (clickedEnemy.hp <= 0) {
                             corpses.push({ x: clickedEnemy.x, y: clickedEnemy.y });
                         }
-                        battleLog.innerText = `${unit.type} атакует ${clickedEnemy.type}`;
+                        battleLog.innerText = `${unit.type} ATTACKS ${clickedEnemy.type}!`;
                         unit.actedThisTurn = true;
                         selectedUnitId = null;
                         showUnitDetails(null);
@@ -1451,7 +1703,7 @@
                         if (end === 'win') setTimeout(() => endBattle(true), 200);
                         else if (end === 'lose') setTimeout(() => endBattle(false), 200);
                     } else {
-                        battleLog.innerText = 'Слишком далеко для атаки';
+                        battleLog.innerText = 'TOO FAR!';
                     }
                 } else {
                     selectedUnitId = null;
@@ -1471,30 +1723,28 @@
 
             const dist = Math.abs(unit.x - gridX) + Math.abs(unit.y - gridY);
             if (dist > (unit.moveRange || 3)) {
-                battleLog.innerText = 'Слишком далеко для перемещения';
+                battleLog.innerText = 'TOO FAR!';
                 return;
             }
 
-            // Пошаговое перемещение
             moveUnitStep(unit, gridX, gridY, unit.moveRange || 3, (success) => {
                 if (success) {
                     unit.actedThisTurn = true;
                     selectedUnitId = null;
                     showUnitDetails(null);
-                    battleLog.innerText = `${unit.type} переместился`;
+                    battleLog.innerText = `${unit.type} MOVED`;
                     drawBattle();
                     moveToEndOfQueue(unit.id);
                 } else {
-                    battleLog.innerText = 'Путь заблокирован!';
+                    battleLog.innerText = 'PATH BLOCKED!';
                     drawBattle();
                 }
             });
         } else if (currentTurn === 'player') {
-            battleLog.innerText = 'Выберите своего юнита';
+            battleLog.innerText = 'SELECT YOUR UNIT';
         }
     }
 
-    // Улучшенный ИИ врагов с пошаговым перемещением
     function enemyTurn() {
         if (!battleActive || currentTurn !== 'enemy' || animationInProgress) return;
 
@@ -1510,7 +1760,7 @@
                 showUnitDetails(null);
                 updateTurnQueue();
                 drawBattle();
-                battleLog.innerText = 'Ваш ход. Выберите юнита.';
+                battleLog.innerText = 'YOUR TURN. CHOOSE A UNIT.';
                 return;
             }
 
@@ -1523,7 +1773,6 @@
                 return;
             }
 
-            // Оценка угроз: выбираем наиболее опасного противника
             let bestTarget = null;
             let bestScore = -Infinity;
             players.forEach(p => {
@@ -1542,12 +1791,11 @@
             const dist = Math.abs(enemy.x - bestTarget.x) + Math.abs(enemy.y - bestTarget.y);
             
             if (dist <= (enemy.attackRange || 1)) {
-                // Атакуем
                 bestTarget.hp = Math.max(0, bestTarget.hp - enemy.attack);
                 if (bestTarget.hp <= 0) {
                     corpses.push({ x: bestTarget.x, y: bestTarget.y });
                 }
-                battleLog.innerText = `${enemy.type} атакует ${bestTarget.type}!`;
+                battleLog.innerText = `${enemy.type} ATTACKS!`;
                 drawBattle();
 
                 const end = checkBattleEnd();
@@ -1557,7 +1805,6 @@
                 moveToEndOfQueue(enemy.id);
                 setTimeout(processNextEnemy, 300);
             } else {
-                // Пошаговое движение к цели
                 const dx = Math.sign(bestTarget.x - enemy.x);
                 const dy = Math.sign(bestTarget.y - enemy.y);
                 
@@ -1569,7 +1816,6 @@
                 } else if (dy !== 0 && canMoveBetween(enemy.x, enemy.y, enemy.x, enemy.y + dy)) {
                     targetY = enemy.y + dy;
                 } else {
-                    // Не можем двигаться к цели, пробуем случайное направление
                     const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
                     for (let dir of dirs) {
                         const nx = enemy.x + dir[0];
@@ -1613,7 +1859,7 @@
         isMineBattle = isMine;
         showBattle();
         drawBattle();
-        battleLog.innerText = 'Ваш ход. Выберите юнита.';
+        battleLog.innerText = 'YOUR TURN. CHOOSE A UNIT.';
         showUnitDetails(null);
     }
 
@@ -1621,7 +1867,7 @@
         if (!battleActive) return;
         gold = Math.max(0, gold - 50);
         updateGoldDisplay();
-        battleLog.innerText = 'Вы сбежали из боя! Потеряно 50💰';
+        battleLog.innerText = 'FLEE! LOST 50💰';
         playerPos = { x: CASTLE_POS.x, y: CASTLE_POS.y };
         playerHero.hp = playerHero.maxHp;
         playerWarriors.forEach(w => w.hp = w.maxHp);
