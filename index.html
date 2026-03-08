@@ -2,1963 +2,2641 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>DISCIPLES: SQUARE MAP</title>
-    <!-- Telegram Web App -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHADOWS OF BATTLE - Тени Битвы</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
-            user-select: none;
+        }
+
+        :root {
+            --bg-dark: #0a0a0a;
+            --bg-medium: #1a1a1a;
+            --bg-light: #2a2a2a;
+            --burgundy: #722F37;
+            --burgundy-light: #9a3d4a;
+            --burgundy-dark: #4a1f25;
+            --white: #f5f5f5;
+            --gray: #888888;
+            --gray-light: #cccccc;
+            --gold: #c9a959;
         }
 
         body {
+            font-family: 'MedievalSharp', cursive;
+            background: var(--bg-dark);
+            color: var(--white);
             min-height: 100vh;
-            background: #000000;
+            overflow: hidden;
+        }
+
+        .game-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .game-header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 2px solid var(--burgundy);
+            margin-bottom: 20px;
+            background: linear-gradient(180deg, var(--bg-medium) 0%, var(--bg-dark) 100%);
+        }
+
+        .game-title {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--white);
+            text-shadow: 0 0 20px var(--burgundy);
+            letter-spacing: 8px;
+        }
+
+        .game-subtitle {
+            font-size: 1rem;
+            color: var(--burgundy-light);
+            letter-spacing: 4px;
+            margin-top: 8px;
+        }
+
+        /* Resource Bar - Top UI */
+        .resource-bar {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            padding: 15px;
+            background: var(--bg-medium);
+            border: 2px solid var(--burgundy);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            box-shadow: 0 4px 15px rgba(114, 47, 55, 0.4);
+        }
+
+        .resource {
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 0;
+            gap: 8px;
+            font-size: 1.1rem;
+            filter: grayscale(0%);
         }
 
-        #game-container {
-            width: 100%;
-            height: 100vh;
-            max-width: 600px;
-            background: #0a0a0a;
-            border-left: 1px solid #ff0000;
-            border-right: 1px solid #ff0000;
+        .resource-icon {
+            font-size: 1.5rem;
+        }
+
+        .resource-value {
+            color: var(--gold);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .resource-btn {
+            padding: 10px 20px;
+            background: var(--burgundy);
+            border: 2px solid var(--burgundy-light);
+            color: var(--white);
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            filter: grayscale(0%);
+            font-weight: 700;
+        }
+
+        .resource-btn:hover:not(:disabled) {
+            background: var(--burgundy-light);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(114, 47, 55, 0.5);
+        }
+
+        .resource-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Main Menu Screen */
+        .main-menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 70vh;
+            text-align: center;
+        }
+
+        .main-menu-title {
+            font-family: 'Cinzel', serif;
+            font-size: 4rem;
+            color: var(--gold);
+            text-shadow: 0 0 30px var(--burgundy);
+            margin-bottom: 20px;
+            animation: titleGlow 3s infinite;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 30px var(--burgundy); }
+            50% { text-shadow: 0 0 50px var(--burgundy-light); }
+        }
+
+        .main-menu-subtitle {
+            font-size: 1.5rem;
+            color: var(--burgundy-light);
+            margin-bottom: 50px;
+            letter-spacing: 6px;
+        }
+
+        .main-menu-btn {
+            padding: 20px 60px;
+            background: linear-gradient(180deg, var(--burgundy) 0%, var(--burgundy-dark) 100%);
+            border: 3px solid var(--burgundy-light);
+            color: var(--white);
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            margin: 15px;
+            font-weight: 700;
+            letter-spacing: 3px;
+        }
+
+        .main-menu-btn:hover {
+            background: linear-gradient(180deg, var(--burgundy-light) 0%, var(--burgundy) 100%);
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(114, 47, 55, 0.6);
+        }
+
+        /* Main Game Area */
+        .main-game {
+            display: none;
+        }
+
+        .main-game.active {
+            display: block;
+        }
+
+        /* Map Screen */
+        .map-viewport {
+            position: relative;
+            background: var(--bg-medium);
+            border: 2px solid var(--burgundy);
+            border-radius: 12px;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
+            width: 100%;
+            height: 600px;
+            margin-bottom: 20px;
         }
 
-        /* Красные акценты */
-        .red-border {
-            border-color: #ff0000 !important;
-        }
-
-        .red-text {
-            color: #ff0000 !important;
-        }
-
-        .red-bg {
-            background: #ff0000 !important;
-            color: #000000 !important;
-        }
-
-        .red-shadow {
-            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
-        }
-
-        /* МЕНЮ - монохром с красным */
-        .menu-screen {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-            padding: 30px 20px;
-            height: 100%;
-            justify-content: center;
-            background: #0a0a0a;
-            position: relative;
-        }
-
-        .menu-screen::before {
-            content: '';
+        .map-world {
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(45deg, rgba(255,0,0,0.05) 0%, transparent 70%);
+            transition: transform 0.5s ease;
+            image-rendering: pixelated;
+        }
+
+        .map-image {
+            width: 3600px;
+            height: 3000px;
+            object-fit: cover;
+            opacity: 0.8;
+            filter: grayscale(60%) contrast(120%);
+        }
+
+        .map-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: grid;
+            grid-template-columns: repeat(36, 100px);
+            grid-template-rows: repeat(30, 100px);
             pointer-events: none;
         }
 
-        .title {
-            font-size: 3rem;
-            font-weight: 900;
-            letter-spacing: 4px;
-            text-align: center;
-            color: #ffffff;
-            text-shadow: 3px 3px 0 #ff0000;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-        }
-
-        .sub {
-            text-align: center;
-            color: #888888;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            margin-top: -15px;
-        }
-
-        .class-cards {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin: 20px 0;
-            z-index: 2;
-        }
-
-        .class-card {
-            background: #1a1a1a;
-            border: 2px solid #333333;
-            border-radius: 0;
-            padding: 20px 25px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            transition: all 0.2s ease;
+        .map-cell {
+            border: 1px solid rgba(114, 47, 55, 0.15);
+            pointer-events: auto;
             cursor: pointer;
-            position: relative;
-            overflow: hidden;
+            transition: all 0.2s ease;
         }
 
-        .class-card:hover {
-            border-color: #ff0000;
-            background: #222222;
+        .map-cell.walkable {
+            background: rgba(100, 100, 100, 0.08);
         }
 
-        .class-card:active {
-            transform: scale(0.98);
+        .map-cell.blocked {
+            background: rgba(50, 50, 50, 0.6);
+            cursor: not-allowed;
+            background-image: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(0, 0, 0, 0.4) 10px,
+                rgba(0, 0, 0, 0.4) 20px
+            );
         }
 
-        .class-card::after {
-            content: '';
+        .map-cell.castle {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        .hero-sprite {
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,0,0,0.2), transparent);
-            transition: left 0.3s ease;
-        }
-
-        .class-card:hover::after {
-            left: 100%;
-        }
-
-        .card-icon {
-            width: 60px;
-            height: 60px;
-            background: #000000;
-            border: 2px solid #ff0000;
+            width: 70px;
+            height: 70px;
+            background: radial-gradient(circle, var(--gold) 0%, var(--burgundy) 100%);
+            border: 4px solid var(--white);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 2.2rem;
-            filter: grayscale(100%);
-        }
-
-        .card-icon.red-icon {
+            transition: all 0.4s ease;
+            z-index: 100;
+            box-shadow: 0 0 30px var(--gold), 0 0 60px var(--burgundy-light);
+            animation: heroGlow 1.5s infinite;
             filter: grayscale(0%);
         }
 
-        .card-info h3 {
-            color: #ffffff;
+        .hero-sprite::before {
+            content: '👑';
+            position: absolute;
+            top: -15px;
             font-size: 1.5rem;
-            font-weight: 600;
-            letter-spacing: 1px;
+            animation: crownBounce 2s infinite;
         }
 
-        .card-info p {
-            color: #aaaaaa;
-            font-size: 0.9rem;
-            display: flex;
-            gap: 15px;
-            margin-top: 5px;
-        }
-
-        .card-info p span {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        /* ГЛОБАЛЬНАЯ КАРТА - строго квадратные ячейки */
-        .map-screen {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-            background: #0a0a0a;
-        }
-
-        .map-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #000000;
-            padding: 10px 15px;
-            border-bottom: 2px solid #ff0000;
-            color: #ffffff;
-            font-size: 0.9rem;
-        }
-
-        .income-timer {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .income-display {
-            background: #1a1a1a;
-            padding: 5px 12px;
-            border: 1px solid #333333;
-            color: #ffffff;
-            font-weight: bold;
-        }
-
-        .castle-buttons {
-            display: flex;
-            gap: 5px;
-            align-items: center;
-        }
-
-        .gold-display {
-            background: #1a1a1a;
-            padding: 5px 12px;
-            border: 1px solid #ff0000;
-            color: #ff0000;
-            font-weight: bold;
-        }
-
-        .castle-btn {
-            background: #1a1a1a;
-            border: 1px solid #333333;
-            color: #ffffff;
-            padding: 5px 10px;
-            font-weight: 600;
+        .hero-sprite::after {
+            content: 'ГЕРОЙ';
+            position: absolute;
+            bottom: -20px;
             font-size: 0.7rem;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            color: var(--gold);
+            text-shadow: 0 0 10px var(--burgundy);
+            white-space: nowrap;
+        }
+
+        @keyframes heroGlow {
+            0%, 100% { 
+                box-shadow: 0 0 25px var(--gold), 0 0 50px var(--burgundy-light);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 45px var(--gold), 0 0 80px var(--burgundy-light);
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes crownBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .map-enemy {
+            position: absolute;
+            width: 55px;
+            height: 55px;
+            background: var(--burgundy) !important;
+            border: 2px solid var(--white);
+            border-radius: 50%;
             cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .castle-btn:hover {
-            border-color: #ff0000;
-            color: #ff0000;
-        }
-
-        .castle-btn:active {
-            transform: translateY(2px);
-        }
-
-        .map-canvas-container {
-            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #000000;
-            padding: 10px;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+            z-index: 50;
+            filter: grayscale(0%);
         }
 
-        #mapCanvas {
-            display: block;
-            width: 100%;
-            aspect-ratio: 1/1;
-            background: #0a0a0a;
-            border: 2px solid #333333;
-            cursor: pointer;
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
+        .map-enemy:hover {
+            transform: scale(1.25);
+            box-shadow: 0 0 35px var(--burgundy-light);
         }
 
-        .map-footer {
+        .map-enemy.defeated {
+            opacity: 0;
+            pointer-events: none;
+            animation: none;
+            transform: scale(0);
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 12px var(--burgundy); }
+            50% { box-shadow: 0 0 30px var(--burgundy-light); }
+        }
+
+        .map-castle {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: transparent;
             display: flex;
-            gap: 10px;
-            padding: 10px 15px;
-            background: #000000;
-            border-top: 1px solid #333333;
+            align-items: center;
+            justify-content: center;
+            font-size: 7rem;
+            z-index: 60;
+            filter: grayscale(0%);
+            animation: castleGlow 3s infinite;
+            cursor: pointer;
+            text-shadow: 0 0 30px var(--gold);
         }
 
-        .map-footer button {
-            flex: 1;
-            background: #1a1a1a;
-            border: 1px solid #333333;
-            padding: 10px 0;
-            color: #ffffff;
+        .map-castle::after {
+            content: 'ГОРОД';
+            position: absolute;
+            bottom: -25px;
+            font-size: 0.8rem;
+            font-family: 'Cinzel', serif;
             font-weight: 700;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.2s;
+            color: var(--gold);
+            text-shadow: 0 0 10px var(--burgundy);
+            white-space: nowrap;
         }
 
-        .map-footer button:hover {
-            border-color: #ff0000;
-            color: #ff0000;
+        @keyframes castleGlow {
+            0%, 100% { text-shadow: 0 0 30px var(--gold); }
+            50% { text-shadow: 0 0 60px var(--gold); }
         }
 
-        .map-footer button:active {
-            transform: translateY(3px);
-        }
-
-        /* ТАВЕРНА - монохром */
-        .tavern-screen {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-            background: #0a0a0a;
-            padding: 15px;
-        }
-
-        .tavern-header {
+        .map-mine {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background: var(--burgundy-dark);
+            border: 3px solid var(--gold);
+            border-radius: 8px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #ff0000;
-            padding-bottom: 10px;
+            justify-content: center;
+            font-size: 2rem;
+            z-index: 55;
+            filter: grayscale(0%);
+            animation: mineGlow 3s infinite;
+            cursor: pointer;
         }
 
-        .tavern-title {
+        .map-mine::after {
+            content: 'ШАХТА';
+            position: absolute;
+            bottom: -18px;
+            font-size: 0.6rem;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            color: var(--gold);
+            text-shadow: 0 0 10px var(--burgundy);
+            white-space: nowrap;
+        }
+
+        .map-mine.captured {
+            border-color: var(--gold);
+            animation: capturedMine 2s infinite;
+        }
+
+        .map-mine.defeated {
+            opacity: 0;
+            pointer-events: none;
+            animation: none;
+            transform: scale(0);
+        }
+
+        .map-mine .mine-guard {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
             font-size: 1.8rem;
-            color: #ffffff;
-            font-weight: 800;
-            letter-spacing: 2px;
+            animation: guardPulse 2s infinite;
+            z-index: 56;
         }
 
-        .tavern-grid {
+        @keyframes guardPulse {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.2); }
+        }
+
+        @keyframes mineGlow {
+            0%, 100% { box-shadow: 0 0 20px var(--burgundy); }
+            50% { box-shadow: 0 0 40px var(--gold); }
+        }
+
+        @keyframes capturedMine {
+            0%, 100% { box-shadow: 0 0 25px var(--gold); }
+            50% { box-shadow: 0 0 50px var(--gold); }
+        }
+
+        .fog-of-war {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 180px, rgba(0,0,0,0.9) 350px);
+            pointer-events: none;
+            z-index: 80;
+        }
+
+        /* Modal Windows */
+        .modal-window {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.92);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-window.active {
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-            flex: 3;
-            overflow-y: auto;
-            margin-bottom: 15px;
         }
 
-        .tavern-item {
-            background: #1a1a1a;
-            border: 1px solid #333333;
-            padding: 15px;
+        .modal-content {
+            background: var(--bg-medium);
+            border: 2px solid var(--burgundy);
+            border-radius: 12px;
+            padding: 35px;
+            max-width: 900px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-content.combat-modal {
+            max-width: 1200px;
+        }
+
+        .modal-content.full-width {
+            max-width: 1200px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: var(--burgundy);
+            border: 2px solid var(--burgundy-light);
+            color: var(--white);
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 10;
+            font-family: 'MedievalSharp', cursive;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: var(--burgundy-light);
+            transform: scale(1.1);
+        }
+
+        .modal-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            color: var(--burgundy-light);
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        /* Class Selection - 3 in a row */
+        .class-selection {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            padding: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .class-selection {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .class-card {
+            background: var(--bg-light);
+            border: 2px solid var(--burgundy);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .class-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(114, 47, 55, 0.4);
+            border-color: var(--burgundy-light);
+        }
+
+        .class-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 2px solid var(--burgundy);
+            filter: grayscale(60%);
+            transition: filter 0.3s ease;
+        }
+
+        .class-card:hover .class-image {
+            filter: grayscale(0%);
+        }
+
+        .class-name {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: var(--white);
+            margin-bottom: 12px;
+        }
+
+        .class-stats {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .stat {
             display: flex;
             align-items: center;
+            gap: 5px;
+            font-size: 1rem;
+        }
+
+        .stat-icon {
+            font-size: 1.2rem;
+        }
+
+        .stat-value {
+            color: var(--burgundy-light);
+            font-weight: 700;
+        }
+
+        /* Tavern */
+        .tavern-info {
+            color: var(--gray);
+            margin-top: 8px;
+            font-style: italic;
+            text-align: center;
+        }
+
+        .recruit-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .recruit-card {
+            background: var(--bg-light);
+            border: 1px solid var(--burgundy);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .recruit-image {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 2px solid var(--burgundy);
+            margin-bottom: 12px;
+            object-fit: cover;
+            filter: grayscale(80%);
+        }
+
+        .recruit-name {
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .recruit-cost {
+            color: var(--gold);
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .recruit-stats {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 8px;
+        }
+
+        .recruit-btn {
+            padding: 8px 20px;
+            background: var(--burgundy);
+            border: none;
+            color: var(--white);
+            font-family: 'MedievalSharp', cursive;
             cursor: pointer;
-            transition: all 0.2s;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            width: 100%;
+            filter: grayscale(0%);
         }
 
-        .tavern-item:hover {
-            border-color: #ff0000;
-            background: #222222;
+        .recruit-btn:hover:not(:disabled) {
+            background: var(--burgundy-light);
         }
 
-        .tavern-item:active {
-            transform: scale(0.99);
+        .recruit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
-        .tavern-icon {
-            font-size: 3rem;
+        /* Army Panel */
+        .army-panel {
+            background: var(--bg-light);
+            border: 1px solid var(--burgundy);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .army-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            color: var(--burgundy-light);
+        }
+
+        .army-slots {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+        }
+
+        .army-slot {
+            aspect-ratio: 1;
+            background: var(--bg-medium);
+            border: 2px solid var(--burgundy);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            filter: grayscale(80%);
+        }
+
+        .army-slot:hover {
+            border-color: var(--burgundy-light);
+            box-shadow: 0 0 15px var(--burgundy);
+        }
+
+        .army-slot.filled {
+            background: var(--burgundy-dark);
+        }
+
+        .army-slot.hero-slot {
+            border-color: var(--gold);
+            box-shadow: 0 0 20px var(--gold);
+            filter: grayscale(0%);
+        }
+
+        .army-slot img {
+            width: 80%;
+            height: 80%;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .army-slot .health-overlay {
+            position: absolute;
+            bottom: 4px;
+            left: 4px;
+            right: 4px;
+            height: 4px;
+            background: var(--bg-dark);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .army-slot .health-fill {
+            height: 100%;
+            background: var(--burgundy-light);
+            transition: width 0.3s ease;
+        }
+
+        .army-slot .hero-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--gold);
+            color: var(--bg-dark);
+            font-size: 0.6rem;
+            font-family: 'Cinzel', serif;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--white);
+        }
+
+        /* Army Display Modal */
+        .army-display-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .army-unit-card {
+            background: var(--bg-medium);
+            border: 2px solid var(--burgundy);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .army-unit-card.hero {
+            border-color: var(--gold);
+            box-shadow: 0 0 15px var(--gold);
+        }
+
+        .army-unit-image {
             width: 60px;
             height: 60px;
-            background: #000000;
-            border: 2px solid #ff0000;
+            border-radius: 50%;
+            border: 2px solid var(--burgundy);
+            margin: 0 auto 10px;
+            object-fit: cover;
+        }
+
+        .army-unit-card.hero .army-unit-image {
+            border-color: var(--gold);
+        }
+
+        .army-unit-name {
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .army-unit-stats {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* Combat Screen */
+        .combat-container {
+            padding: 20px;
+        }
+
+        .combat-info-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: var(--bg-light);
+            border: 2px solid var(--burgundy);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .combat-turn-info {
+            font-family: 'Cinzel', serif;
+            font-size: 1.3rem;
+            color: var(--gold);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .combat-turn-order {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .turn-order-unit {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.8rem;
+            border: 2px solid var(--burgundy);
+            background: var(--bg-medium);
+            filter: grayscale(80%);
+            transition: all 0.3s ease;
+        }
+
+        .turn-order-unit.current {
+            border-color: var(--gold);
+            filter: grayscale(0%);
+            animation: turnPulse 1s infinite;
+            transform: scale(1.2);
+            order: -1;
+            box-shadow: 0 0 20px var(--gold);
+        }
+
+        @keyframes turnPulse {
+            0%, 100% { box-shadow: 0 0 15px var(--gold); }
+            50% { box-shadow: 0 0 35px var(--gold); }
+        }
+
+        .turn-order-unit.dead {
+            opacity: 0.3;
             filter: grayscale(100%);
         }
 
-        .tavern-info {
-            flex: 1;
+        .turn-order-unit.hero {
+            border-color: var(--gold);
         }
 
-        .tavern-info h3 {
-            color: #ffffff;
-            font-size: 1.3rem;
-            font-weight: 600;
-        }
-
-        .tavern-info p {
-            color: #aaaaaa;
-            font-size: 0.9rem;
+        .combat-actions-bar {
             display: flex;
             gap: 15px;
-            margin-top: 5px;
         }
 
-        .tavern-info p span {
+        .combat-teams {
+            display: grid;
+            grid-template-columns: 1fr 80px 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .combat-side {
+            background: var(--bg-light);
+            border: 2px solid var(--burgundy);
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .combat-side.player {
+            border-color: var(--gold);
+        }
+
+        .combat-side.enemy {
+            border-color: var(--burgundy-light);
+        }
+
+        .combat-team-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            text-align: center;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--burgundy);
+        }
+
+        .combat-units {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .combat-unit {
+            background: var(--bg-medium);
+            border: 1px solid var(--burgundy);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            filter: grayscale(80%);
+        }
+
+        .combat-unit.current-turn {
+            border: 3px solid var(--gold);
+            box-shadow: 0 0 40px var(--gold), inset 0 0 20px var(--gold);
+            animation: currentTurnPulse 0.8s infinite;
+            filter: grayscale(0%);
+            background: linear-gradient(180deg, var(--burgundy-dark) 0%, var(--bg-medium) 100%);
+            transform: scale(1.05);
+        }
+
+        @keyframes currentTurnPulse {
+            0%, 100% { 
+                box-shadow: 0 0 30px var(--gold), inset 0 0 15px var(--gold);
+            }
+            50% { 
+                box-shadow: 0 0 55px var(--gold), inset 0 0 30px var(--gold);
+            }
+        }
+
+        .combat-unit.hero {
+            border: 2px solid var(--gold);
+            filter: grayscale(0%);
+        }
+
+        .combat-unit.hero::before {
+            content: '👑';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.2rem;
+            z-index: 10;
+        }
+
+        .combat-unit.targetable {
+            border-color: var(--burgundy-light);
+            box-shadow: 0 0 25px var(--burgundy-light);
+            animation: targetPulse 1s infinite;
+            cursor: pointer;
+            filter: grayscale(0%);
+        }
+
+        @keyframes targetPulse {
+            0%, 100% { box-shadow: 0 0 15px var(--burgundy-light); }
+            50% { box-shadow: 0 0 35px var(--burgundy-light); }
+        }
+
+        .combat-unit.dead {
+            opacity: 0.25;
+            filter: grayscale(100%);
+            pointer-events: none;
+        }
+
+        .combat-unit-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            border: 2px solid var(--burgundy);
+            margin: 0 auto 8px;
+            object-fit: cover;
+            position: relative;
+            z-index: 1;
+        }
+
+        .combat-unit.hero .combat-unit-image {
+            border-color: var(--gold);
+            box-shadow: 0 0 15px var(--gold);
+        }
+
+        .combat-unit-name {
+            font-size: 0.8rem;
+            margin-bottom: 6px;
+            font-weight: 700;
+        }
+
+        .combat-unit-stats {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 6px;
+            font-size: 0.75rem;
+        }
+
+        .combat-unit-stat {
             display: flex;
             align-items: center;
             gap: 3px;
         }
 
-        .tavern-cost {
-            font-size: 1.3rem;
-            color: #ff0000;
-            font-weight: bold;
+        .combat-unit-health {
+            width: 100%;
+            height: 6px;
+            background: var(--bg-dark);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 4px;
         }
 
-        .army-preview {
-            background: #1a1a1a;
-            border: 1px solid #333333;
-            padding: 15px;
-            margin-bottom: 15px;
-            flex: 2;
-            min-height: 120px;
-            overflow-y: auto;
-        }
-
-        .army-title {
-            color: #ffffff;
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-            letter-spacing: 1px;
-        }
-
-        .army-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .army-unit {
-            background: #000000;
-            border: 1px solid #ff0000;
-            padding: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 60px;
-        }
-
-        .army-unit span {
-            font-size: 2rem;
-            filter: grayscale(100%);
-        }
-
-        .army-unit small {
-            color: #aaaaaa;
-            font-size: 0.6rem;
-        }
-
-        .tavern-footer {
-            display: flex;
-            gap: 10px;
-        }
-
-        .tavern-footer button {
-            flex: 1;
-            background: #1a1a1a;
-            border: 1px solid #333333;
-            padding: 12px 0;
-            color: #ffffff;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .tavern-footer button:hover {
-            border-color: #ff0000;
-            color: #ff0000;
-        }
-
-        .tavern-footer button:active {
-            transform: translateY(3px);
-        }
-
-        /* ЭКРАН БИТВЫ - монохром с красным */
-        .battle-screen {
-            display: none;
-            flex-direction: column;
+        .combat-unit-health-fill {
             height: 100%;
-            background: #0a0a0a;
+            background: linear-gradient(90deg, var(--burgundy-dark), var(--burgundy-light));
+            transition: width 0.5s ease;
         }
 
-        .battle-header {
+        .combat-unit-hp-text {
+            font-size: 0.7rem;
+            color: var(--gray);
+        }
+
+        .vs-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            color: var(--burgundy-light);
+            font-weight: 900;
+        }
+
+        .combat-log {
+            background: var(--bg-medium);
+            border: 1px solid var(--burgundy);
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .combat-log::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .combat-log::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+            border-radius: 4px;
+        }
+
+        .combat-log::-webkit-scrollbar-thumb {
+            background: var(--burgundy);
+            border-radius: 4px;
+        }
+
+        .combat-log-entry {
+            padding: 6px 0;
+            border-bottom: 1px solid var(--bg-light);
+            font-size: 0.9rem;
+        }
+
+        .combat-log-entry:last-child {
+            border-bottom: none;
+        }
+
+        .combat-log-entry.damage {
+            color: var(--burgundy-light);
+        }
+
+        .combat-log-entry.heal {
+            color: var(--gold);
+        }
+
+        .combat-log-entry.info {
+            color: var(--gray-light);
+        }
+
+        .combat-log-entry.crit {
+            color: var(--gold);
+            font-weight: 700;
+        }
+
+        .combat-log-entry.hero-action {
+            color: var(--gold);
+            font-weight: 700;
+            border-left: 3px solid var(--gold);
+            padding-left: 10px;
+        }
+
+        /* Menu Options */
+        .menu-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .menu-option {
+            padding: 18px;
+            background: var(--bg-light);
+            border: 1px solid var(--burgundy);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-family: 'MedievalSharp', cursive;
+            font-size: 1.1rem;
+            filter: grayscale(0%);
+            font-weight: 700;
+        }
+
+        .menu-option:hover {
+            background: var(--burgundy-dark);
+            border-color: var(--burgundy-light);
+            transform: scale(1.02);
+        }
+
+        .menu-option.new-game {
+            background: var(--burgundy);
+            border-color: var(--burgundy-light);
+        }
+
+        .menu-option.new-game:hover {
+            background: var(--burgundy-light);
+        }
+
+        /* Unit Stats */
+        .unit-stats {
+            background: var(--bg-light);
+            border: 1px solid var(--burgundy);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-row {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            background: #000000;
-            padding: 8px 12px;
-            border-bottom: 2px solid #ff0000;
-            color: #ffffff;
-            font-weight: bold;
-            font-size: 0.8rem;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--bg-medium);
         }
 
-        .turn-queue {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            background: #1a1a1a;
-            padding: 5px 10px;
-            border: 1px solid #333333;
+        .stat-row:last-child {
+            border-bottom: none;
         }
 
-        .queue-icon {
-            font-size: 1.2rem;
-            width: 26px;
-            height: 26px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #000000;
-            border: 1px solid #ff0000;
-            color: #ffffff;
-            flex-shrink: 0;
-            filter: grayscale(100%);
+        .stat-label {
+            color: var(--gray);
         }
 
-        .queue-icon.next {
-            border-width: 2px;
-            border-color: #ff0000;
-            box-shadow: 0 0 8px #ff0000;
-            background: #222222;
-        }
-
-        .turn-text {
-            font-weight: bold;
-            color: #ff0000;
-            margin-left: 5px;
-        }
-
-        .btn-menu {
-            background: #1a1a1a;
-            border: 1px solid #333333;
-            color: #ffffff;
-            padding: 5px 12px;
-            font-weight: 600;
-            font-size: 0.7rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-menu:hover {
-            border-color: #ff0000;
-            color: #ff0000;
-        }
-
-        .btn-menu:active {
-            transform: translateY(2px);
-        }
-
-        .battle-canvas-wrapper {
-            flex: 4;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #000000;
-            padding: 5px;
-        }
-
-        #battleCanvas {
-            display: block;
-            width: 100%;
-            height: auto;
-            aspect-ratio: 7/11;
-            background: #0a0a0a;
-            border: 2px solid #333333;
-            cursor: pointer;
-        }
-
-        .unit-details {
-            background: #1a1a1a;
-            border: 1px solid #333333;
-            margin: 5px 12px;
-            padding: 8px 12px;
-            color: #ffffff;
-            min-height: 45px;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .unit-details span {
-            color: #ff0000;
-            font-size: 1.3rem;
-            filter: grayscale(100%);
-        }
-
-        .log-message {
-            background: #1a1a1a;
-            border: 1px solid #333333;
-            margin: 5px 12px;
-            padding: 8px 12px;
-            font-size: 0.8rem;
-            color: #ffffff;
-            text-align: center;
-            min-height: 2.5rem;
-        }
-
-        .battle-footer {
-            display: flex;
-            gap: 5px;
-            padding: 5px 12px 10px;
-            background: #000000;
-            border-top: 1px solid #333333;
-        }
-
-        .battle-footer button {
-            flex: 1;
-            background: #1a1a1a;
-            border: 1px solid #333333;
-            padding: 8px 0;
-            color: #ffffff;
+        .stat-value-display {
+            color: var(--white);
             font-weight: 700;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.2s;
         }
 
-        .battle-footer button:hover {
-            border-color: #ff0000;
-            color: #ff0000;
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--burgundy);
+            color: var(--white);
+            padding: 18px 25px;
+            border-radius: 8px;
+            border: 2px solid var(--burgundy-light);
+            font-family: 'MedievalSharp', cursive;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+            z-index: 1001;
+            filter: grayscale(0%);
+            font-weight: 700;
         }
 
-        .battle-footer button:active {
-            transform: translateY(3px);
+        .notification.show {
+            transform: translateX(0);
         }
 
-        .flee-btn {
-            border-color: #ff0000 !important;
-            color: #ff0000 !important;
+        /* Responsive */
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 1.8rem;
+                letter-spacing: 4px;
+            }
+
+            .main-menu-title {
+                font-size: 2.5rem;
+            }
+
+            .resource-bar {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+
+            .combat-teams {
+                grid-template-columns: 1fr;
+            }
+
+            .vs-divider {
+                padding: 15px 0;
+            }
+
+            .combat-units {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .army-slots {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
 
-        .flee-btn:hover {
-            background: #ff0000 !important;
-            color: #000000 !important;
+        /* Attack Animations */
+        @keyframes attackLunge {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(30px) scale(1.1); }
+            100% { transform: translateX(0); }
         }
 
-        .hourglass-btn {
-            font-size: 1rem;
+        @keyframes attackLungeLeft {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(-30px) scale(1.1); }
+            100% { transform: translateX(0); }
         }
 
-        /* Препятствия в бою */
-        .obstacle {
-            background: #2a2a2a;
-            border: 2px solid #ff0000;
-            position: relative;
+        @keyframes hitShake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-5px); }
+            40% { transform: translateX(5px); }
+            60% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
         }
 
-        .obstacle::after {
-            content: '🪨';
-            font-size: 1.5rem;
+        @keyframes damageFlash {
+            0%, 100% { filter: grayscale(80%); }
+            50% { filter: grayscale(0%) brightness(1.5) sepia(1) hue-rotate(-50deg); }
+        }
+
+        .attacking-right {
+            animation: attackLunge 0.6s ease;
+        }
+
+        .attacking-left {
+            animation: attackLungeLeft 0.6s ease;
+        }
+
+        .hit {
+            animation: hitShake 0.4s ease;
+        }
+
+        .damage-flash {
+            animation: damageFlash 0.4s ease;
+        }
+
+        /* Damage Number */
+        .damage-number {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            filter: grayscale(100%);
-            opacity: 0.7;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--burgundy-light);
+            animation: damageFloat 1.2s ease-out forwards;
+            z-index: 100;
+            text-shadow: 0 0 10px var(--burgundy);
+            pointer-events: none;
         }
 
-        /* Анимации */
-        @keyframes pulse-red {
-            0%, 100% { border-color: #333333; }
-            50% { border-color: #ff0000; }
+        .damage-number.crit {
+            font-size: 2rem;
+            color: var(--gold);
         }
 
-        .pulse-red {
-            animation: pulse-red 1.5s infinite;
+        .damage-number.hero-damage {
+            color: var(--gold);
+            text-shadow: 0 0 15px var(--gold);
         }
 
-        /* Стили для Canvas */
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
+        @keyframes damageFloat {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-60px) scale(1.3); opacity: 0; }
         }
 
-        /* Скроллбары */
-        ::-webkit-scrollbar {
-            width: 4px;
+        /* Action Button in Combat */
+        .combat-action-btn {
+            padding: 10px 20px;
+            background: var(--burgundy);
+            border: 2px solid var(--burgundy-light);
+            color: var(--white);
+            font-family: 'MedievalSharp', cursive;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            filter: grayscale(0%);
+            font-weight: 700;
         }
 
-        ::-webkit-scrollbar-track {
-            background: #1a1a1a;
+        .combat-action-btn:hover:not(:disabled) {
+            background: var(--burgundy-light);
+            transform: scale(1.05);
         }
 
-        ::-webkit-scrollbar-thumb {
-            background: #ff0000;
+        .combat-action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: #ffffff;
+        .combat-action-btn.active {
+            background: var(--gold);
+            border-color: var(--gold);
+        }
+
+        /* Click indicator */
+        .click-indicator {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--gold);
+            border-radius: 50%;
+            animation: clickRipple 0.6s ease-out forwards;
+            pointer-events: none;
+            z-index: 150;
+        }
+
+        @keyframes clickRipple {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+
+        .path-indicator {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: var(--gold);
+            border-radius: 50%;
+            opacity: 0.6;
+            pointer-events: none;
+            z-index: 90;
+            animation: pathFade 1s ease-out forwards;
+        }
+
+        @keyframes pathFade {
+            0% { opacity: 0.8; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.5); }
         }
     </style>
 </head>
 <body>
-<div id="game-container">
-    <!-- МЕНЮ - монохром с красным -->
-    <div id="menu-screen" class="menu-screen">
-        <div class="title">DISCIPLES</div>
-        <div class="sub">SQUARE MAP</div>
-        <div class="class-cards">
-            <div class="class-card" data-class="warrior">
-                <div class="card-icon">⚔️</div>
-                <div class="card-info">
-                    <h3>WARRIOR</h3>
-                    <p><span>❤️ 35</span> <span>⚔️ 7</span> <span>🦶 3</span></p>
+    <div class="game-container">
+        <header class="game-header">
+            <h1 class="game-title">⚔️ SHADOWS OF BATTLE ⚔️</h1>
+            <p class="game-subtitle">ТЕНИ БИТВЫ</p>
+        </header>
+
+        <!-- Main Menu Screen -->
+        <div id="mainMenu" class="main-menu">
+            <h1 class="main-menu-title">SHADOWS OF BATTLE</h1>
+            <p class="main-menu-subtitle">ТЕНИ БИТВЫ</p>
+            <button class="main-menu-btn" onclick="startGame()">⚔️ НОВАЯ ИГРА</button>
+            <button class="main-menu-btn" onclick="showHelpFromMenu()">❓ ПОМОЩЬ</button>
+        </div>
+
+        <!-- Main Game Area -->
+        <div id="mainGame" class="main-game">
+            <div class="resource-bar">
+                <div class="resource">
+                    <span class="resource-icon">💰</span>
+                    <span class="resource-value" id="gold">200</span>
+                </div>
+                <div class="resource">
+                    <span class="resource-icon">⛏️</span>
+                    <span>ШАХТЫ: <span id="mineCount">0</span> (+<span id="mineIncome">0</span>/5мин)</span>
+                </div>
+                <div class="resource">
+                    <span class="resource-icon">⏳</span>
+                    <span class="resource-value" id="timer">5:00</span>
+                </div>
+                <button class="resource-btn" id="armyBtn" onclick="showArmyDisplay()">АРМИЯ (<span id="armyCountDisplay">0</span>)</button>
+                <button class="resource-btn" id="tavernBtn" onclick="openWindow('tavernWindow')" disabled>🍺 ТАВЕРНА</button>
+                <button class="resource-btn" onclick="openWindow('menuWindow')">⚙️ МЕНЮ</button>
+            </div>
+
+            <div class="map-viewport" id="mapViewport">
+                <div class="map-world" id="mapWorld">
+                    <img src="https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/175c3f3ff-9149-46ce-b0f2-ecfa34cbb3c0.png" alt="Карта мира" class="map-image">
+                    <div class="map-grid" id="mapGrid"></div>
+                    <div class="hero-sprite" id="heroSprite">⚔️</div>
+                    <div class="map-castle" id="mapCastle" style="left: 1700px; top: 1400px;">🏰</div>
+                </div>
+                <div class="fog-of-war"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Class Selection Window -->
+    <div class="modal-window" id="classWindow">
+        <div class="modal-content full-width">
+            <button class="modal-close" onclick="closeWindow('classWindow')">✕</button>
+            <h2 class="modal-title">🎭 ВЫБЕРИТЕ КЛАСС ГЕРОЯ</h2>
+            <div class="class-selection">
+                <div class="class-card" onclick="selectClass('warrior')">
+                    <img src="https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1c0f9d6e8-e7ba-4ac5-b938-4076e6ecd9fb.png" alt="Воин" class="class-image">
+                    <h3 class="class-name">🔱 ВОИН</h3>
+                    <div class="class-stats">
+                        <div class="stat">
+                            <span class="stat-icon">❤️</span>
+                            <span class="stat-value">35</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-icon">⚔️</span>
+                            <span class="stat-value">7</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-icon">🎯</span>
+                            <span class="stat-value">5</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="class-card" onclick="selectClass('mage')">
+                    <img src="https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1ea8a0891-9507-4ba9-8b8e-035b383e1562.png" alt="Маг" class="class-image">
+                    <h3 class="class-name">🔮 МАГ</h3>
+                    <div class="class-stats">
+                        <div class="stat">
+                            <span class="stat-icon">❤️</span>
+                            <span class="stat-value">24</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-icon">⚡</span>
+                            <span class="stat-value">12</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-icon">🎯</span>
+                            <span class="stat-value">7</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="class-card" onclick="selectClass('archer')">
+                    <img src="https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1b312ad06-e731-4a5b-8838-d05120d7367a.png" alt="Лучник" class="class-image">
+                    <h3 class="class-name">🏹 ЛУЧНИК</h3>
+                    <div class="class-stats">
+                        <div class="stat">
+                            <span class="stat-icon">❤️</span>
+                            <span class="stat-value">28</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-icon">🏹</span>
+                            <span class="stat-value">9</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-icon">🎯</span>
+                            <span class="stat-value">8</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="class-card" data-class="mage">
-                <div class="card-icon">🔮</div>
-                <div class="card-info">
-                    <h3>MAGE</h3>
-                    <p><span>❤️ 24</span> <span>⚡ 12</span> <span>🦶 3</span></p>
+        </div>
+    </div>
+
+    <!-- Tavern Window -->
+    <div class="modal-window" id="tavernWindow">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeWindow('tavernWindow')">✕</button>
+            <h2 class="modal-title">🍺 ТАВЕРНА</h2>
+            <p class="tavern-info">📍 Вы в городе. Наймите воинов для вашей армии (макс. 6)</p>
+
+            <div class="recruit-section" id="recruitSection"></div>
+
+            <div class="army-panel">
+                <h3 class="army-title">⚔️ ТВОЯ АРМИЯ (<span id="armyCount2">0</span>/6)</h3>
+                <div class="army-slots" id="armySlots">
+                    <div class="army-slot hero-slot" data-index="0">
+                        <div class="hero-badge">👑 ГЕРОЙ</div>
+                    </div>
+                    <div class="army-slot" data-index="1"></div>
+                    <div class="army-slot" data-index="2"></div>
+                    <div class="army-slot" data-index="3"></div>
+                    <div class="army-slot" data-index="4"></div>
+                    <div class="army-slot" data-index="5"></div>
                 </div>
             </div>
-            <div class="class-card" data-class="archer">
-                <div class="card-icon">🏹</div>
-                <div class="card-info">
-                    <h3>ARCHER</h3>
-                    <p><span>❤️ 28</span> <span>🏹 9</span> <span>🦶 3</span></p>
+        </div>
+    </div>
+
+    <!-- Army Display Window -->
+    <div class="modal-window" id="armyDisplayWindow">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeWindow('armyDisplayWindow')">✕</button>
+            <h2 class="modal-title">⚔️ ВАША АРМИЯ</h2>
+            <div class="army-display-grid" id="armyDisplayGrid"></div>
+        </div>
+    </div>
+
+    <!-- Combat Window -->
+    <div class="modal-window" id="combatWindow">
+        <div class="modal-content combat-modal">
+            <div class="combat-container">
+                <div class="combat-info-bar">
+                    <div style="width: 100%;">
+                        <div class="combat-turn-info" id="combatTurnInfo">⚔️ ХОД: ГЕРОЙ 👑</div>
+                        <div class="combat-turn-order" id="turnOrder"></div>
+                    </div>
+                    <div class="combat-actions-bar">
+                        <button class="combat-action-btn" id="pauseBtn" onclick="togglePause()">⏸️ ПАУЗА</button>
+                        <button class="combat-action-btn" id="fleeBtn" onclick="fleeCombat()">🏃 СБЕЖАТЬ (-50💰)</button>
+                    </div>
+                </div>
+
+                <div class="combat-teams">
+                    <div class="combat-side player">
+                        <h3 class="combat-team-title">👑 ВАША АРМИЯ</h3>
+                        <div class="combat-units" id="playerUnits"></div>
+                    </div>
+                    
+                    <div class="vs-divider">VS</div>
+                    
+                    <div class="combat-side enemy">
+                        <h3 class="combat-team-title">💀 ВРАГИ</h3>
+                        <div class="combat-units" id="enemyUnits"></div>
+                    </div>
+                </div>
+
+                <div class="combat-log" id="combatLog">
+                    <div class="combat-log-entry info">⚔️ Битва началась!</div>
                 </div>
             </div>
         </div>
-        <div style="text-align: center; color:#555555; font-size:0.7rem; letter-spacing:2px;">[ SELECT YOUR CLASS ]</div>
     </div>
 
-    <!-- Глобальная карта - строго квадратные ячейки -->
-    <div id="map-screen" class="map-screen">
-        <div class="map-header">
-            <div class="income-timer">
-                <span class="income-display" id="incomePerMin">💰 +<span id="incomeRate">1</span>/5m</span>
-                <span class="income-display" id="timerDisplay">⏳ 5:00</span>
-            </div>
-            <div class="castle-buttons">
-                <span class="gold-display" id="goldDisplay">💰 200</span>
-                <button class="castle-btn" id="tavernBtn" style="display:none;">🍺 TAVERN</button>
-                <button class="castle-btn" id="teleportBtn">🏰 CASTLE</button>
+    <!-- Menu Window -->
+    <div class="modal-window" id="menuWindow">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeWindow('menuWindow')">✕</button>
+            <h2 class="modal-title">⚙️ МЕНЮ</h2>
+            <div class="menu-options">
+                <div class="menu-option" onclick="showStats()">📊 СТАТИСТИКА</div>
+                <div class="menu-option" onclick="showHelp()">❓ ПОМОЩЬ</div>
+                <div class="menu-option new-game" onclick="returnToMainMenu()">🏠 ГЛАВНОЕ МЕНЮ</div>
             </div>
         </div>
-        <div class="map-canvas-container">
-            <canvas id="mapCanvas" width="600" height="600"></canvas>
-        </div>
-        <div class="map-footer">
-            <button id="menuFromMapBtn">⚙️ MENU</button>
+    </div>
+
+    <!-- Stats Window -->
+    <div class="modal-window" id="statsWindow">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeWindow('statsWindow')">✕</button>
+            <h2 class="modal-title">📊 СТАТИСТИКА</h2>
+            <div class="unit-stats" id="statsContent"></div>
         </div>
     </div>
 
-    <!-- Таверна - монохром -->
-    <div id="tavern-screen" class="tavern-screen">
-        <div class="tavern-header">
-            <span class="tavern-title">TAVERN</span>
-            <span class="gold-display" id="tavernGold">💰 200</span>
-        </div>
-        <div class="tavern-grid" id="tavernGrid"></div>
-        <div class="army-preview">
-            <div class="army-title">⚔️ YOUR ARMY (<span id="armyCount">0</span>/6)</div>
-            <div class="army-grid" id="armyGrid"></div>
-        </div>
-        <div class="tavern-footer">
-            <button id="closeTavernBtn">↩️ CLOSE</button>
+    <!-- Unit Stats Window -->
+    <div class="modal-window" id="unitStatsWindow">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeWindow('unitStatsWindow')">✕</button>
+            <h2 class="modal-title">📊 ХАРАКТЕРИСТИКИ</h2>
+            <div class="unit-stats" id="unitStatsContent"></div>
         </div>
     </div>
 
-    <!-- Экран битвы - монохром с красным -->
-    <div id="battle-screen" class="battle-screen">
-        <div class="battle-header">
-            <div class="turn-queue" id="turnQueue"></div>
-            <span class="turn-text" id="turnText">PLAYER TURN</span>
-            <button class="btn-menu" id="menuFromBattleBtn">⚙️ MENU</button>
-        </div>
-        <div class="battle-canvas-wrapper">
-            <canvas id="battleCanvas" width="700" height="1100"></canvas>
-        </div>
-        <div class="unit-details" id="unitDetails">[ SELECT UNIT ]</div>
-        <div class="log-message" id="battleLog">YOUR TURN. CHOOSE A UNIT.</div>
-        <div class="battle-footer">
-            <button id="fleeBtn" class="flee-btn">🏃 FLEE (-50💰)</button>
-            <button id="endTurnBtn" class="hourglass-btn">⌛ END TURN</button>
-        </div>
-    </div>
-</div>
+    <!-- Notification -->
+    <div class="notification" id="notification"></div>
 
-<script>
-(function() {
-    const tg = window.Telegram?.WebApp;
-    if (tg) {
-        tg.expand();
-        tg.backgroundColor = '#000000';
-        tg.setHeaderColor('#000000');
-    }
+    <script>
+        // Game State
+        const gameState = {
+            gold: 200,
+            timer: 300,
+            selectedClass: null,
+            hero: null,
+            army: [],
+            maxArmySize: 6,
+            inCombat: false,
+            playerUnits: [],
+            enemyUnits: [],
+            turnQueue: [],
+            currentTurnIndex: 0,
+            combatInProgress: false,
+            combatPaused: false,
+            defeatedEnemies: [],
+            capturedMines: [],
+            heroPosition: { x: 18, y: 15 },
+            mapWidth: 36,
+            mapHeight: 30,
+            cellSize: 100,
+            viewportWidth: 800,
+            viewportHeight: 600,
+            inTavern: false,
+            inCastle: false,
+            blockedCells: [],
+            castleCells: [
+                {x: 17, y: 14}, {x: 18, y: 14},
+                {x: 17, y: 15}, {x: 18, y: 15}
+            ]
+        };
 
-    // --- DOM элементы ---
-    const menuScreen = document.getElementById('menu-screen');
-    const mapScreen = document.getElementById('map-screen');
-    const tavernScreen = document.getElementById('tavern-screen');
-    const battleScreen = document.getElementById('battle-screen');
-    const mapCanvas = document.getElementById('mapCanvas');
-    const ctxMap = mapCanvas.getContext('2d');
-    const battleCanvas = document.getElementById('battleCanvas');
-    const ctxBattle = battleCanvas.getContext('2d');
-    const battleLog = document.getElementById('battleLog');
-    const turnText = document.getElementById('turnText');
-    const tavernBtn = document.getElementById('tavernBtn');
-    const teleportBtn = document.getElementById('teleportBtn');
-    const menuFromMapBtn = document.getElementById('menuFromMapBtn');
-    const menuFromBattleBtn = document.getElementById('menuFromBattleBtn');
-    const endTurnBtn = document.getElementById('endTurnBtn');
-    const fleeBtn = document.getElementById('fleeBtn');
-    const goldDisplay = document.getElementById('goldDisplay');
-    const tavernGold = document.getElementById('tavernGold');
-    const tavernGrid = document.getElementById('tavernGrid');
-    const closeTavernBtn = document.getElementById('closeTavernBtn');
-    const armyGrid = document.getElementById('armyGrid');
-    const armyCount = document.getElementById('armyCount');
-    const unitDetails = document.getElementById('unitDetails');
-    const incomeRateSpan = document.getElementById('incomeRate');
-    const timerDisplay = document.getElementById('timerDisplay');
-    const turnQueue = document.getElementById('turnQueue');
-
-    // ---------- ГЛОБАЛЬНАЯ КАРТА ----------
-    const MAP_SIZE = 100;
-    const CAMERA_SIZE = 6;
-    const CASTLE_POS = { x: Math.floor(MAP_SIZE/2), y: Math.floor(MAP_SIZE/2) };
-    let worldMap = [];
-    let enemiesOnMap = [];
-    let mines = [];
-    let lastIncomeTime = Date.now();
-    const INCOME_INTERVAL = 5 * 60 * 1000;
-
-    let gold = 200;
-    function updateGoldDisplay() {
-        goldDisplay.innerText = `💰 ${gold}`;
-        tavernGold.innerText = `💰 ${gold}`;
-    }
-
-    function updateIncomeRate() {
-        const playerMines = mines.filter(m => m.owner === 'player').length;
-        const totalRate = 1 + playerMines;
-        incomeRateSpan.innerText = totalRate;
-    }
-
-    function updateTimer() {
-        const now = Date.now();
-        const timeLeft = Math.max(0, INCOME_INTERVAL - (now - lastIncomeTime));
-        const minutes = Math.floor(timeLeft / 60000);
-        const seconds = Math.floor((timeLeft % 60000) / 1000);
-        timerDisplay.innerText = `⏳ ${minutes}:${seconds.toString().padStart(2, '0')}`;
-    }
-
-    function generateWorld() {
-        worldMap = [];
-        for (let y = 0; y < MAP_SIZE; y++) {
-            let row = [];
-            for (let x = 0; x < MAP_SIZE; x++) {
-                const nx = x / MAP_SIZE - 0.5;
-                const ny = y / MAP_SIZE - 0.5;
-                const distance = Math.sqrt(nx*nx + ny*ny);
-                
-                let r = Math.random() * (1 + distance * 2);
-                
-                if (r < 0.5) row.push(1); // лес
-                else if (r < 0.8) row.push(3); // трава
-                else if (r < 0.95) row.push(2); // вода
-                else row.push(0); // дорога
-            }
-            worldMap.push(row);
-        }
-
-        const roads = new Set();
-        roads.add(`${CASTLE_POS.x},${CASTLE_POS.y}`);
-        const directions = [[1,0],[-1,0],[0,1],[0,-1]];
-        
-        let mainDirs = [];
-        for (let i = 0; i < 3; i++) {
-            let dir;
-            do {
-                dir = directions[Math.floor(Math.random() * 4)];
-            } while (mainDirs.some(d => d[0] === dir[0] && d[1] === dir[1]));
-            mainDirs.push(dir);
-        }
-
-        mainDirs.forEach(dir => {
-            let x = CASTLE_POS.x;
-            let y = CASTLE_POS.y;
-            let length = 50 + Math.floor(Math.random() * 30);
-            for (let step = 0; step < length; step++) {
-                x = Math.max(0, Math.min(MAP_SIZE-1, x + dir[0]));
-                y = Math.max(0, Math.min(MAP_SIZE-1, y + dir[1]));
-                roads.add(`${x},${y}`);
-                if (step % 7 === 0) {
-                    let bx = x, by = y;
-                    for (let b = 0; b < 10; b++) {
-                        const bdir = directions[Math.floor(Math.random() * 4)];
-                        bx = Math.max(0, Math.min(MAP_SIZE-1, bx + bdir[0]));
-                        by = Math.max(0, Math.min(MAP_SIZE-1, by + bdir[1]));
-                        roads.add(`${bx},${by}`);
-                    }
-                }
-            }
-        });
-
-        for (let i = 0; i < 60; i++) {
-            let x = CASTLE_POS.x + Math.floor(Math.random() * 60 - 30);
-            let y = CASTLE_POS.y + Math.floor(Math.random() * 60 - 30);
-            x = Math.max(0, Math.min(MAP_SIZE-1, x));
-            y = Math.max(0, Math.min(MAP_SIZE-1, y));
-            for (let step = 0; step < 20; step++) {
-                const dir = directions[Math.floor(Math.random() * 4)];
-                x = Math.max(0, Math.min(MAP_SIZE-1, x + dir[0]));
-                y = Math.max(0, Math.min(MAP_SIZE-1, y + dir[1]));
-                roads.add(`${x},${y}`);
-            }
-        }
-
-        roads.forEach(key => {
-            const [x, y] = key.split(',').map(Number);
-            worldMap[y][x] = 0;
-        });
-
-        mines = [];
-        for (let i = 0; i < 20; i++) {
-            let x = Math.floor(Math.random() * MAP_SIZE);
-            let y = Math.floor(Math.random() * MAP_SIZE);
-            if (worldMap[y][x] === 0 && !(x === CASTLE_POS.x && y === CASTLE_POS.y)) {
-                mines.push({ x, y, owner: null });
-            }
-        }
-    }
-
-    function generateEnemies() {
-        enemiesOnMap = [];
-        const enemyTemplates = [
-            { type: 'SKELETON', hp: 18, maxHp: 18, attack: 5, icon: '💀', moveRange: 3, attackRange: 1 },
-            { type: 'SHADE', hp: 16, maxHp: 16, attack: 6, icon: '👤', moveRange: 4, attackRange: 1 },
-            { type: 'DEATH KNIGHT', hp: 24, maxHp: 24, attack: 7, icon: '⚔️', moveRange: 3, attackRange: 1 },
-            { type: 'GOBLIN', hp: 14, maxHp: 14, attack: 4, icon: '👺', moveRange: 4, attackRange: 1 },
-            { type: 'ORC', hp: 22, maxHp: 22, attack: 6, icon: '👹', moveRange: 3, attackRange: 1 },
-            { type: 'WOLF', hp: 12, maxHp: 12, attack: 8, icon: '🐺', moveRange: 5, attackRange: 1 },
-            { type: 'DRAGON', hp: 40, maxHp: 40, attack: 15, icon: '🐉', moveRange: 2, attackRange: 2 },
-            { type: 'BOAR', hp: 20, maxHp: 20, attack: 7, icon: '🐗', moveRange: 3, attackRange: 1 },
-            { type: 'BAT', hp: 10, maxHp: 10, attack: 4, icon: '🦇', moveRange: 4, attackRange: 1 }
-        ];
-        const occupied = new Set([`${CASTLE_POS.x},${CASTLE_POS.y}`]);
-        mines.forEach(m => occupied.add(`${m.x},${m.y}`));
-        
-        for (let i = 0; i < 80; i++) {
-            let attempts = 0;
-            while (attempts < 500) {
-                const x = Math.floor(Math.random() * MAP_SIZE);
-                const y = Math.floor(Math.random() * MAP_SIZE);
-                const key = `${x},${y}`;
-                if (!occupied.has(key) && worldMap[y][x] === 0) {
-                    occupied.add(key);
-                    const units = [];
-                    const unitCount = 3 + Math.floor(Math.random() * 3);
-                    for (let j = 0; j < unitCount; j++) {
-                        const tmpl = enemyTemplates[Math.floor(Math.random() * enemyTemplates.length)];
-                        units.push({ ...tmpl, hp: tmpl.maxHp, team: 'enemy' });
-                    }
-                    enemiesOnMap.push({ x, y, units });
-                    break;
-                }
-                attempts++;
-            }
-        }
-    }
-
-    let playerHero = null;
-    let playerWarriors = [];
-
-    const heroByClass = {
-        warrior: { type: 'WARRIOR', hp: 35, maxHp: 35, attack: 7, team: 'player', icon: '⚔️', moveRange: 3, attackRange: 1 },
-        mage: { type: 'MAGE', hp: 24, maxHp: 24, attack: 12, team: 'player', icon: '🔮', moveRange: 3, attackRange: 3 },
-        archer: { type: 'ARCHER', hp: 28, maxHp: 28, attack: 9, team: 'player', icon: '🏹', moveRange: 3, attackRange: 4 }
-    };
-
-    let playerPos = { x: CASTLE_POS.x, y: CASTLE_POS.y };
-
-    function checkIncome() {
-        const now = Date.now();
-        if (now - lastIncomeTime >= INCOME_INTERVAL) {
-            const intervals = Math.floor((now - lastIncomeTime) / INCOME_INTERVAL);
-            if (intervals > 0) {
-                let income = intervals * 1;
-                const playerMines = mines.filter(m => m.owner === 'player').length;
-                income += intervals * playerMines;
-                gold += income;
-                updateGoldDisplay();
-                lastIncomeTime += intervals * INCOME_INTERVAL;
-                battleLog.innerText = `INCOME: +${income}💰`;
-                updateIncomeRate();
-            }
-        }
-    }
-
-    // Функция для получения мировых координат по клику
-    function getWorldCoordsFromClick(e) {
-        const rect = mapCanvas.getBoundingClientRect();
-        const scale = mapCanvas.width / rect.width;
-        const mouseX = (e.clientX - rect.left) * scale;
-        const mouseY = (e.clientY - rect.top) * scale;
-        const cellSize = mapCanvas.width / CAMERA_SIZE;
-        
-        const col = Math.floor(mouseX / cellSize);
-        const row = Math.floor(mouseY / cellSize);
-        
-        if (col < 0 || col >= CAMERA_SIZE || row < 0 || row >= CAMERA_SIZE) return null;
-        
-        let startX = playerPos.x - Math.floor(CAMERA_SIZE/2);
-        let startY = playerPos.y - Math.floor(CAMERA_SIZE/2);
-        startX = Math.max(0, Math.min(MAP_SIZE - CAMERA_SIZE, startX));
-        startY = Math.max(0, Math.min(MAP_SIZE - CAMERA_SIZE, startY));
-        
-        const worldX = startX + col;
-        const worldY = startY + row;
-        
-        return { x: worldX, y: worldY, col, row };
-    }
-
-    function drawMap() {
-        checkIncome();
-        updateTimer();
-        ctxMap.clearRect(0, 0, mapCanvas.width, mapCanvas.height);
-        const cellSize = mapCanvas.width / CAMERA_SIZE;
-        let startX = playerPos.x - Math.floor(CAMERA_SIZE/2);
-        let startY = playerPos.y - Math.floor(CAMERA_SIZE/2);
-        startX = Math.max(0, Math.min(MAP_SIZE - CAMERA_SIZE, startX));
-        startY = Math.max(0, Math.min(MAP_SIZE - CAMERA_SIZE, startY));
-
-        tavernBtn.style.display = (playerPos.x === CASTLE_POS.x && playerPos.y === CASTLE_POS.y) ? 'inline-block' : 'none';
-
-        for (let i = 0; i < CAMERA_SIZE; i++) {
-            for (let j = 0; j < CAMERA_SIZE; j++) {
-                const worldX = startX + j;
-                const worldY = startY + i;
-                const cellType = worldMap[worldY][worldX];
-                const x = j * cellSize;
-                const y = i * cellSize;
-
-                // Монохромные цвета для фона
-                if (cellType === 0) { // дорога
-                    ctxMap.fillStyle = '#333333';
-                } else if (cellType === 1) { // лес
-                    ctxMap.fillStyle = '#222222';
-                } else if (cellType === 2) { // вода
-                    ctxMap.fillStyle = '#111111';
-                } else { // трава
-                    ctxMap.fillStyle = '#2a2a2a';
-                }
-                
-                ctxMap.fillRect(x, y, cellSize, cellSize);
-                
-                // Квадратная сетка
-                ctxMap.strokeStyle = '#444444';
-                ctxMap.lineWidth = 1;
-                ctxMap.strokeRect(x + 0.5, y + 0.5, cellSize - 1, cellSize - 1);
-
-                // Эмодзи
-                ctxMap.font = `${cellSize-35}px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`;
-                ctxMap.textAlign = 'center';
-                ctxMap.textBaseline = 'middle';
-
-                ctxMap.fillStyle = '#aaaaaa';
-
-                if (cellType === 1) {
-                    ctxMap.fillText('🌲', x + cellSize/2, y + cellSize/2);
-                } else if (cellType === 2) {
-                    ctxMap.fillText('💧', x + cellSize/2, y + cellSize/2);
-                } else if (cellType === 3) {
-                    ctxMap.fillText('🌿', x + cellSize/2, y + cellSize/2);
-                }
-
-                const mineHere = mines.find(m => m.x === worldX && m.y === worldY);
-                if (mineHere) {
-                    if (mineHere.owner === 'player') {
-                        ctxMap.fillStyle = '#ff0000';
-                        ctxMap.fillText('⛏️', x + cellSize/2 - 8, y + cellSize/2 - 5);
-                        ctxMap.fillText('✔️', x + cellSize/2 + 8, y + cellSize/2 + 3);
-                    } else {
-                        ctxMap.fillStyle = '#888888';
-                        ctxMap.fillText('⛏️', x + cellSize/2, y + cellSize/2);
-                    }
-                }
-
-                if (worldX === CASTLE_POS.x && worldY === CASTLE_POS.y) {
-                    ctxMap.fillStyle = '#ff0000';
-                    ctxMap.fillText('🏰', x + cellSize/2, y + cellSize/2);
-                }
-                
-                const enemyHere = enemiesOnMap.find(e => e.x === worldX && e.y === worldY);
-                if (enemyHere) {
-                    ctxMap.fillStyle = '#ff0000';
-                    const enemyIcon = enemyHere.units[0]?.icon || '⚔️';
-                    ctxMap.fillText(enemyIcon, x + cellSize/2, y + cellSize/2);
-                }
-                
-                if (playerPos.x === worldX && playerPos.y === worldY) {
-                    ctxMap.fillStyle = '#ffffff';
-                    ctxMap.fillText(playerHero.icon, x + cellSize/2, y + cellSize/2);
-                }
-            }
-        }
-    }
-
-    // Функция проверки возможности перемещения
-    function canMoveTo(worldX, worldY) {
-        if (worldX < 0 || worldX >= MAP_SIZE || worldY < 0 || worldY >= MAP_SIZE) return false;
-        
-        // Можно ходить только по дорогам (0)
-        if (worldMap[worldY][worldX] !== 0) return false;
-        
-        // Нельзя ходить на клетку с врагом
-        const enemyHere = enemiesOnMap.find(e => e.x === worldX && e.y === worldY);
-        if (enemyHere) return false;
-        
-        return true;
-    }
-
-    function handleMapClick(e) {
-        const coords = getWorldCoordsFromClick(e);
-        if (!coords) return;
-        
-        const { x: worldX, y: worldY } = coords;
-
-        // Проверяем, что клетка соседняя (манхэттенское расстояние 1)
-        const dx = Math.abs(worldX - playerPos.x);
-        const dy = Math.abs(worldY - playerPos.y);
-        
-        if (dx + dy !== 1) {
-            battleLog.innerText = 'YOU CAN ONLY MOVE TO ADJACENT CELLS!';
-            return;
-        }
-
-        // Проверяем, можно ли переместиться
-        if (!canMoveTo(worldX, worldY)) {
-            battleLog.innerText = 'YOU CAN ONLY MOVE ON ROADS!';
-            return;
-        }
-
-        // Перемещаем игрока
-        playerPos = { x: worldX, y: worldY };
-        drawMap();
-
-        // Проверяем шахты
-        const mineHere = mines.find(m => m.x === worldX && m.y === worldY);
-        if (mineHere && mineHere.owner !== 'player') {
-            const mineGuard = enemiesOnMap.find(e => e.x === worldX && e.y === worldY);
-            if (mineGuard) {
-                startBattle(mineGuard, true);
-            } else {
-                mineHere.owner = 'player';
-                updateIncomeRate();
-                battleLog.innerText = 'MINE CAPTURED! +1💰/5min';
-                drawMap();
-            }
-        } else {
-            const enemyHere = enemiesOnMap.find(e => e.x === worldX && e.y === worldY);
-            if (enemyHere) startBattle(enemyHere, false);
-        }
-    }
-
-    // ---------- ТАВЕРНА ----------
-    function updateArmyDisplay() {
-        armyGrid.innerHTML = '';
-        const allUnits = [playerHero, ...playerWarriors].filter(u => u.hp > 0);
-        armyCount.innerText = allUnits.length;
-        allUnits.forEach(unit => {
-            const div = document.createElement('div');
-            div.className = 'army-unit';
-            div.innerHTML = `<span>${unit.icon}</span><small>❤️${unit.hp}</small>`;
-            armyGrid.appendChild(div);
-        });
-    }
-
-    function openTavern() {
-        updateArmyDisplay();
-        const templates = [
-            { type: 'SWORDSMAN', hp: 20, maxHp: 20, attack: 5, icon: '⚔️', moveRange: 3, attackRange: 1, cost: 40 },
-            { type: 'SPEARMAN', hp: 18, maxHp: 18, attack: 6, icon: '🔱', moveRange: 3, attackRange: 2, cost: 45 },
-            { type: 'ARCHER', hp: 16, maxHp: 16, attack: 7, icon: '🏹', moveRange: 3, attackRange: 4, cost: 50 },
-            { type: 'MAGE', hp: 14, maxHp: 14, attack: 8, icon: '🔮', moveRange: 3, attackRange: 3, cost: 55 },
-            { type: 'HEALER', hp: 15, maxHp: 15, attack: 4, icon: '💊', moveRange: 3, attackRange: 1, cost: 35 },
-            { type: 'BERSERKER', hp: 22, maxHp: 22, attack: 5, icon: '🪓', moveRange: 4, attackRange: 1, cost: 50 },
-            { type: 'GUARDIAN', hp: 24, maxHp: 24, attack: 4, icon: '🛡️', moveRange: 2, attackRange: 1, cost: 45 }
+        // Mine positions with guarding enemies
+        const minePositions = [
+            {x: 6, y: 6, id: 'mine_0', enemyId: 'enemy_0'},
+            {x: 11, y: 9, id: 'mine_1', enemyId: 'enemy_1'},
+            {x: 16, y: 7, id: 'mine_2', enemyId: 'enemy_2'},
+            {x: 21, y: 11, id: 'mine_3', enemyId: 'enemy_3'},
+            {x: 26, y: 8, id: 'mine_4', enemyId: 'enemy_4'}
         ];
 
-        tavernGrid.innerHTML = '';
-        templates.forEach(tmpl => {
-            const item = document.createElement('div');
-            item.className = 'tavern-item';
-            item.innerHTML = `
-                <div class="tavern-icon">${tmpl.icon}</div>
-                <div class="tavern-info">
-                    <h3>${tmpl.type}</h3>
-                    <p><span>❤️${tmpl.maxHp}</span> <span>⚔️${tmpl.attack}</span> <span>🦶${tmpl.moveRange}</span></p>
-                </div>
-                <div class="tavern-cost">${tmpl.cost}💰</div>
-            `;
-            item.addEventListener('click', () => hireUnit(tmpl));
-            tavernGrid.appendChild(item);
-        });
-
-        mapScreen.style.display = 'none';
-        tavernScreen.style.display = 'flex';
-    }
-
-    function hireUnit(tmpl) {
-        if (gold < tmpl.cost) {
-            battleLog.innerText = `NOT ENOUGH GOLD! NEED ${tmpl.cost}`;
-            return;
-        }
-        const aliveWarriors = playerWarriors.filter(w => w.hp > 0);
-        if (aliveWarriors.length >= 5) {
-            battleLog.innerText = 'MAX 5 MERCENARIES!';
-            return;
-        }
-
-        gold -= tmpl.cost;
-        updateGoldDisplay();
-        const newWarrior = { ...tmpl, hp: tmpl.maxHp, team: 'player' };
-        playerWarriors.push(newWarrior);
-        battleLog.innerText = `HIRED ${newWarrior.type}`;
-        
-        updateArmyDisplay();
-        openTavern();
-    }
-
-    // ---------- ТАКТИЧЕСКИЙ БОЙ (без изменений) ----------
-    const BATTLE_WIDTH = 7;
-    const BATTLE_HEIGHT = 11;
-    let battlePlayerUnits = [];
-    let battleEnemyUnits = [];
-    let obstacles = [];
-    let corpses = [];
-    let currentTurn = 'player';
-    let selectedUnitId = null;
-    let battleActive = false;
-    let currentEnemyPos = null;
-    let nextId = 1000;
-    let isMineBattle = false;
-    let animationInProgress = false;
-    let turnOrder = [];
-
-    function generateObstacles() {
-        obstacles = [];
-        const count = 5 + Math.floor(Math.random() * 8);
-        for (let i = 0; i < count; i++) {
-            const x = Math.floor(Math.random() * BATTLE_WIDTH);
-            const y = Math.floor(Math.random() * BATTLE_HEIGHT);
-            const isPlayerStart = (y >= 6) && (x <= 1);
-            const isEnemyStart = (y < 5) && (x >= 5);
-            if (!isPlayerStart && !isEnemyStart) {
-                obstacles.push({ x, y });
-            }
-        }
-    }
-
-    function isObstacle(x, y) {
-        return obstacles.some(o => o.x === x && o.y === y);
-    }
-
-    function isCellOccupied(x, y, excludeUnitId = null) {
-        const player = battlePlayerUnits.find(u => u.x === x && u.y === y && u.hp > 0 && u.id !== excludeUnitId);
-        const enemy = battleEnemyUnits.find(u => u.x === x && u.y === y && u.hp > 0 && u.id !== excludeUnitId);
-        return !!(player || enemy);
-    }
-
-    function canMoveBetween(x1, y1, x2, y2) {
-        if (x1 === x2 && y1 === y2) return true;
-        
-        const dx = x2 - x1;
-        const dy = y2 - y1;
-        
-        if (Math.abs(dx) + Math.abs(dy) > 1) return false;
-        
-        const nx = x1 + Math.sign(dx);
-        const ny = y1 + Math.sign(dy);
-        
-        if (isObstacle(nx, ny)) return false;
-        if (isCellOccupied(nx, ny)) return false;
-        
-        return true;
-    }
-
-    function moveUnitStep(unit, targetX, targetY, stepsLeft, callback) {
-        if (stepsLeft <= 0 || (unit.x === targetX && unit.y === targetY)) {
-            callback(true);
-            return;
-        }
-        
-        const dx = Math.sign(targetX - unit.x);
-        const dy = Math.sign(targetY - unit.y);
-        
-        if (dx !== 0) {
-            const newX = unit.x + dx;
-            const newY = unit.y;
-            if (canMoveBetween(unit.x, unit.y, newX, newY)) {
-                animateJump(unit, unit.x, unit.y, newX, newY, () => {
-                    moveUnitStep(unit, targetX, targetY, stepsLeft - 1, callback);
-                });
-                return;
-            }
-        }
-        
-        if (dy !== 0) {
-            const newX = unit.x;
-            const newY = unit.y + dy;
-            if (canMoveBetween(unit.x, unit.y, newX, newY)) {
-                animateJump(unit, unit.x, unit.y, newX, newY, () => {
-                    moveUnitStep(unit, targetX, targetY, stepsLeft - 1, callback);
-                });
-                return;
-            }
-        }
-        
-        callback(false);
-    }
-
-    function updateTurnQueue() {
-        const allAlive = [...battlePlayerUnits.filter(u => u.hp > 0), ...battleEnemyUnits.filter(u => u.hp > 0)];
-        
-        if (turnOrder.length === 0) {
-            turnOrder = allAlive.map(u => u.id);
-            turnOrder.sort((a, b) => {
-                const uA = allAlive.find(u => u.id === a);
-                const uB = allAlive.find(u => u.id === b);
-                return uA.y - uB.y;
-            });
-        } else {
-            turnOrder = turnOrder.filter(id => allAlive.some(u => u.id === id));
-        }
-
-        turnQueue.innerHTML = '';
-        turnOrder.slice(0, 6).forEach((id, index) => {
-            const unit = allAlive.find(u => u.id === id);
-            if (!unit) return;
-            const icon = document.createElement('span');
-            icon.className = 'queue-icon';
-            icon.textContent = unit.icon;
-            if (unit.team === 'player') {
-                icon.style.borderColor = '#ffffff';
-            } else {
-                icon.style.borderColor = '#ff0000';
-            }
-            if (index === 0) {
-                icon.classList.add('next');
-            }
-            if (unit.id === selectedUnitId) {
-                icon.style.boxShadow = '0 0 10px #ff0000';
-            }
-            turnQueue.appendChild(icon);
-        });
-
-        turnText.innerText = currentTurn === 'player' ? 'PLAYER TURN' : 'ENEMY TURN';
-    }
-
-    function moveToEndOfQueue(unitId) {
-        const index = turnOrder.indexOf(unitId);
-        if (index !== -1) {
-            turnOrder.splice(index, 1);
-            turnOrder.push(unitId);
-        }
-        updateTurnQueue();
-    }
-
-    function setupBattleUnits(enemyUnitsData) {
-        battlePlayerUnits = [];
-        battleEnemyUnits = [];
-        generateObstacles();
-
-        const allPlayer = [playerHero, ...playerWarriors].filter(u => u.hp > 0);
-        
-        let playerPositions = [];
-        for (let y = 6; y < BATTLE_HEIGHT; y++) {
-            for (let x = 0; x <= 1; x++) {
-                playerPositions.push({ x, y });
-            }
-        }
-        playerPositions = playerPositions.sort(() => Math.random() - 0.5);
-        for (let i = 0; i < Math.min(allPlayer.length, playerPositions.length); i++) {
-            const pos = playerPositions[i];
-            battlePlayerUnits.push({
-                ...allPlayer[i],
-                id: nextId++,
-                x: pos.x,
-                y: pos.y,
-                actedThisTurn: false
-            });
-        }
-
-        let enemyPositions = [];
-        for (let y = 0; y < 5; y++) {
-            for (let x = 5; x <= 6; x++) {
-                enemyPositions.push({ x, y });
-            }
-        }
-        enemyPositions = enemyPositions.sort(() => Math.random() - 0.5);
-        for (let i = 0; i < Math.min(enemyUnitsData.length, enemyPositions.length); i++) {
-            const pos = enemyPositions[i];
-            battleEnemyUnits.push({
-                ...enemyUnitsData[i],
-                id: nextId++,
-                x: pos.x,
-                y: pos.y,
-                actedThisTurn: false
-            });
-        }
-        turnOrder = [];
-        updateTurnQueue();
-    }
-
-    function drawBattle() {
-        ctxBattle.clearRect(0, 0, battleCanvas.width, battleCanvas.height);
-        const cellSize = battleCanvas.width / BATTLE_WIDTH;
-
-        for (let y = 0; y < BATTLE_HEIGHT; y++) {
-            for (let x = 0; x < BATTLE_WIDTH; x++) {
-                const xPos = x * cellSize;
-                const yPos = y * cellSize;
-                
-                if (isObstacle(x, y)) {
-                    ctxBattle.fillStyle = '#2a2a2a';
-                    ctxBattle.fillRect(xPos, yPos, cellSize, cellSize);
-                    
-                    ctxBattle.strokeStyle = '#ff0000';
-                    ctxBattle.lineWidth = 2;
-                    ctxBattle.strokeRect(xPos+2, yPos+2, cellSize-4, cellSize-4);
-                    
-                    ctxBattle.font = `${cellSize-40}px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`;
-                    ctxBattle.fillStyle = '#666666';
-                    ctxBattle.fillText('🪨', xPos + cellSize/2, yPos + cellSize/2);
-                } else {
-                    ctxBattle.fillStyle = '#1a1a1a';
-                    ctxBattle.fillRect(xPos, yPos, cellSize, cellSize);
-                    
-                    ctxBattle.strokeStyle = '#333333';
-                    ctxBattle.lineWidth = 1;
-                    ctxBattle.strokeRect(xPos, yPos, cellSize, cellSize);
-                }
-            }
-        }
-
-        if (selectedUnitId && currentTurn === 'player' && !animationInProgress) {
-            const selected = battlePlayerUnits.find(u => u.id === selectedUnitId);
-            if (selected && selected.hp > 0 && !selected.actedThisTurn) {
-                const moveRange = selected.moveRange || 3;
-                const attackRange = selected.attackRange || 1;
-                
-                for (let dy = -moveRange; dy <= moveRange; dy++) {
-                    for (let dx = -moveRange; dx <= moveRange; dx++) {
-                        if (Math.abs(dx) + Math.abs(dy) > moveRange) continue;
-                        const nx = selected.x + dx;
-                        const ny = selected.y + dy;
-                        if (nx < 0 || nx >= BATTLE_WIDTH || ny < 0 || ny >= BATTLE_HEIGHT) continue;
-                        if (isObstacle(nx, ny)) continue;
-                        if (isCellOccupied(nx, ny, selected.id)) continue;
-                        
-                        ctxBattle.fillStyle = 'rgba(255, 255, 255, 0.2)';
-                        ctxBattle.fillRect(nx * cellSize, ny * cellSize, cellSize, cellSize);
-                    }
-                }
-                
-                for (let dy = -attackRange; dy <= attackRange; dy++) {
-                    for (let dx = -attackRange; dx <= attackRange; dx++) {
-                        if (Math.abs(dx) + Math.abs(dy) > attackRange) continue;
-                        const nx = selected.x + dx;
-                        const ny = selected.y + dy;
-                        if (nx < 0 || nx >= BATTLE_WIDTH || ny < 0 || ny >= BATTLE_HEIGHT) continue;
-                        if (isObstacle(nx, ny)) continue;
-                        const enemy = battleEnemyUnits.find(u => u.x === nx && u.y === ny && u.hp > 0);
-                        if (enemy) {
-                            ctxBattle.fillStyle = 'rgba(255, 0, 0, 0.3)';
-                            ctxBattle.fillRect(nx * cellSize, ny * cellSize, cellSize, cellSize);
-                        }
-                    }
-                }
-            }
-        }
-
-        ctxBattle.font = `${cellSize-56}px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`;
-        ctxBattle.textAlign = 'center';
-        ctxBattle.textBaseline = 'middle';
-        
-        corpses.forEach(corpse => {
-            const x = corpse.x * cellSize;
-            const y = corpse.y * cellSize;
-            ctxBattle.fillStyle = 'rgba(255,255,255,0.3)';
-            ctxBattle.fillText('💀', x + cellSize/2, y + cellSize/2);
-        });
-
-        battlePlayerUnits.forEach(u => drawUnitStatic(u, true, cellSize));
-        battleEnemyUnits.forEach(u => drawUnitStatic(u, false, cellSize));
-        updateTurnQueue();
-    }
-
-    function drawUnitStatic(unit, isPlayer, cellSize) {
-        if (unit.hp <= 0) return;
-        const x = unit.x * cellSize;
-        const y = unit.y * cellSize;
-        
-        ctxBattle.beginPath();
-        ctxBattle.arc(x + cellSize/2, y + cellSize/2, cellSize/2 - 10, 0, 2 * Math.PI);
-        ctxBattle.strokeStyle = isPlayer ? '#ffffff' : '#ff0000';
-        ctxBattle.lineWidth = 3;
-        ctxBattle.stroke();
-        
-        if (unit.id === selectedUnitId && currentTurn === 'player' && isPlayer) {
-            ctxBattle.beginPath();
-            ctxBattle.arc(x + cellSize/2, y + cellSize/2, cellSize/2 - 8, 0, 2 * Math.PI);
-            ctxBattle.strokeStyle = '#ff0000';
-            ctxBattle.lineWidth = 2;
-            ctxBattle.stroke();
-        }
-        
-        ctxBattle.font = `${cellSize-56}px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`;
-        ctxBattle.fillStyle = isPlayer ? '#ffffff' : '#ff0000';
-        ctxBattle.fillText(unit.icon, x + cellSize/2, y + cellSize/2);
-
-        const barWidth = 35;
-        const barHeight = 4;
-        const barX = x + (cellSize - barWidth) / 2;
-        const barY = y + cellSize/2 + 18;
-        const hpPercent = unit.hp / unit.maxHp;
-
-        ctxBattle.fillStyle = '#333333';
-        ctxBattle.fillRect(barX, barY, barWidth, barHeight);
-
-        ctxBattle.fillStyle = isPlayer ? '#ffffff' : '#ff0000';
-        ctxBattle.fillRect(barX, barY, barWidth * hpPercent, barHeight);
-    }
-
-    function animateJump(unit, fromX, fromY, toX, toY, callback) {
-        if (animationInProgress) {
-            if (callback) callback();
-            return;
-        }
-        animationInProgress = true;
-        const startTime = performance.now();
-        const duration = 250;
-
-        function animate(currentTime) {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const jumpHeight = Math.sin(progress * Math.PI) * 30;
-
-            drawBattleWithAnimation(unit, fromX, fromY, toX, toY, progress, jumpHeight);
-
-            if (progress < 1) {
-                requestAnimationFrame(animate);
-            } else {
-                unit.x = toX;
-                unit.y = toY;
-                animationInProgress = false;
-                drawBattle();
-                if (callback) callback();
-            }
-        }
-        requestAnimationFrame(animate);
-    }
-
-    function drawBattleWithAnimation(movingUnit, fromX, fromY, toX, toY, progress, jumpHeight) {
-        ctxBattle.clearRect(0, 0, battleCanvas.width, battleCanvas.height);
-        const cellSize = battleCanvas.width / BATTLE_WIDTH;
-
-        for (let y = 0; y < BATTLE_HEIGHT; y++) {
-            for (let x = 0; x < BATTLE_WIDTH; x++) {
-                const xPos = x * cellSize;
-                const yPos = y * cellSize;
-                
-                if (isObstacle(x, y)) {
-                    ctxBattle.fillStyle = '#2a2a2a';
-                    ctxBattle.fillRect(xPos, yPos, cellSize, cellSize);
-                    ctxBattle.strokeStyle = '#ff0000';
-                    ctxBattle.lineWidth = 2;
-                    ctxBattle.strokeRect(xPos+2, yPos+2, cellSize-4, cellSize-4);
-                    ctxBattle.font = `${cellSize-40}px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`;
-                    ctxBattle.fillStyle = '#666666';
-                    ctxBattle.fillText('🪨', xPos + cellSize/2, yPos + cellSize/2);
-                } else {
-                    ctxBattle.fillStyle = '#1a1a1a';
-                    ctxBattle.fillRect(xPos, yPos, cellSize, cellSize);
-                    ctxBattle.strokeStyle = '#333333';
-                    ctxBattle.lineWidth = 1;
-                    ctxBattle.strokeRect(xPos, yPos, cellSize, cellSize);
-                }
-            }
-        }
-
-        ctxBattle.font = `${cellSize-56}px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`;
-        corpses.forEach(corpse => {
-            const x = corpse.x * cellSize;
-            const y = corpse.y * cellSize;
-            ctxBattle.fillStyle = 'rgba(255,255,255,0.3)';
-            ctxBattle.fillText('💀', x + cellSize/2, y + cellSize/2);
-        });
-
-        battlePlayerUnits.forEach(u => {
-            if (u.id === movingUnit.id || u.hp <= 0) return;
-            drawUnitStatic(u, true, cellSize);
-        });
-        battleEnemyUnits.forEach(u => {
-            if (u.id === movingUnit.id || u.hp <= 0) return;
-            drawUnitStatic(u, false, cellSize);
-        });
-
-        const x = (fromX + (toX - fromX) * progress) * cellSize;
-        const y = (fromY + (toY - fromY) * progress) * cellSize - jumpHeight;
-        
-        ctxBattle.beginPath();
-        ctxBattle.arc(x + cellSize/2, y + cellSize/2, cellSize/2 - 10, 0, 2 * Math.PI);
-        ctxBattle.strokeStyle = movingUnit.team === 'player' ? '#ffffff' : '#ff0000';
-        ctxBattle.lineWidth = 3;
-        ctxBattle.stroke();
-        
-        ctxBattle.font = `${cellSize-56}px 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif`;
-        ctxBattle.fillStyle = movingUnit.team === 'player' ? '#ffffff' : '#ff0000';
-        ctxBattle.fillText(movingUnit.icon, x + cellSize/2, y + cellSize/2);
-
-        const barWidth = 35;
-        const barHeight = 4;
-        const barX = x + (cellSize - barWidth) / 2;
-        const barY = y + cellSize/2 + 18;
-        const hpPercent = movingUnit.hp / movingUnit.maxHp;
-
-        ctxBattle.fillStyle = '#333333';
-        ctxBattle.fillRect(barX, barY, barWidth, barHeight);
-
-        ctxBattle.fillStyle = movingUnit.team === 'player' ? '#ffffff' : '#ff0000';
-        ctxBattle.fillRect(barX, barY, barWidth * hpPercent, barHeight);
-    }
-
-    function checkBattleEnd() {
-        const playerAlive = battlePlayerUnits.some(u => u.hp > 0);
-        const enemyAlive = battleEnemyUnits.some(u => u.hp > 0);
-        if (!playerAlive) return 'lose';
-        if (!enemyAlive) return 'win';
-        return 'ongoing';
-    }
-
-    function endBattle(win) {
-        if (win) {
-            if (isMineBattle) {
-                const mine = mines.find(m => m.x === currentEnemyPos.x && m.y === currentEnemyPos.y);
-                if (mine) mine.owner = 'player';
-                updateIncomeRate();
-            }
-            enemiesOnMap = enemiesOnMap.filter(e => !(e.x === currentEnemyPos.x && e.y === currentEnemyPos.y));
-            playerHero = battlePlayerUnits.find(u => u.type.includes('HERO') || u.type.includes('WARRIOR') || u.type.includes('MAGE') || u.type.includes('ARCHER')) || playerHero;
-            playerWarriors = battlePlayerUnits.filter(u => !u.type.includes('HERO') && !u.type.includes('WARRIOR') && !u.type.includes('MAGE') && !u.type.includes('ARCHER'));
-        } else {
-            playerPos = { x: CASTLE_POS.x, y: CASTLE_POS.y };
-            playerHero.hp = playerHero.maxHp;
-            playerWarriors.forEach(w => w.hp = w.maxHp);
-        }
-        corpses = [];
-        isMineBattle = false;
-        turnOrder = [];
-        showMap();
-        drawMap();
-    }
-
-    function showUnitDetails(unit) {
-        if (!unit) {
-            unitDetails.innerHTML = '[ SELECT UNIT ]';
-            return;
-        }
-        unitDetails.innerHTML = `
-            <span>${unit.icon}</span>
-            <div><strong>${unit.type}</strong> | ❤️ ${unit.hp}/${unit.maxHp} | ⚔️ ${unit.attack} | 🦶 ${unit.moveRange} | 🏹 ${unit.attackRange}</div>
-        `;
-    }
-
-    function handleBattleClick(e) {
-        if (!battleActive || animationInProgress) return;
-        
-        const rect = battleCanvas.getBoundingClientRect();
-        const scaleX = battleCanvas.width / rect.width;
-        const scaleY = battleCanvas.height / rect.height;
-        const mouseX = (e.clientX - rect.left) * scaleX;
-        const mouseY = (e.clientY - rect.top) * scaleY;
-        const cellSize = battleCanvas.width / BATTLE_WIDTH;
-        const gridX = Math.floor(mouseX / cellSize);
-        const gridY = Math.floor(mouseY / cellSize);
-        if (gridX < 0 || gridX >= BATTLE_WIDTH || gridY < 0 || gridY >= BATTLE_HEIGHT) return;
-
-        if (isObstacle(gridX, gridY)) {
-            battleLog.innerText = 'OBSTACLE!';
-            return;
-        }
-
-        const clickedPlayer = battlePlayerUnits.find(u => u.x === gridX && u.y === gridY && u.hp > 0);
-        const clickedEnemy = battleEnemyUnits.find(u => u.x === gridX && u.y === gridY && u.hp > 0);
-
-        if (clickedPlayer) {
-            showUnitDetails(clickedPlayer);
-            if (currentTurn === 'player') {
-                selectedUnitId = clickedPlayer.id;
-                drawBattle();
-                battleLog.innerText = `SELECTED: ${clickedPlayer.type}`;
-            }
-            return;
-        }
-        
-        if (clickedEnemy) {
-            showUnitDetails(clickedEnemy);
-            if (currentTurn === 'player' && selectedUnitId) {
-                const unit = battlePlayerUnits.find(u => u.id === selectedUnitId);
-                if (unit && unit.hp > 0 && !unit.actedThisTurn) {
-                    const dist = Math.abs(unit.x - gridX) + Math.abs(unit.y - gridY);
-                    if (dist <= (unit.attackRange || 1)) {
-                        clickedEnemy.hp = Math.max(0, clickedEnemy.hp - unit.attack);
-                        if (clickedEnemy.hp <= 0) {
-                            corpses.push({ x: clickedEnemy.x, y: clickedEnemy.y });
-                        }
-                        battleLog.innerText = `${unit.type} ATTACKS ${clickedEnemy.type}!`;
-                        unit.actedThisTurn = true;
-                        selectedUnitId = null;
-                        showUnitDetails(null);
-                        drawBattle();
-                        
-                        moveToEndOfQueue(unit.id);
-                        
-                        const end = checkBattleEnd();
-                        if (end === 'win') setTimeout(() => endBattle(true), 200);
-                        else if (end === 'lose') setTimeout(() => endBattle(false), 200);
-                    } else {
-                        battleLog.innerText = 'TOO FAR!';
-                    }
-                } else {
-                    selectedUnitId = null;
-                    drawBattle();
-                }
-            }
-            return;
-        }
-
-        if (currentTurn === 'player' && selectedUnitId && !animationInProgress) {
-            const unit = battlePlayerUnits.find(u => u.id === selectedUnitId);
-            if (!unit || unit.hp <= 0 || unit.actedThisTurn) {
-                selectedUnitId = null;
-                drawBattle();
-                return;
-            }
-
-            const dist = Math.abs(unit.x - gridX) + Math.abs(unit.y - gridY);
-            if (dist > (unit.moveRange || 3)) {
-                battleLog.innerText = 'TOO FAR!';
-                return;
-            }
-
-            moveUnitStep(unit, gridX, gridY, unit.moveRange || 3, (success) => {
-                if (success) {
-                    unit.actedThisTurn = true;
-                    selectedUnitId = null;
-                    showUnitDetails(null);
-                    battleLog.innerText = `${unit.type} MOVED`;
-                    drawBattle();
-                    moveToEndOfQueue(unit.id);
-                } else {
-                    battleLog.innerText = 'PATH BLOCKED!';
-                    drawBattle();
-                }
-            });
-        } else if (currentTurn === 'player') {
-            battleLog.innerText = 'SELECT YOUR UNIT';
-        }
-    }
-
-    function enemyTurn() {
-        if (!battleActive || currentTurn !== 'enemy' || animationInProgress) return;
-
-        const enemies = battleEnemyUnits.filter(u => u.hp > 0);
-        let index = 0;
-
-        function processNextEnemy() {
-            if (!battleActive) return;
-            if (index >= enemies.length) {
-                battlePlayerUnits.forEach(u => u.actedThisTurn = false);
-                currentTurn = 'player';
-                selectedUnitId = null;
-                showUnitDetails(null);
-                updateTurnQueue();
-                drawBattle();
-                battleLog.innerText = 'YOUR TURN. CHOOSE A UNIT.';
-                return;
-            }
-
-            const enemy = enemies[index];
-            index++;
-
-            const players = battlePlayerUnits.filter(u => u.hp > 0);
-            if (players.length === 0) {
-                endBattle(false);
-                return;
-            }
-
-            let bestTarget = null;
-            let bestScore = -Infinity;
-            players.forEach(p => {
-                const threat = p.attack * (p.hp / p.maxHp);
-                if (threat > bestScore) {
-                    bestScore = threat;
-                    bestTarget = p;
-                }
-            });
-
-            if (!bestTarget) {
-                endBattle(false);
-                return;
-            }
-
-            const dist = Math.abs(enemy.x - bestTarget.x) + Math.abs(enemy.y - bestTarget.y);
+        // Generate blocked cells (mountains, water, etc.)
+        function generateBlockedCells() {
+            const blocked = [];
             
-            if (dist <= (enemy.attackRange || 1)) {
-                bestTarget.hp = Math.max(0, bestTarget.hp - enemy.attack);
-                if (bestTarget.hp <= 0) {
-                    corpses.push({ x: bestTarget.x, y: bestTarget.y });
+            // Add mountain ranges
+            for (let i = 0; i < 80; i++) {
+                blocked.push({
+                    x: Math.floor(Math.random() * gameState.mapWidth),
+                    y: Math.floor(Math.random() * gameState.mapHeight)
+                });
+            }
+            
+            // Add mountain chains
+            for (let i = 0; i < 10; i++) {
+                const startX = Math.floor(Math.random() * (gameState.mapWidth - 5));
+                const startY = Math.floor(Math.random() * (gameState.mapHeight - 5));
+                for (let j = 0; j < 5; j++) {
+                    blocked.push({ x: startX + j, y: startY + Math.floor(j/2) });
                 }
-                battleLog.innerText = `${enemy.type} ATTACKS!`;
-                drawBattle();
-
-                const end = checkBattleEnd();
-                if (end === 'win') { setTimeout(() => endBattle(true), 200); return; }
-                if (end === 'lose') { setTimeout(() => endBattle(false), 200); return; }
-
-                moveToEndOfQueue(enemy.id);
-                setTimeout(processNextEnemy, 300);
-            } else {
-                const dx = Math.sign(bestTarget.x - enemy.x);
-                const dy = Math.sign(bestTarget.y - enemy.y);
-                
-                let targetX = enemy.x;
-                let targetY = enemy.y;
-                
-                if (dx !== 0 && canMoveBetween(enemy.x, enemy.y, enemy.x + dx, enemy.y)) {
-                    targetX = enemy.x + dx;
-                } else if (dy !== 0 && canMoveBetween(enemy.x, enemy.y, enemy.x, enemy.y + dy)) {
-                    targetY = enemy.y + dy;
-                } else {
-                    const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
-                    for (let dir of dirs) {
-                        const nx = enemy.x + dir[0];
-                        const ny = enemy.y + dir[1];
-                        if (nx >= 0 && nx < BATTLE_WIDTH && ny >= 0 && ny < BATTLE_HEIGHT &&
-                            !isObstacle(nx, ny) && !isCellOccupied(nx, ny, enemy.id)) {
-                            targetX = nx;
-                            targetY = ny;
-                            break;
+            }
+            
+            // Add water bodies
+            for (let i = 0; i < 5; i++) {
+                const centerX = Math.floor(Math.random() * gameState.mapWidth);
+                const centerY = Math.floor(Math.random() * gameState.mapHeight);
+                for (let dx = -2; dx <= 2; dx++) {
+                    for (let dy = -2; dy <= 2; dy++) {
+                        if (Math.random() > 0.3) {
+                            blocked.push({ x: centerX + dx, y: centerY + dy });
                         }
                     }
                 }
-                
-                if (targetX !== enemy.x || targetY !== enemy.y) {
-                    animateJump(enemy, enemy.x, enemy.y, targetX, targetY, () => {
-                        drawBattle();
-                        const end = checkBattleEnd();
-                        if (end === 'win') { setTimeout(() => endBattle(true), 200); return; }
-                        if (end === 'lose') { setTimeout(() => endBattle(false), 200); return; }
-                        
-                        moveToEndOfQueue(enemy.id);
-                        setTimeout(processNextEnemy, 300);
-                    });
-                } else {
-                    moveToEndOfQueue(enemy.id);
-                    setTimeout(processNextEnemy, 300);
+            }
+            
+            // Mark castle cells as walkable (not blocked)
+            gameState.castleCells.forEach(cell => {
+                const index = blocked.findIndex(c => c.x === cell.x && c.y === cell.y);
+                if (index !== -1) {
+                    blocked.splice(index, 1);
+                }
+            });
+            
+            gameState.blockedCells = blocked;
+        }
+
+        function isCellBlocked(x, y) {
+            return gameState.blockedCells.some(cell => cell.x === x && cell.y === y);
+        }
+
+        function isCastleCell(x, y) {
+            return gameState.castleCells.some(cell => cell.x === x && cell.y === y);
+        }
+
+        function isMineCell(x, y) {
+            return minePositions.some(mine => mine.x === x && mine.y === y);
+        }
+
+        function getMineAtPosition(x, y) {
+            return minePositions.find(mine => mine.x === x && mine.y === y);
+        }
+
+        // Class Stats
+        const classStats = {
+            warrior: { name: 'ВОИН', health: 35, attack: 7, motivation: 5, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1c0f9d6e8-e7ba-4ac5-b938-4076e6ecd9fb.png' },
+            mage: { name: 'МАГ', health: 24, attack: 12, motivation: 7, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1ea8a0891-9507-4ba9-8b8e-035b383e1562.png' },
+            archer: { name: 'ЛУЧНИК', health: 28, attack: 9, motivation: 8, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1b312ad06-e731-4a5b-8838-d05120d7367a.png' }
+        };
+
+        // Recruitable Units
+        const recruitUnits = [
+            { type: 'warrior', name: 'Воин', health: 35, attack: 7, motivation: 5, cost: 50, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1c0f9d6e8-e7ba-4ac5-b938-4076e6ecd9fb.png' },
+            { type: 'mage', name: 'Маг', health: 24, attack: 12, motivation: 7, cost: 60, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1ea8a0891-9507-4ba9-8b8e-035b383e1562.png' },
+            { type: 'archer', name: 'Лучник', health: 28, attack: 9, motivation: 8, cost: 55, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1b312ad06-e731-4a5b-8838-d05120d7367a.png' },
+            { type: 'paladin', name: 'Паладин', health: 45, attack: 6, motivation: 4, cost: 80, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/19e74443b-da45-425c-b5f7-e55551e271fb.png' },
+            { type: 'necromancer', name: 'Некромант', health: 20, attack: 14, motivation: 9, cost: 70, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/15b7d0313-00ad-4419-a92a-65d80328490c.png' },
+            { type: 'assassin', name: 'Ассасин', health: 22, attack: 15, motivation: 10, cost: 75, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1a2647fdf-3af2-4269-a9bb-0caa78c218df.png' }
+        ];
+
+        // Enemy Stats with NEW images - REDUCED gold rewards
+        const enemyStats = {
+            skeleton: { name: 'СКЕЛЕТ', health: 30, maxHealth: 30, attack: 5, motivation: 3, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/11c1a2fef-8573-40d3-9d89-1b26a9f78866.png', reward: 10, count: 3, emoji: '💀' },
+            knight: { name: 'ТЁМНЫЙ РЫЦАРЬ', health: 50, maxHealth: 50, attack: 8, motivation: 4, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1f928062f-840f-4558-b52f-efb5079ae6c4.png', reward: 15, count: 2, emoji: '🛡️' },
+            demon: { name: 'ДЕМОН', health: 40, maxHealth: 40, attack: 10, motivation: 6, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/18e7b151e-327d-451d-956c-8c5672eddc74.png', reward: 12, count: 3, emoji: '👹' },
+            orc: { name: 'ОРК', health: 45, maxHealth: 45, attack: 9, motivation: 5, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/14e0ec0c6-fe9f-4d11-b2d1-78deb2b53c58.png', reward: 13, count: 3, emoji: '👺' },
+            dragon: { name: 'ДРАКОН', health: 80, maxHealth: 80, attack: 14, motivation: 7, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1604aaada-84d1-45e8-a063-7d1c637c3d60.png', reward: 25, count: 2, emoji: '🐉' },
+            necro: { name: 'НЕКРОМАНТ', health: 35, maxHealth: 35, attack: 13, motivation: 8, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1298b3978-1e6e-4409-b9df-19bb4e232047.png', reward: 18, count: 2, emoji: '🧙' },
+            boss1: { name: 'КОРОЛЬ СКЕЛЕТОВ', health: 120, maxHealth: 120, attack: 16, motivation: 9, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1b17f865f-3d80-40b0-b60b-1a0372d8e025.png', reward: 50, count: 1, emoji: '👑' },
+            boss2: { name: 'ЛОРД ДЕМОНОВ', health: 150, maxHealth: 150, attack: 18, motivation: 10, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1d57b02b9-7290-430c-832e-a9c9a97acbdc.png', reward: 60, count: 1, emoji: '👑' },
+            boss3: { name: 'ДРЕВНИЙ ДРАКОН', health: 200, maxHealth: 200, attack: 20, motivation: 11, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/162cb9300-5722-4ec6-a2ae-9abcc6a9783d.png', reward: 75, count: 1, emoji: '👑' }
+        };
+
+        const enemyPositions = [
+            {x: 5, y: 5, type: 'skeleton', id: 'enemy_0'}, {x: 10, y: 8, type: 'knight', id: 'enemy_1'}, {x: 15, y: 6, type: 'demon', id: 'enemy_2'},
+            {x: 20, y: 10, type: 'orc', id: 'enemy_3'}, {x: 25, y: 7, type: 'dragon', id: 'enemy_4'}, {x: 30, y: 10, type: 'necro', id: 'enemy_5'},
+            {x: 8, y: 15, type: 'skeleton', id: 'enemy_6'}, {x: 14, y: 18, type: 'knight', id: 'enemy_7'}, {x: 20, y: 15, type: 'demon', id: 'enemy_8'},
+            {x: 26, y: 18, type: 'orc', id: 'enemy_9'}, {x: 31, y: 15, type: 'dragon', id: 'enemy_10'}, {x: 7, y: 22, type: 'necro', id: 'enemy_11'},
+            {x: 12, y: 25, type: 'skeleton', id: 'enemy_12'}, {x: 18, y: 22, type: 'knight', id: 'enemy_13'}, {x: 24, y: 25, type: 'demon', id: 'enemy_14'},
+            {x: 30, y: 22, type: 'orc', id: 'enemy_15'}, {x: 10, y: 28, type: 'dragon', id: 'enemy_16'}, {x: 22, y: 28, type: 'necro', id: 'enemy_17'},
+            {x: 15, y: 12, type: 'boss1', id: 'enemy_18'}, {x: 25, y: 12, type: 'boss2', id: 'enemy_19'}, {x: 20, y: 20, type: 'boss3', id: 'enemy_20'}
+        ];
+
+        // Start Game
+        function startGame() {
+            document.getElementById('mainMenu').style.display = 'none';
+            document.getElementById('mainGame').classList.add('active');
+            openWindow('classWindow');
+            init();
+            // Start mine income timer
+            setInterval(() => {
+                if (gameState.capturedMines.length > 0) {
+                    gameState.gold += gameState.capturedMines.length;
+                    updateGold();
+                    showNotification(`+${gameState.capturedMines.length}💰 от шахт!`);
+                }
+            }, 300000); // 5 minutes
+        }
+
+        function returnToMainMenu() {
+            closeWindow('menuWindow');
+            document.getElementById('mainGame').classList.remove('active');
+            document.getElementById('mainMenu').style.display = 'flex';
+        }
+
+        function showHelpFromMenu() {
+            alert('🎮 Как играть:\n\n1. Выберите класс героя\n2. Кликните на соседнюю клетку для перемещения\n3. Посетите таверну в городе для найма (макс. 6)\n4. Сражайтесь с врагами (авто-бой)\n5. Захватывайте шахты после победы над врагами\n6. Каждая шахта приносит +1💰 каждые 5 минут\n\n⚔️ В бою:\n• Очередность хода зависит от мотивации\n• Герой помечен короной 👑\n• Можно поставить на паузу\n• Можно сбежать за 50 золота\n• При поражении мотивация героя падает');
+        }
+
+        // Initialize Game
+        function init() {
+            generateBlockedCells();
+            updateGold();
+            updateMineCount();
+            updateArmyButton();
+            startTimer();
+            createMapGrid();
+            updateHeroPosition();
+            populateTavern();
+            setupMapClick();
+            renderEnemyEmojis();
+            renderMines();
+            updateTavernButton();
+        }
+
+        // Window Management
+        function openWindow(windowId) {
+            if (gameState.inCombat && windowId !== 'combatWindow') return;
+            document.querySelectorAll('.modal-window').forEach(w => w.classList.remove('active'));
+            document.getElementById(windowId).classList.add('active');
+            
+            if (windowId === 'tavernWindow') {
+                gameState.inTavern = true;
+                updateArmyDisplay();
+            }
+        }
+
+        function closeWindow(windowId) {
+            if (gameState.inCombat && windowId === 'combatWindow') return;
+            document.getElementById(windowId).classList.remove('active');
+            if (windowId === 'tavernWindow') {
+                gameState.inTavern = false;
+            }
+        }
+
+        function showArmyDisplay() {
+            const grid = document.getElementById('armyDisplayGrid');
+            grid.innerHTML = '';
+            
+            // Add hero
+            if (gameState.hero) {
+                const heroCard = document.createElement('div');
+                heroCard.className = 'army-unit-card hero';
+                heroCard.innerHTML = `
+                    <img src="${gameState.hero.image}" alt="${gameState.hero.name}" class="army-unit-image">
+                    <div class="army-unit-name">👑 ${gameState.hero.name}</div>
+                    <div class="army-unit-stats">
+                        <span>❤️ ${gameState.hero.currentHealth}/${gameState.hero.maxHealth}</span>
+                        <span>⚔️ ${gameState.hero.attack}</span>
+                        <span>🎯 ${gameState.hero.motivation}</span>
+                    </div>
+                `;
+                grid.appendChild(heroCard);
+            }
+            
+            // Add army units
+            gameState.army.forEach((unit, index) => {
+                const unitCard = document.createElement('div');
+                unitCard.className = 'army-unit-card';
+                unitCard.innerHTML = `
+                    <img src="${unit.image}" alt="${unit.name}" class="army-unit-image">
+                    <div class="army-unit-name">${unit.name}</div>
+                    <div class="army-unit-stats">
+                        <span>❤️ ${unit.currentHealth}/${unit.maxHealth}</span>
+                        <span>⚔️ ${unit.attack}</span>
+                        <span>🎯 ${unit.motivation}</span>
+                    </div>
+                `;
+                grid.appendChild(unitCard);
+            });
+            
+            openWindow('armyDisplayWindow');
+        }
+
+        function createMapGrid() {
+            const grid = document.getElementById('mapGrid');
+            grid.innerHTML = '';
+            for (let y = 0; y < gameState.mapHeight; y++) {
+                for (let x = 0; x < gameState.mapWidth; x++) {
+                    const cell = document.createElement('div');
+                    const blocked = isCellBlocked(x, y);
+                    const castle = isCastleCell(x, y);
+                    cell.className = `map-cell ${blocked ? 'blocked' : 'walkable'} ${castle ? 'castle' : ''}`;
+                    cell.dataset.x = x;
+                    cell.dataset.y = y;
+                    cell.onclick = () => onCellClick(x, y);
+                    grid.appendChild(cell);
                 }
             }
         }
 
-        processNextEnemy();
-    }
-
-    function startBattle(enemyData, isMine = false) {
-        currentEnemyPos = { x: enemyData.x, y: enemyData.y };
-        setupBattleUnits(enemyData.units);
-        corpses = [];
-        currentTurn = 'player';
-        selectedUnitId = null;
-        battleActive = true;
-        isMineBattle = isMine;
-        showBattle();
-        drawBattle();
-        battleLog.innerText = 'YOUR TURN. CHOOSE A UNIT.';
-        showUnitDetails(null);
-    }
-
-    function fleeBattle() {
-        if (!battleActive) return;
-        gold = Math.max(0, gold - 50);
-        updateGoldDisplay();
-        battleLog.innerText = 'FLEE! LOST 50💰';
-        playerPos = { x: CASTLE_POS.x, y: CASTLE_POS.y };
-        playerHero.hp = playerHero.maxHp;
-        playerWarriors.forEach(w => w.hp = w.maxHp);
-        corpses = [];
-        battleActive = false;
-        isMineBattle = false;
-        turnOrder = [];
-        showMap();
-        drawMap();
-    }
-
-    // ---------- Управление экранами ----------
-    function showMenu() { menuScreen.style.display = 'flex'; mapScreen.style.display = 'none'; tavernScreen.style.display = 'none'; battleScreen.style.display = 'none'; }
-    function showMap() { menuScreen.style.display = 'none'; mapScreen.style.display = 'flex'; tavernScreen.style.display = 'none'; battleScreen.style.display = 'none'; drawMap(); }
-    function showTavern() { menuScreen.style.display = 'none'; mapScreen.style.display = 'none'; tavernScreen.style.display = 'flex'; battleScreen.style.display = 'none'; }
-    function showBattle() { menuScreen.style.display = 'none'; mapScreen.style.display = 'none'; tavernScreen.style.display = 'none'; battleScreen.style.display = 'flex'; }
-
-    // ---------- События ----------
-    document.querySelectorAll('.class-card').forEach(card => {
-        card.addEventListener('click', () => {
-            const className = card.dataset.class;
-            playerHero = { ...heroByClass[className], hp: heroByClass[className].maxHp };
-            playerWarriors = [];
-            gold = 200;
-            updateGoldDisplay();
-            generateWorld();
-            generateEnemies();
-            playerPos = { x: CASTLE_POS.x, y: CASTLE_POS.y };
-            updateIncomeRate();
-            showMap();
-        });
-    });
-
-    mapCanvas.addEventListener('click', handleMapClick);
-    mapCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); handleMapClick(e.touches[0]); });
-
-    battleCanvas.addEventListener('click', handleBattleClick);
-    battleCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); handleBattleClick(e.touches[0]); });
-
-    tavernBtn.addEventListener('click', openTavern);
-    closeTavernBtn.addEventListener('click', showMap);
-
-    teleportBtn.addEventListener('click', () => {
-        playerPos = { x: CASTLE_POS.x, y: CASTLE_POS.y };
-        playerHero.hp = playerHero.maxHp;
-        playerWarriors.forEach(w => w.hp = w.maxHp);
-        drawMap();
-    });
-
-    menuFromMapBtn.addEventListener('click', showMenu);
-    menuFromBattleBtn.addEventListener('click', showMenu);
-
-    fleeBtn.addEventListener('click', fleeBattle);
-
-    endTurnBtn.addEventListener('click', () => {
-        if (currentTurn === 'player' && battleActive && !animationInProgress) {
-            battlePlayerUnits.forEach(u => u.actedThisTurn = false);
-            currentTurn = 'enemy';
-            selectedUnitId = null;
-            showUnitDetails(null);
-            updateTurnQueue();
-            drawBattle();
-            setTimeout(enemyTurn, 300);
+        function onCellClick(x, y) {
+            if (gameState.inCombat) return;
+            
+            // Check if cell is adjacent (one cell movement)
+            const dx = Math.abs(x - gameState.heroPosition.x);
+            const dy = Math.abs(y - gameState.heroPosition.y);
+            
+            if (dx <= 1 && dy <= 1 && (dx > 0 || dy > 0)) {
+                if (!isCellBlocked(x, y)) {
+                    moveHeroTo(x, y);
+                }
+            }
         }
-    });
 
-    setInterval(() => {
-        if (mapScreen.style.display === 'flex') {
-            updateTimer();
-            checkIncome();
-            drawMap();
+        function renderEnemyEmojis() {
+            const world = document.getElementById('mapWorld');
+            world.querySelectorAll('.map-enemy-marker').forEach(el => el.remove());
+            
+            enemyPositions.forEach(pos => {
+                // Skip if enemy is on blocked cell
+                if (isCellBlocked(pos.x, pos.y)) return;
+                
+                if (gameState.defeatedEnemies.includes(pos.id)) return;
+                
+                const marker = document.createElement('div');
+                marker.className = 'map-enemy map-enemy-marker';
+                marker.dataset.type = pos.type;
+                marker.dataset.id = pos.id;
+                marker.style.left = (pos.x * gameState.cellSize + 25) + 'px';
+                marker.style.top = (pos.y * gameState.cellSize + 25) + 'px';
+                const enemyData = enemyStats[pos.type];
+                marker.textContent = enemyData ? enemyData.emoji : '💀';
+                marker.onclick = () => startCombat(pos.type, pos.id);
+                world.appendChild(marker);
+            });
         }
-    }, 1000);
 
-    setInterval(() => {
-        if (mapScreen.style.display === 'flex') {
-            checkIncome();
-            drawMap();
+        function renderMines() {
+            const world = document.getElementById('mapWorld');
+            world.querySelectorAll('.map-mine-marker').forEach(el => el.remove());
+            
+            minePositions.forEach(mine => {
+                const marker = document.createElement('div');
+                marker.className = `map-mine map-mine-marker ${gameState.capturedMines.includes(mine.id) ? 'captured' : ''}`;
+                marker.dataset.id = mine.id;
+                marker.style.left = (mine.x * gameState.cellSize + 15) + 'px';
+                marker.style.top = (mine.y * gameState.cellSize + 15) + 'px';
+                marker.textContent = '⛏️';
+                
+                // Add enemy guard emoji if enemy is still alive
+                if (!gameState.defeatedEnemies.includes(mine.enemyId)) {
+                    const enemy = enemyPositions.find(e => e.id === mine.enemyId);
+                    if (enemy) {
+                        const enemyData = enemyStats[enemy.type];
+                        const guardEl = document.createElement('div');
+                        guardEl.className = 'mine-guard';
+                        guardEl.textContent = enemyData ? enemyData.emoji : '💀';
+                        marker.appendChild(guardEl);
+                    }
+                }
+                
+                marker.onclick = () => tryCaptureMine(mine);
+                world.appendChild(marker);
+            });
         }
-    }, 60000);
 
-    showMenu();
-})();
-</script>
+        function tryCaptureMine(mine) {
+            if (gameState.defeatedEnemies.includes(mine.enemyId)) {
+                if (!gameState.capturedMines.includes(mine.id)) {
+                    gameState.capturedMines.push(mine.id);
+                    updateMineCount();
+                    renderMines();
+                    showNotification(`Шахта захвачена! +1💰 каждые 5 мин`);
+                }
+            } else {
+                showNotification('Сначала победите охраняющего врага!');
+            }
+        }
+
+        function updateMineCount() {
+            document.getElementById('mineCount').textContent = gameState.capturedMines.length;
+            document.getElementById('mineIncome').textContent = gameState.capturedMines.length;
+        }
+
+        function updateEnemyMarkers() {
+            gameState.defeatedEnemies.forEach(enemyId => {
+                const marker = document.querySelector(`.map-enemy-marker[data-id="${enemyId}"]`);
+                if (marker) {
+                    marker.classList.add('defeated');
+                    marker.onclick = null;
+                }
+            });
+            renderEnemyEmojis();
+            renderMines();
+        }
+
+        function setupMapClick() {
+            // Map click is handled by individual cells now
+        }
+
+        function selectClass(className) {
+            gameState.selectedClass = className;
+            gameState.hero = {
+                ...classStats[className],
+                currentHealth: classStats[className].health,
+                maxHealth: classStats[className].health
+            };
+            gameState.playerUnits = [{
+                ...classStats[className],
+                currentHealth: classStats[className].health,
+                maxHealth: classStats[className].health,
+                id: 'hero',
+                isHero: true,
+                side: 'player'
+            }];
+            closeWindow('classWindow');
+            showNotification(`Класс ${classStats[className].name} выбран!`);
+            updateArmyDisplay();
+            updateTavernButton();
+            updateArmyButton();
+        }
+
+        function updateGold() {
+            document.getElementById('gold').textContent = gameState.gold;
+        }
+
+        function startTimer() {
+            const timerElement = document.getElementById('timer');
+            const interval = setInterval(() => {
+                if (gameState.timer > 0) {
+                    gameState.timer--;
+                    const minutes = Math.floor(gameState.timer / 60);
+                    const seconds = gameState.timer % 60;
+                    timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                }
+            }, 1000);
+        }
+
+        function moveHeroTo(x, y) {
+            x = Math.max(0, Math.min(gameState.mapWidth - 1, x));
+            y = Math.max(0, Math.min(gameState.mapHeight - 1, y));
+            
+            if (isCellBlocked(x, y)) return;
+            
+            showPathIndicator(x, y);
+            gameState.heroPosition = { x, y };
+            updateHeroPosition();
+            checkEnemyEncounter();
+            updateTavernButton();
+        }
+
+        function showPathIndicator(x, y) {
+            const world = document.getElementById('mapWorld');
+            const indicator = document.createElement('div');
+            indicator.className = 'path-indicator';
+            indicator.style.left = (x * gameState.cellSize + 40) + 'px';
+            indicator.style.top = (y * gameState.cellSize + 40) + 'px';
+            world.appendChild(indicator);
+            setTimeout(() => indicator.remove(), 1000);
+        }
+
+        function updateHeroPosition() {
+            const hero = document.getElementById('heroSprite');
+            const world = document.getElementById('mapWorld');
+            
+            // Center viewport on hero
+            const offsetX = (gameState.viewportWidth / 2) - (gameState.heroPosition.x * gameState.cellSize) - (gameState.cellSize / 2);
+            const offsetY = (gameState.viewportHeight / 2) - (gameState.heroPosition.y * gameState.cellSize) - (gameState.cellSize / 2);
+            
+            // Clamp to map bounds
+            const maxX = 0;
+            const minX = -(gameState.mapWidth * gameState.cellSize - gameState.viewportWidth);
+            const maxY = 0;
+            const minY = -(gameState.mapHeight * gameState.cellSize - gameState.viewportHeight);
+            
+            const clampedX = Math.max(minX, Math.min(maxX, offsetX));
+            const clampedY = Math.max(minY, Math.min(maxY, offsetY));
+            
+            world.style.transform = `translate(${clampedX}px, ${clampedY}px)`;
+            hero.style.left = (gameState.heroPosition.x * gameState.cellSize + 15) + 'px';
+            hero.style.top = (gameState.heroPosition.y * gameState.cellSize + 15) + 'px';
+        }
+
+        function updateTavernButton() {
+            const tavernBtn = document.getElementById('tavernBtn');
+            // Check if hero is in castle (any of the 4 castle cells)
+            const inCastle = isCastleCell(gameState.heroPosition.x, gameState.heroPosition.y);
+            gameState.inCastle = inCastle;
+            tavernBtn.disabled = !inCastle;
+            tavernBtn.title = inCastle ? 'Открыть таверну' : 'Перейдите в замок (ячейки города) для доступа к таверне';
+        }
+
+        function updateArmyButton() {
+            const armyBtn = document.getElementById('armyBtn');
+            const totalCount = gameState.army.length + (gameState.hero ? 1 : 0);
+            document.getElementById('armyCountDisplay').textContent = totalCount;
+            armyBtn.textContent = `АРМИЯ (${totalCount})`;
+        }
+
+        function checkEnemyEncounter() {
+            for (const enemy of enemyPositions) {
+                if (enemy.x === gameState.heroPosition.x && enemy.y === gameState.heroPosition.y) {
+                    if (!gameState.defeatedEnemies.includes(enemy.id)) {
+                        startCombat(enemy.type, enemy.id);
+                        break;
+                    }
+                }
+            }
+        }
+
+        function populateTavern() {
+            const section = document.getElementById('recruitSection');
+            section.innerHTML = '';
+            
+            recruitUnits.forEach(unit => {
+                const card = document.createElement('div');
+                card.className = 'recruit-card';
+                card.innerHTML = `
+                    <img src="${unit.image}" alt="${unit.name}" class="recruit-image">
+                    <h3 class="recruit-name">${unit.name}</h3>
+                    <p class="recruit-cost">💰 ${unit.cost}</p>
+                    <p class="recruit-stats">❤️ ${unit.health} ⚔️ ${unit.attack} 🎯 ${unit.motivation}</p>
+                    <button class="recruit-btn" onclick="recruitUnit('${unit.type}', ${unit.cost})">НАНЯТЬ</button>
+                `;
+                section.appendChild(card);
+            });
+        }
+
+        function recruitUnit(type, cost) {
+            if (!gameState.inTavern) {
+                showNotification('Нанимать можно только в таверне!');
+                return;
+            }
+            if (!gameState.inCastle) {
+                showNotification('Вернитесь в город для найма!');
+                return;
+            }
+            if (gameState.army.length >= gameState.maxArmySize) {
+                showNotification('Армия полна! (макс. 6)');
+                return;
+            }
+            if (gameState.gold < cost) {
+                showNotification('Недостаточно золота!');
+                return;
+            }
+            
+            const unitData = recruitUnits.find(u => u.type === type);
+            gameState.gold -= cost;
+            gameState.army.push({
+                ...unitData,
+                currentHealth: unitData.health,
+                maxHealth: unitData.health,
+                id: Date.now().toString(),
+                side: 'player'
+            });
+            
+            updateGold();
+            updateArmyDisplay();
+            updateArmyButton();
+            showNotification(`${unitData.name} нанят!`);
+        }
+
+        function updateArmyDisplay() {
+            document.getElementById('armyCount2').textContent = gameState.army.length;
+            
+            const slots = document.querySelectorAll('.army-slot');
+            slots.forEach((slot, index) => {
+                slot.classList.remove('filled');
+                slot.innerHTML = '';
+                
+                if (index === 0) {
+                    slot.classList.add('hero-slot', 'filled');
+                    slot.innerHTML = '<div class="hero-badge">👑 ГЕРОЙ</div>';
+                    if (gameState.hero) {
+                        slot.innerHTML += `
+                            <img src="${gameState.hero.image}" alt="${gameState.hero.name}">
+                            <div class="health-overlay">
+                                <div class="health-fill" style="width: ${(gameState.hero.currentHealth / gameState.hero.maxHealth) * 100}%"></div>
+                            </div>
+                        `;
+                    }
+                    slot.onclick = () => showUnitStats(0);
+                } else if (index > 0 && index - 1 < gameState.army.length) {
+                    const unit = gameState.army[index - 1];
+                    slot.classList.add('filled');
+                    slot.innerHTML = `
+                        <img src="${unit.image}" alt="${unit.name}">
+                        <div class="health-overlay">
+                            <div class="health-fill" style="width: ${(unit.currentHealth / unit.maxHealth) * 100}%"></div>
+                        </div>
+                    `;
+                    slot.onclick = () => showUnitStats(index);
+                }
+            });
+        }
+
+        function showUnitStats(index) {
+            let unit;
+            if (index === 0 && gameState.hero) {
+                unit = gameState.hero;
+            } else if (index > 0 && index - 1 < gameState.army.length) {
+                unit = gameState.army[index - 1];
+            }
+            
+            if (!unit) return;
+            
+            const content = document.getElementById('unitStatsContent');
+            content.innerHTML = `
+                <div class="stat-row">
+                    <span class="stat-label">Имя:</span>
+                    <span class="stat-value-display">${unit.name} ${index === 0 ? '👑' : ''}</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Здоровье:</span>
+                    <span class="stat-value-display">${unit.currentHealth}/${unit.maxHealth} ❤️</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Атака:</span>
+                    <span class="stat-value-display">${unit.attack} ⚔️</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Мотивация:</span>
+                    <span class="stat-value-display">${unit.motivation} 🎯</span>
+                </div>
+                ${index > 0 ? `<button class="combat-action-btn" style="width: 100%; margin-top: 15px;" onclick="dismissUnit(${index - 1})">🗑️ УВОЛИТЬ</button>` : ''}
+            `;
+            openWindow('unitStatsWindow');
+        }
+
+        function dismissUnit(index) {
+            gameState.army.splice(index, 1);
+            updateArmyDisplay();
+            updateArmyButton();
+            closeWindow('unitStatsWindow');
+            showNotification('Юнит уволен');
+        }
+
+        // Combat System - Turn order by motivation (hero NOT always first)
+        function startCombat(enemyType, enemyId) {
+            if (!gameState.selectedClass) {
+                showNotification('Выберите класс сначала!');
+                return;
+            }
+            
+            gameState.inCombat = true;
+            gameState.combatInProgress = true;
+            gameState.combatPaused = false;
+            
+            // Setup player units (hero + army, max 6)
+            gameState.playerUnits = [
+                { ...gameState.hero, id: 'hero', isHero: true, side: 'player' }
+            ];
+            gameState.army.forEach((unit, i) => {
+                if (gameState.playerUnits.length < 6) {
+                    gameState.playerUnits.push({ ...unit, id: `unit_${i}`, side: 'player' });
+                }
+            });
+            
+            // Setup enemy units
+            const enemyData = enemyStats[enemyType];
+            gameState.enemyUnits = [];
+            const enemyCount = Math.min(enemyData.count || 1, 6);
+            
+            for (let i = 0; i < enemyCount; i++) {
+                gameState.enemyUnits.push({
+                    ...enemyData,
+                    currentHealth: enemyData.maxHealth,
+                    id: `enemy_${i}`,
+                    side: 'enemy',
+                    enemyId: enemyId
+                });
+            }
+            
+            createTurnQueue();
+            renderCombatUnits();
+            updateCombatUI();
+            document.getElementById('combatLog').innerHTML = '<div class="combat-log-entry info">⚔️ Битва началась!</div>';
+            
+            openWindow('combatWindow');
+            setTimeout(() => processNextTurn(), 1500);
+        }
+
+        function createTurnQueue() {
+            // ALL units sorted by motivation (hero NOT always first)
+            const allUnits = [...gameState.playerUnits, ...gameState.enemyUnits]
+                .filter(u => u.currentHealth > 0)
+                .sort((a, b) => b.motivation - a.motivation);
+            
+            gameState.turnQueue = allUnits.map(u => ({ 
+                id: u.id, 
+                side: u.side, 
+                name: u.name, 
+                motivation: u.motivation, 
+                isHero: u.isHero || false,
+                image: u.image
+            }));
+            gameState.currentTurnIndex = 0;
+        }
+
+        function renderCombatUnits() {
+            const playerContainer = document.getElementById('playerUnits');
+            const enemyContainer = document.getElementById('enemyUnits');
+            
+            playerContainer.innerHTML = '';
+            enemyContainer.innerHTML = '';
+            
+            gameState.playerUnits.forEach((unit, index) => {
+                const unitEl = document.createElement('div');
+                unitEl.className = `combat-unit ${unit.currentHealth <= 0 ? 'dead' : ''} ${unit.isHero ? 'hero' : ''}`;
+                unitEl.id = `player_unit_${index}`;
+                unitEl.innerHTML = `
+                    <img src="${unit.image}" alt="${unit.name}" class="combat-unit-image">
+                    <div class="combat-unit-name">${unit.name}</div>
+                    <div class="combat-unit-stats">
+                        <span class="combat-unit-stat">⚔️ ${unit.attack}</span>
+                        <span class="combat-unit-stat">🎯 ${unit.motivation}</span>
+                    </div>
+                    <div class="combat-unit-health">
+                        <div class="combat-unit-health-fill" style="width: ${(unit.currentHealth / unit.maxHealth) * 100}%"></div>
+                    </div>
+                    <div class="combat-unit-hp-text">${unit.currentHealth}/${unit.maxHealth}</div>
+                `;
+                playerContainer.appendChild(unitEl);
+            });
+            
+            gameState.enemyUnits.forEach((unit, index) => {
+                const unitEl = document.createElement('div');
+                unitEl.className = `combat-unit ${unit.currentHealth <= 0 ? 'dead' : ''}`;
+                unitEl.id = `enemy_unit_${index}`;
+                unitEl.innerHTML = `
+                    <img src="${unit.image}" alt="${unit.name}" class="combat-unit-image">
+                    <div class="combat-unit-name">${unit.name}</div>
+                    <div class="combat-unit-stats">
+                        <span class="combat-unit-stat">⚔️ ${unit.attack}</span>
+                        <span class="combat-unit-stat">🎯 ${unit.motivation}</span>
+                    </div>
+                    <div class="combat-unit-health">
+                        <div class="combat-unit-health-fill" style="width: ${(unit.currentHealth / unit.maxHealth) * 100}%"></div>
+                    </div>
+                    <div class="combat-unit-hp-text">${unit.currentHealth}/${unit.maxHealth}</div>
+                `;
+                enemyContainer.appendChild(unitEl);
+            });
+            
+            renderTurnOrder();
+        }
+
+        function renderTurnOrder() {
+            const turnOrderEl = document.getElementById('turnOrder');
+            turnOrderEl.innerHTML = '';
+            
+            // Reorder queue - current unit first
+            const reorderedQueue = [...gameState.turnQueue];
+            const currentUnit = reorderedQueue[gameState.currentTurnIndex];
+            if (currentUnit && gameState.currentTurnIndex > 0) {
+                reorderedQueue.splice(gameState.currentTurnIndex, 1);
+                reorderedQueue.unshift(currentUnit);
+            }
+            
+            reorderedQueue.forEach((unit, index) => {
+                const unitEl = document.createElement('div');
+                unitEl.className = `turn-order-unit ${index === 0 ? 'current' : ''} ${unit.isHero ? 'hero' : ''}`;
+                
+                const actualUnit = unit.side === 'player' 
+                    ? gameState.playerUnits.find(u => u.id === unit.id)
+                    : gameState.enemyUnits.find(u => u.id === unit.id);
+                
+                if (actualUnit && actualUnit.currentHealth <= 0) {
+                    unitEl.classList.add('dead');
+                }
+                
+                // Show unit image/icon instead of name
+                unitEl.innerHTML = `<img src="${unit.image}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">`;
+                turnOrderEl.appendChild(unitEl);
+            });
+        }
+
+        function updateCombatUI() {
+            renderCombatUnits();
+            
+            document.querySelectorAll('.combat-unit.current-turn').forEach(el => {
+                el.classList.remove('current-turn');
+            });
+            
+            if (gameState.turnQueue.length > 0 && gameState.currentTurnIndex < gameState.turnQueue.length) {
+                const currentUnitData = gameState.turnQueue[gameState.currentTurnIndex];
+                const currentUnit = currentUnitData.side === 'player'
+                    ? gameState.playerUnits.find(u => u.id === currentUnitData.id)
+                    : gameState.enemyUnits.find(u => u.id === currentUnitData.id);
+                
+                if (currentUnit && currentUnit.currentHealth > 0) {
+                    const index = currentUnitData.side === 'player'
+                        ? gameState.playerUnits.findIndex(u => u.id === currentUnitData.id)
+                        : gameState.enemyUnits.findIndex(u => u.id === currentUnitData.id);
+                    
+                    const el = document.getElementById(`${currentUnitData.side}_unit_${index}`);
+                    if (el) {
+                        el.classList.add('current-turn');
+                    }
+                    
+                    // Update turn info display
+                    const turnInfo = document.getElementById('combatTurnInfo');
+                    const unitName = currentUnit.name;
+                    const isHero = currentUnitData.isHero;
+                    turnInfo.textContent = `⚔️ ХОД: ${unitName}${isHero ? ' 👑' : ''}`;
+                }
+            }
+            
+            const pauseBtn = document.getElementById('pauseBtn');
+            pauseBtn.textContent = gameState.combatPaused ? '▶️ ПРОДОЛЖИТЬ' : '⏸️ ПАУЗА';
+            pauseBtn.classList.toggle('active', gameState.combatPaused);
+            
+            renderTurnOrder();
+        }
+
+        function togglePause() {
+            gameState.combatPaused = !gameState.combatPaused;
+            updateCombatUI();
+            
+            if (!gameState.combatPaused && gameState.combatInProgress) {
+                setTimeout(() => processNextTurn(), 500);
+            }
+        }
+
+        function processNextTurn() {
+            if (!gameState.combatInProgress || gameState.combatPaused) return;
+            
+            const playerAlive = gameState.playerUnits.filter(u => u.currentHealth > 0).length;
+            const enemyAlive = gameState.enemyUnits.filter(u => u.currentHealth > 0).length;
+            
+            if (enemyAlive === 0) {
+                winCombat();
+                return;
+            }
+            if (playerAlive === 0) {
+                loseCombat();
+                return;
+            }
+            
+            // Rebuild turn queue with alive units (sorted by motivation)
+            createTurnQueue();
+            
+            if (gameState.currentTurnIndex >= gameState.turnQueue.length) {
+                gameState.currentTurnIndex = 0;
+                createTurnQueue();
+            }
+            
+            const currentUnitData = gameState.turnQueue[gameState.currentTurnIndex];
+            const currentUnit = currentUnitData.side === 'player'
+                ? gameState.playerUnits.find(u => u.id === currentUnitData.id)
+                : gameState.enemyUnits.find(u => u.id === currentUnitData.id);
+            
+            if (!currentUnit || currentUnit.currentHealth <= 0) {
+                gameState.currentTurnIndex++;
+                setTimeout(() => processNextTurn(), 500);
+                return;
+            }
+            
+            updateCombatUI();
+            
+            // Find targets from opposite side
+            const targets = currentUnit.side === 'player' 
+                ? gameState.enemyUnits.filter(u => u.currentHealth > 0)
+                : gameState.playerUnits.filter(u => u.currentHealth > 0);
+            
+            if (targets.length === 0) {
+                gameState.currentTurnIndex++;
+                setTimeout(() => processNextTurn(), 500);
+                return;
+            }
+            
+            const target = targets[Math.floor(Math.random() * targets.length)];
+            
+            performAttackWithAnimation(currentUnit, target, currentUnitData.isHero, () => {
+                // Move current unit to end of queue
+                const currentUnitData = gameState.turnQueue[gameState.currentTurnIndex];
+                gameState.turnQueue.splice(gameState.currentTurnIndex, 1);
+                gameState.turnQueue.push(currentUnitData);
+                gameState.currentTurnIndex = 0;
+                
+                setTimeout(() => processNextTurn(), 1500);
+            });
+        }
+
+        function performAttackWithAnimation(attacker, target, isHero, callback) {
+            const attackerIndex = attacker.side === 'player'
+                ? gameState.playerUnits.findIndex(u => u.id === attacker.id)
+                : gameState.enemyUnits.findIndex(u => u.id === attacker.id);
+            
+            const targetIndex = target.side === 'player'
+                ? gameState.playerUnits.findIndex(u => u.id === target.id)
+                : gameState.enemyUnits.findIndex(u => u.id === target.id);
+            
+            const attackerEl = document.getElementById(`${attacker.side}_unit_${attackerIndex}`);
+            const targetEl = document.getElementById(`${target.side}_unit_${targetIndex}`);
+            
+            if (attackerEl) {
+                attackerEl.classList.add(attacker.side === 'player' ? 'attacking-right' : 'attacking-left');
+            }
+            
+            setTimeout(() => {
+                let damage = attacker.attack;
+                const isCrit = Math.random() < 0.15;
+                const finalDamage = isCrit ? Math.floor(damage * 2) : damage;
+                
+                // Apply damage to target
+                target.currentHealth = Math.max(0, target.currentHealth - finalDamage);
+                
+                if (targetEl) {
+                    targetEl.classList.add('hit', 'damage-flash');
+                    showDamageNumber(targetEl, finalDamage, isCrit, isHero);
+                }
+                
+                const logClass = isHero ? 'hero-action' : (isCrit ? 'crit' : 'damage');
+                addCombatLog(`${attacker.name}${isHero ? ' 👑' : ''} атакует ${target.name}: ${finalDamage} урона! ${isCrit ? '🔥 КРИТ!' : ''}`, logClass);
+                
+                setTimeout(() => {
+                    if (attackerEl) attackerEl.classList.remove('attacking-right', 'attacking-left');
+                    if (targetEl) targetEl.classList.remove('hit', 'damage-flash');
+                    
+                    if (target.currentHealth <= 0) {
+                        addCombatLog(`💀 ${target.name} погиб!`, 'damage');
+                    }
+                    
+                    updateCombatUI();
+                    callback();
+                }, 400);
+            }, 600);
+        }
+
+        function showDamageNumber(element, damage, isCrit, isHero) {
+            const damageEl = document.createElement('div');
+            damageEl.className = `damage-number ${isCrit ? 'crit' : ''} ${isHero ? 'hero-damage' : ''}`;
+            damageEl.textContent = `-${damage}`;
+            element.appendChild(damageEl);
+            setTimeout(() => damageEl.remove(), 1200);
+        }
+
+        function addCombatLog(message, type) {
+            const log = document.getElementById('combatLog');
+            const entry = document.createElement('div');
+            entry.className = `combat-log-entry ${type}`;
+            entry.textContent = message;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function winCombat() {
+            gameState.combatInProgress = false;
+            gameState.inCombat = false;
+            
+            // Mark enemy as defeated
+            if (gameState.enemyUnits[0] && gameState.enemyUnits[0].enemyId) {
+                const enemyId = gameState.enemyUnits[0].enemyId;
+                if (!gameState.defeatedEnemies.includes(enemyId)) {
+                    gameState.defeatedEnemies.push(enemyId);
+                }
+            }
+            
+            let totalReward = 0;
+            gameState.enemyUnits.forEach(enemy => {
+                if (enemy.currentHealth <= 0) {
+                    totalReward += enemy.reward;
+                }
+            });
+            
+            gameState.gold += totalReward;
+            updateGold();
+            
+            gameState.playerUnits.forEach(unit => {
+                if (unit.currentHealth > 0) {
+                    unit.currentHealth = Math.min(unit.maxHealth, unit.currentHealth + Math.floor(unit.maxHealth * 0.3));
+                }
+            });
+            
+            gameState.playerUnits.forEach((unit, i) => {
+                if (i === 0) {
+                    gameState.hero.currentHealth = unit.currentHealth;
+                    gameState.hero.maxHealth = unit.maxHealth;
+                } else if (i - 1 < gameState.army.length) {
+                    gameState.army[i - 1].currentHealth = unit.currentHealth;
+                    gameState.army[i - 1].maxHealth = unit.maxHealth;
+                }
+            });
+            
+            addCombatLog(`🏆 ПОБЕДА! Вы получили ${totalReward} золота!`, 'heal');
+            
+            setTimeout(() => {
+                showNotification(`Победа! +${totalReward}💰`);
+                closeWindow('combatWindow');
+                updateArmyDisplay();
+                updateArmyButton();
+                updateEnemyMarkers();
+                renderMines();
+            }, 2000);
+        }
+
+        function loseCombat() {
+            gameState.combatInProgress = false;
+            gameState.inCombat = false;
+            addCombatLog('💀 ПОРАЖЕНИЕ! Ваша армия погибла...', 'damage');
+            
+            // Decrease hero motivation on loss
+            if (gameState.hero && gameState.hero.motivation > 1) {
+                gameState.hero.motivation = Math.max(1, gameState.hero.motivation - 1);
+                showNotification('Мотивация героя упала!');
+            }
+            
+            // Return hero to city without army
+            gameState.hero.currentHealth = gameState.hero.maxHealth;
+            gameState.army = [];
+            gameState.heroPosition = { x: 18, y: 15 };
+            
+            setTimeout(() => {
+                showNotification('Поражение! Возвращение в город без армии...');
+                closeWindow('combatWindow');
+                updateHeroPosition();
+                updateArmyDisplay();
+                updateArmyButton();
+                updateTavernButton();
+            }, 2000);
+        }
+
+        function fleeCombat() {
+            if (gameState.gold < 50) {
+                showNotification('Недостаточно золота для побега!');
+                return;
+            }
+            
+            gameState.gold -= 50;
+            updateGold();
+            gameState.combatInProgress = false;
+            gameState.inCombat = false;
+            addCombatLog('Вы сбежали с поля боя! (-50💰)', 'info');
+            
+            setTimeout(() => {
+                showNotification('Вы сбежали! -50💰');
+                closeWindow('combatWindow');
+            }, 1000);
+        }
+
+        function showStats() {
+            const content = document.getElementById('statsContent');
+            content.innerHTML = `
+                <div class="stat-row">
+                    <span class="stat-label">Класс:</span>
+                    <span class="stat-value-display">${gameState.selectedClass ? classStats[gameState.selectedClass].name : 'Не выбран'}</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Золото:</span>
+                    <span class="stat-value-display">${gameState.gold} 💰</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Шахты:</span>
+                    <span class="stat-value-display">${gameState.capturedMines.length}/${minePositions.length}</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Армия:</span>
+                    <span class="stat-value-display">${gameState.army.length + 1}/6</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Время:</span>
+                    <span class="stat-value-display">${document.getElementById('timer').textContent}</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Позиция:</span>
+                    <span class="stat-value-display">(${gameState.heroPosition.x}, ${gameState.heroPosition.y})</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">Побеждено врагов:</span>
+                    <span class="stat-value-display">${gameState.defeatedEnemies.length}/${enemyPositions.length}</span>
+                </div>
+            `;
+            closeWindow('menuWindow');
+            openWindow('statsWindow');
+        }
+
+        function showHelp() {
+            const content = document.getElementById('statsContent');
+            content.innerHTML = `
+                <p><strong>🎮 Как играть:</strong></p><br>
+                <p>1. Выберите класс героя</p>
+                <p>2. Кликните на соседнюю клетку для перемещения</p>
+                <p>3. Посетите таверну в городе для найма (макс. 6)</p>
+                <p>4. Сражайтесь с врагами (авто-бой)</p>
+                <p>5. Захватывайте шахты после победы</p>
+                <p>6. Каждая шахта: +1💰 каждые 5 мин</p>
+                <br>
+                <p><strong>⚔️ В бою:</strong></p>
+                <p>• Очередность хода зависит от мотивации</p>
+                <p>• Герой помечен короной 👑</p>
+                <p>• Можно поставить на паузу</p>
+                <p>• Можно сбежать за 50 золота</p>
+                <p>• При поражении мотивация героя падает</p>
+            `;
+            closeWindow('menuWindow');
+            openWindow('statsWindow');
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+    </script>
 </body>
 </html>
