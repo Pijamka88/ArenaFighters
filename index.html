@@ -377,12 +377,13 @@
             position: absolute;
             width: 45px;
             height: 45px;
+            background: var(--burgundy);
             border: 2px solid var(--white);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             transition: all 0.2s ease;
             animation: pulse 2s infinite;
             z-index: 50;
@@ -390,12 +391,12 @@
             overflow: hidden;
         }
 
-        .map-enemy img {
+        .map-enemy-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
             border-radius: 50%;
-            filter: grayscale(40%);
+            filter: grayscale(40%) contrast(120%);
         }
 
         @keyframes pulse {
@@ -481,14 +482,24 @@
             top: -20px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 1.5rem;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid var(--gold);
+            overflow: hidden;
             animation: guardPulse 2s infinite;
             z-index: 56;
         }
 
+        .mine-guard-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
         @keyframes guardPulse {
-            0%, 100% { transform: translateX(-50%) scale(1); }
-            50% { transform: translateX(-50%) scale(1.1); }
+            0%, 100% { transform: translateX(-50%) scale(1); box-shadow: 0 0 10px var(--gold); }
+            50% { transform: translateX(-50%) scale(1.1); box-shadow: 0 0 20px var(--gold); }
         }
 
         @keyframes mineGlow {
@@ -1091,8 +1102,19 @@
         .combat-unit.current-turn {
             border: 3px solid var(--gold);
             box-shadow: 0 0 20px var(--gold), inset 0 0 10px var(--gold);
+            animation: currentTurnPulse 0.8s infinite;
             filter: grayscale(0%);
             background: linear-gradient(180deg, var(--burgundy-dark) 0%, var(--bg-medium) 100%);
+            transform: scale(1.02);
+        }
+
+        @keyframes currentTurnPulse {
+            0%, 100% { 
+                box-shadow: 0 0 15px var(--gold), inset 0 0 8px var(--gold);
+            }
+            50% { 
+                box-shadow: 0 0 25px var(--gold), inset 0 0 15px var(--gold);
+            }
         }
 
         .combat-unit.hero {
@@ -1117,35 +1139,34 @@
             pointer-events: none;
         }
 
-        /* Плавная анимация удара */
         .combat-unit.hit-animation {
-            animation: smoothHit 0.6s ease-in-out;
+            animation: hitX 0.6s ease-in-out;
         }
 
-        @keyframes smoothHit {
+        @keyframes hitX {
             0% { 
                 filter: grayscale(80%);
-                transform: scale(1) translateX(0);
+                transform: scale(1);
             }
-            15% { 
-                filter: grayscale(0%) brightness(1.5) sepia(0.5) hue-rotate(-20deg);
-                transform: scale(1.08) translateX(5px);
+            20% { 
+                filter: grayscale(0%) brightness(1.5) sepia(1) hue-rotate(-50deg);
+                transform: scale(1.15);
             }
-            30% { 
+            40% { 
                 filter: grayscale(80%);
-                transform: scale(1) translateX(0);
-            }
-            45% { 
-                filter: grayscale(0%) brightness(1.5) sepia(0.5) hue-rotate(-20deg);
-                transform: scale(1.05) translateX(-3px);
+                transform: scale(0.95);
             }
             60% { 
+                filter: grayscale(0%) brightness(1.5) sepia(1) hue-rotate(-50deg);
+                transform: scale(1.08);
+            }
+            80% { 
                 filter: grayscale(80%);
-                transform: scale(1) translateX(0);
+                transform: scale(0.98);
             }
             100% { 
                 filter: grayscale(80%);
-                transform: scale(1) translateX(0);
+                transform: scale(1);
             }
         }
 
@@ -1156,7 +1177,6 @@
             border: 2px solid var(--burgundy);
             margin: 0 auto 5px;
             object-fit: cover;
-            transition: transform 0.3s ease;
         }
 
         .combat-unit.hero .combat-unit-image {
@@ -1473,51 +1493,52 @@
         }
 
         @keyframes attackLunge {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(15px) scale(1.05); }
-            50% { transform: translateX(0); }
-            100% { transform: translateX(0); }
+            0% { transform: translateX(0) scale(1); }
+            30% { transform: translateX(20px) scale(1.1); }
+            60% { transform: translateX(-5px) scale(1.05); }
+            100% { transform: translateX(0) scale(1); }
         }
 
         @keyframes attackLungeLeft {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-15px) scale(1.05); }
-            50% { transform: translateX(0); }
-            100% { transform: translateX(0); }
+            0% { transform: translateX(0) scale(1); }
+            30% { transform: translateX(-20px) scale(1.1); }
+            60% { transform: translateX(5px) scale(1.05); }
+            100% { transform: translateX(0) scale(1); }
         }
 
         .attacking-right {
-            animation: attackLunge 0.8s ease-in-out;
+            animation: attackLunge 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
         }
 
         .attacking-left {
-            animation: attackLungeLeft 0.8s ease-in-out;
+            animation: attackLungeLeft 0.8s cubic-bezier(0.25, 0.1, 0.25, 1);
         }
 
         .damage-number {
             position: absolute;
-            font-size: 1.2rem;
+            font-size: 1.4rem;
             font-weight: 900;
             color: var(--burgundy-light);
             animation: damageFloat 1.2s ease-out forwards;
             z-index: 100;
-            text-shadow: 0 0 8px var(--burgundy);
+            text-shadow: 0 0 10px var(--burgundy);
             pointer-events: none;
         }
 
         .damage-number.crit {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             color: var(--gold);
         }
 
         .damage-number.hero-damage {
             color: var(--gold);
-            text-shadow: 0 0 10px var(--gold);
+            text-shadow: 0 0 15px var(--gold);
         }
 
         @keyframes damageFloat {
             0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-50px) scale(1.3); opacity: 0; }
+            50% { transform: translateY(-30px) scale(1.3); opacity: 0.8; }
+            100% { transform: translateY(-60px) scale(1.5); opacity: 0; }
         }
 
         .combat-action-btn {
@@ -1801,15 +1822,15 @@
         ];
 
         const enemyStats = {
-            skeleton: { name: 'СКЕЛЕТ', health: 30, maxHealth: 30, attack: 5, motivation: 3, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/11c1a2fef-8573-40d3-9d89-1b26a9f78866.png', reward: 10, count: 3, isBoss: false },
-            knight: { name: 'ТЁМНЫЙ РЫЦАРЬ', health: 50, maxHealth: 50, attack: 8, motivation: 4, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1f928062f-840f-4558-b52f-efb5079ae6c4.png', reward: 15, count: 2, isBoss: false },
-            demon: { name: 'ДЕМОН', health: 40, maxHealth: 40, attack: 10, motivation: 6, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/18e7b151e-327d-451d-956c-8c5672eddc74.png', reward: 12, count: 3, isBoss: false },
-            orc: { name: 'ОРК', health: 45, maxHealth: 45, attack: 9, motivation: 5, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/14e0ec0c6-fe9f-4d11-b2d1-78deb2b53c58.png', reward: 13, count: 3, isBoss: false },
-            dragon: { name: 'ДРАКОН', health: 80, maxHealth: 80, attack: 14, motivation: 7, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1604aaada-84d1-45e8-a063-7d1c637c3d60.png', reward: 25, count: 2, isBoss: false },
-            necro: { name: 'НЕКРОМАНТ', health: 35, maxHealth: 35, attack: 13, motivation: 8, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1298b3978-1e6e-4409-b9df-19bb4e232047.png', reward: 18, count: 2, isBoss: false },
-            boss1: { name: 'КОРОЛЬ СКЕЛЕТОВ', health: 120, maxHealth: 120, attack: 16, motivation: 9, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1b17f865f-3d80-40b0-b60b-1a0372d8e025.png', reward: 50, count: 1, isBoss: true },
-            boss2: { name: 'ЛОРД ДЕМОНОВ', health: 150, maxHealth: 150, attack: 18, motivation: 10, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1d57b02b9-7290-430c-832e-a9c9a97acbdc.png', reward: 60, count: 1, isBoss: true },
-            boss3: { name: 'ДРЕВНИЙ ДРАКОН', health: 200, maxHealth: 200, attack: 20, motivation: 11, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/162cb9300-5722-4ec6-a2ae-9abcc6a9783d.png', reward: 75, count: 1, isBoss: true }
+            skeleton: { name: 'СКЕЛЕТ', health: 30, maxHealth: 30, attack: 5, motivation: 3, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/11c1a2fef-8573-40d3-9d89-1b26a9f78866.png', reward: 10, count: 3, emoji: '💀', isBoss: false },
+            knight: { name: 'ТЁМНЫЙ РЫЦАРЬ', health: 50, maxHealth: 50, attack: 8, motivation: 4, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1f928062f-840f-4558-b52f-efb5079ae6c4.png', reward: 15, count: 2, emoji: '🛡️', isBoss: false },
+            demon: { name: 'ДЕМОН', health: 40, maxHealth: 40, attack: 10, motivation: 6, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/18e7b151e-327d-451d-956c-8c5672eddc74.png', reward: 12, count: 3, emoji: '👹', isBoss: false },
+            orc: { name: 'ОРК', health: 45, maxHealth: 45, attack: 9, motivation: 5, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/14e0ec0c6-fe9f-4d11-b2d1-78deb2b53c58.png', reward: 13, count: 3, emoji: '👺', isBoss: false },
+            dragon: { name: 'ДРАКОН', health: 80, maxHealth: 80, attack: 14, motivation: 7, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1604aaada-84d1-45e8-a063-7d1c637c3d60.png', reward: 25, count: 2, emoji: '🐉', isBoss: false },
+            necro: { name: 'НЕКРОМАНТ', health: 35, maxHealth: 35, attack: 13, motivation: 8, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1298b3978-1e6e-4409-b9df-19bb4e232047.png', reward: 18, count: 2, emoji: '🧙', isBoss: false },
+            boss1: { name: 'КОРОЛЬ СКЕЛЕТОВ', health: 120, maxHealth: 120, attack: 16, motivation: 9, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1b17f865f-3d80-40b0-b60b-1a0372d8e025.png', reward: 50, count: 1, emoji: '👑', isBoss: true },
+            boss2: { name: 'ЛОРД ДЕМОНОВ', health: 150, maxHealth: 150, attack: 18, motivation: 10, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/1d57b02b9-7290-430c-832e-a9c9a97acbdc.png', reward: 60, count: 1, emoji: '👑', isBoss: true },
+            boss3: { name: 'ДРЕВНИЙ ДРАКОН', health: 200, maxHealth: 200, attack: 20, motivation: 11, image: 'https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/162cb9300-5722-4ec6-a2ae-9abcc6a9783d.png', reward: 75, count: 1, emoji: '👑', isBoss: true }
         };
 
         const enemyPositions = [
@@ -1824,123 +1845,6 @@
 
         let incomeInterval = null;
         let mineInterval = null;
-
-        function generateBorderBlockedCells() {
-            const blocked = [];
-            
-            // Верхняя граница (y = 0)
-            for (let x = 0; x < gameState.mapWidth; x++) {
-                blocked.push({x, y: 0});
-            }
-            
-            // Нижняя граница (y = mapHeight - 1)
-            for (let x = 0; x < gameState.mapWidth; x++) {
-                blocked.push({x, y: gameState.mapHeight - 1});
-            }
-            
-            // Левая граница (x = 0)
-            for (let y = 1; y < gameState.mapHeight - 1; y++) {
-                blocked.push({x: 0, y});
-            }
-            
-            // Правая граница (x = mapWidth - 1)
-            for (let y = 1; y < gameState.mapHeight - 1; y++) {
-                blocked.push({x: gameState.mapWidth - 1, y});
-            }
-            
-            return blocked;
-        }
-
-        function generateBlockedCells() {
-            const blocked = generateBorderBlockedCells();
-            
-            // Горы на севере
-            for (let x = 5; x < 15; x++) {
-                for (let y = 2; y < 7; y++) {
-                    if (Math.random() > 0.3 && !isBorderCell(x, y)) {
-                        blocked.push({x, y});
-                    }
-                }
-            }
-            
-            // Лес на востоке
-            for (let x = 25; x < 35; x++) {
-                for (let y = 5; y < 20; y++) {
-                    if (Math.random() > 0.4 && !isBorderCell(x, y)) {
-                        blocked.push({x, y});
-                    }
-                }
-            }
-            
-            // Болота на юге
-            for (let x = 10; x < 25; x++) {
-                for (let y = 20; y < 28; y++) {
-                    if (Math.random() > 0.5 && !isBorderCell(x, y)) {
-                        blocked.push({x, y});
-                    }
-                }
-            }
-            
-            // Река через центр
-            for (let i = 0; i < 15; i++) {
-                if (!isBorderCell(15 + i, 12)) blocked.push({x: 15 + i, y: 12});
-                if (!isBorderCell(15 + i, 13)) blocked.push({x: 15 + i, y: 13});
-            }
-            
-            // Озеро
-            for (let dx = -3; dx <= 3; dx++) {
-                for (let dy = -3; dy <= 3; dy++) {
-                    if (Math.abs(dx) + Math.abs(dy) <= 4) {
-                        const x = 8 + dx;
-                        const y = 22 + dy;
-                        if (!isBorderCell(x, y) && x > 0 && x < gameState.mapWidth - 1 && y > 0 && y < gameState.mapHeight - 1) {
-                            blocked.push({x, y});
-                        }
-                    }
-                }
-            }
-            
-            // Убираем дубликаты
-            const uniqueBlocked = [];
-            const seen = new Set();
-            blocked.forEach(cell => {
-                const key = `${cell.x},${cell.y}`;
-                if (!seen.has(key)) {
-                    seen.add(key);
-                    uniqueBlocked.push(cell);
-                }
-            });
-            
-            // Убираем блокировку с клетки замка
-            const castleIndex = uniqueBlocked.findIndex(c => c.x === gameState.castleCell.x && c.y === gameState.castleCell.y);
-            if (castleIndex !== -1) uniqueBlocked.splice(castleIndex, 1);
-            
-            // Убираем блокировку с позиций шахт
-            minePositions.forEach(mine => {
-                const index = uniqueBlocked.findIndex(c => c.x === mine.x && c.y === mine.y);
-                if (index !== -1) uniqueBlocked.splice(index, 1);
-            });
-            
-            // Убираем блокировку с позиций врагов
-            enemyPositions.forEach(enemy => {
-                const index = uniqueBlocked.findIndex(c => c.x === enemy.x && c.y === enemy.y);
-                if (index !== -1) uniqueBlocked.splice(index, 1);
-            });
-            
-            gameState.blockedCells = uniqueBlocked;
-        }
-
-        function isBorderCell(x, y) {
-            return x === 0 || x === gameState.mapWidth - 1 || y === 0 || y === gameState.mapHeight - 1;
-        }
-
-        function isCellBlocked(x, y) {
-            return gameState.blockedCells.some(cell => cell.x === x && cell.y === y);
-        }
-
-        function isCastleCell(x, y) {
-            return gameState.castleCell.x === x && gameState.castleCell.y === y;
-        }
 
         function resetGame() {
             if (incomeInterval) clearInterval(incomeInterval);
@@ -1975,6 +1879,96 @@
             };
         }
 
+        function generateBlockedCells() {
+            const blocked = [];
+            
+            // Непроходимые границы карты
+            for (let x = 0; x < gameState.mapWidth; x++) {
+                blocked.push({x: x, y: 0}); // Верхняя граница
+                blocked.push({x: x, y: gameState.mapHeight - 1}); // Нижняя граница
+            }
+            
+            for (let y = 0; y < gameState.mapHeight; y++) {
+                blocked.push({x: 0, y: y}); // Левая граница
+                blocked.push({x: gameState.mapWidth - 1, y: y}); // Правая граница
+            }
+            
+            // Горы на севере
+            for (let x = 5; x < 15; x++) {
+                for (let y = 2; y < 7; y++) {
+                    if (Math.random() > 0.3 && !(x === gameState.castleCell.x && y === gameState.castleCell.y)) {
+                        blocked.push({x: x, y: y});
+                    }
+                }
+            }
+            
+            // Лес на востоке
+            for (let x = 25; x < 35; x++) {
+                for (let y = 5; y < 20; y++) {
+                    if (Math.random() > 0.4) {
+                        blocked.push({x: x, y: y});
+                    }
+                }
+            }
+            
+            // Болота на юге
+            for (let x = 10; x < 25; x++) {
+                for (let y = 20; y < 28; y++) {
+                    if (Math.random() > 0.5) {
+                        blocked.push({x: x, y: y});
+                    }
+                }
+            }
+            
+            // Река через центр
+            for (let i = 0; i < 15; i++) {
+                blocked.push({x: 15 + i, y: 12});
+                blocked.push({x: 15 + i, y: 13});
+            }
+            
+            // Озеро
+            for (let dx = -3; dx <= 3; dx++) {
+                for (let dy = -3; dy <= 3; dy++) {
+                    if (Math.abs(dx) + Math.abs(dy) <= 4) {
+                        blocked.push({x: 8 + dx, y: 22 + dy});
+                    }
+                }
+            }
+            
+            // Убираем блокировку с клетки замка
+            const castleIndex = blocked.findIndex(c => c.x === gameState.castleCell.x && c.y === gameState.castleCell.y);
+            if (castleIndex !== -1) blocked.splice(castleIndex, 1);
+            
+            // Убираем блокировку с позиций шахт и врагов
+            minePositions.forEach(mine => {
+                const index = blocked.findIndex(c => c.x === mine.x && c.y === mine.y);
+                if (index !== -1) blocked.splice(index, 1);
+            });
+            
+            enemyPositions.forEach(enemy => {
+                const index = blocked.findIndex(c => c.x === enemy.x && c.y === enemy.y);
+                if (index !== -1) blocked.splice(index, 1);
+            });
+            
+            // Убираем дубликаты
+            const uniqueBlocked = [];
+            blocked.forEach(cell => {
+                if (!uniqueBlocked.some(c => c.x === cell.x && c.y === cell.y)) {
+                    uniqueBlocked.push(cell);
+                }
+            });
+            
+            gameState.blockedCells = uniqueBlocked;
+        }
+
+        function isCellBlocked(x, y) {
+            return gameState.blockedCells.some(cell => cell.x === x && cell.y === y);
+        }
+
+        function isCastleCell(x, y) {
+            return gameState.castleCell.x === x && gameState.castleCell.y === y;
+        }
+
         function startGame() {
             resetGame();
             document.getElementById('mainMenu').style.display = 'none';
@@ -2007,7 +2001,7 @@
         }
 
         function showHelpFromMenu() {
-            alert('🎮 Как играть:\n\n1. Выберите класс\n2. Ходите по соседним клеткам\n3. В городе наймите воинов\n4. Сражайтесь с врагами\n5. Захватывайте шахты\n\n⚔️ В бою:\n• Очередность по мотивации\n• Герой помечен 👑\n• Пауза и побег доступны');
+            alert('🎮 Как играть:\n\n1. Выберите класс\n2. Ходите по соседним клеткам\n3. В городе наймите воинов\n4. Сражайтесь с врагами\n5. Захватывайте шахты\n\n⚔️ В бою:\n• Очередность по мотивации\n• Герой помечен 👑\n• Герой возрождается после боя с 100% HP\n• Пауза и побег доступны');
         }
 
         function init() {
@@ -2119,10 +2113,10 @@
             world.querySelectorAll('.map-enemy-marker').forEach(el => el.remove());
             
             enemyPositions.forEach(pos => {
-                // Пропускаем врагов на заблокированных клетках
                 if (isCellBlocked(pos.x, pos.y)) return;
-                
                 if (gameState.defeatedEnemies.includes(pos.id)) return;
+                
+                const enemyData = enemyStats[pos.type];
                 
                 const marker = document.createElement('div');
                 marker.className = 'map-enemy map-enemy-marker';
@@ -2131,8 +2125,9 @@
                 marker.style.top = (pos.y * gameState.cellSize + 25) + 'px';
                 
                 const img = document.createElement('img');
-                img.src = enemyStats[pos.type].image;
-                img.alt = pos.type;
+                img.src = enemyData.image;
+                img.alt = enemyData.name;
+                img.className = 'map-enemy-image';
                 img.loading = 'lazy';
                 
                 marker.appendChild(img);
@@ -2145,7 +2140,6 @@
             world.querySelectorAll('.map-mine-marker').forEach(el => el.remove());
             
             minePositions.forEach(mine => {
-                // Пропускаем шахты на заблокированных клетках
                 if (isCellBlocked(mine.x, mine.y)) return;
                 
                 const marker = document.createElement('div');
@@ -2158,15 +2152,15 @@
                 if (!gameState.defeatedEnemies.includes(mine.enemyId)) {
                     const enemy = enemyPositions.find(e => e.id === mine.enemyId);
                     if (enemy) {
+                        const enemyData = enemyStats[enemy.type];
                         const guardEl = document.createElement('div');
                         guardEl.className = 'mine-guard';
                         
                         const guardImg = document.createElement('img');
-                        guardImg.src = enemyStats[enemy.type].image;
-                        guardImg.style.width = '25px';
-                        guardImg.style.height = '25px';
-                        guardImg.style.borderRadius = '50%';
-                        guardImg.style.border = '2px solid var(--gold)';
+                        guardImg.src = enemyData.image;
+                        guardImg.alt = enemyData.name;
+                        guardImg.className = 'mine-guard-image';
+                        guardImg.loading = 'lazy';
                         
                         guardEl.appendChild(guardImg);
                         marker.appendChild(guardEl);
@@ -2202,6 +2196,7 @@
                     setTimeout(() => marker.remove(), 500);
                 }
             });
+            renderEnemyImages();
         }
 
         function selectClass(className) {
@@ -2345,12 +2340,10 @@
             
             gameState.gold -= 50;
             
-            // Лечим героя
             if (gameState.hero) {
                 gameState.hero.currentHealth = gameState.hero.maxHealth;
             }
             
-            // Лечим всю армию
             gameState.army.forEach(unit => {
                 unit.currentHealth = unit.maxHealth;
             });
@@ -2506,34 +2499,32 @@
             const enemyData = enemyStats[enemyType];
             gameState.enemyUnits = [];
             
-            // Для боссов всегда 1, для обычных врагов - рандомное количество
-            let enemyCount;
+            // Для боссов - только один в пачке
             if (enemyData.isBoss) {
-                enemyCount = 1;
-            } else {
-                enemyCount = Math.floor(Math.random() * enemyData.count) + 1; // от 1 до count
-            }
-            
-            // Выбираем случайных врагов для пачки (могут быть разные типы)
-            const enemyTypes = Object.keys(enemyStats).filter(key => !enemyStats[key].isBoss);
-            
-            for (let i = 0; i < enemyCount; i++) {
-                // С вероятностью 70% берем того же типа, 30% - случайного
-                let typeToUse;
-                if (Math.random() < 0.7) {
-                    typeToUse = enemyType;
-                } else {
-                    typeToUse = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
-                }
-                
-                const enemyToAdd = enemyStats[typeToUse];
                 gameState.enemyUnits.push({
-                    ...enemyToAdd,
-                    currentHealth: enemyToAdd.maxHealth,
-                    id: `enemy_${i}_${Date.now()}_${Math.random()}`,
+                    ...enemyData,
+                    currentHealth: enemyData.maxHealth,
+                    id: `enemy_0`,
                     side: 'enemy',
                     enemyId: enemyId
                 });
+            } else {
+                // Для обычных врагов - смесь разных типов
+                const enemyCount = Math.min(enemyData.count || 1, 6);
+                const possibleEnemies = ['skeleton', 'knight', 'demon', 'orc', 'dragon', 'necro'];
+                
+                for (let i = 0; i < enemyCount; i++) {
+                    const randomType = possibleEnemies[Math.floor(Math.random() * possibleEnemies.length)];
+                    const randomEnemyData = enemyStats[randomType];
+                    
+                    gameState.enemyUnits.push({
+                        ...randomEnemyData,
+                        currentHealth: randomEnemyData.maxHealth,
+                        id: `enemy_${i}`,
+                        side: 'enemy',
+                        enemyId: enemyId
+                    });
+                }
             }
             
             createTurnQueue();
@@ -2727,9 +2718,7 @@
             const attackerEl = document.getElementById(`${attacker.side}_unit_${attackerIndex}`);
             const targetEl = document.getElementById(`${target.side}_unit_${targetIndex}`);
             
-            if (attackerEl) {
-                attackerEl.classList.add(attacker.side === 'player' ? 'attacking-right' : 'attacking-left');
-            }
+            if (attackerEl) attackerEl.classList.add(attacker.side === 'player' ? 'attacking-right' : 'attacking-left');
             
             setTimeout(() => {
                 let damage = attacker.attack;
@@ -2752,7 +2741,7 @@
                     updateCombatUI();
                     callback();
                 }, 600);
-            }, 600);
+            }, 800);
         }
 
         function showDamageNumber(element, damage, isCrit, isHero) {
@@ -2788,7 +2777,6 @@
             gameState.gold += totalReward;
             updateGold();
             
-            // Герой возрождается с полным здоровьем после боя
             const heroUnit = gameState.playerUnits.find(u => u.isHero);
             if (heroUnit) {
                 gameState.hero.currentHealth = gameState.hero.maxHealth;
@@ -2829,7 +2817,6 @@
                 gameState.hero.motivation = Math.max(1, gameState.hero.motivation - 1);
             }
             
-            // Герой возрождается с полным здоровьем после поражения
             gameState.hero.currentHealth = gameState.hero.maxHealth;
             gameState.army = [];
             gameState.heroPosition = { ...gameState.castleCell };
@@ -2897,8 +2884,8 @@
                 <p>• Очередность по мотивации</p>
                 <p>• Герой помечен 👑</p>
                 <p>• Герой возрождается после боя с 100% HP</p>
-                <p>• Боссы всегда одни в пачке</p>
                 <p>• Пауза и побег доступны</p>
+                <p>• Боссы всегда одни в пачке</p>
             `;
             closeWindow('menuWindow');
             openWindow('statsWindow');
