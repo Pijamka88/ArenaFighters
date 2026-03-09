@@ -403,13 +403,13 @@
 
         .map-castle {
             position: absolute;
-            width: 250px;
-            height: 250px;
+            width: 100px;
+            height: 100px;
             background: transparent;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 8rem;
+            font-size: 4rem;
             z-index: 60;
             text-shadow: 0 0 20px var(--burgundy);
             pointer-events: none;
@@ -425,8 +425,8 @@
         .map-castle::after {
             content: 'ГОРОД';
             position: absolute;
-            bottom: -25px;
-            font-size: 0.9rem;
+            bottom: -20px;
+            font-size: 0.7rem;
             font-family: 'Cormorant Garamond', serif;
             font-weight: 700;
             color: var(--gold);
@@ -667,6 +667,33 @@
             margin-bottom: 15px;
         }
 
+        .heal-all-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--gold);
+            border: 2px solid var(--burgundy-light);
+            color: var(--bg-dark);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(0.9rem, 3.5vw, 1.1rem);
+            cursor: pointer;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: 700;
+            touch-action: manipulation;
+            transition: all 0.2s ease;
+        }
+
+        .heal-all-btn:active {
+            background: var(--burgundy-light);
+            color: var(--white);
+            transform: scale(0.98);
+        }
+
+        .heal-all-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .recruit-section {
             display: flex;
             flex-direction: column;
@@ -881,6 +908,7 @@
             border-radius: 8px;
             padding: 10px;
             text-align: center;
+            position: relative;
         }
 
         .army-unit-card.hero {
@@ -1049,6 +1077,7 @@
             transition: all 0.2s ease;
             position: relative;
             filter: grayscale(80%);
+            overflow: hidden;
         }
 
         .combat-unit.current-turn {
@@ -1089,6 +1118,34 @@
             opacity: 0.25;
             filter: grayscale(100%);
             pointer-events: none;
+        }
+
+        /* Анимация удара */
+        .combat-unit.hit-animation {
+            animation: hitX 0.4s ease;
+        }
+
+        @keyframes hitX {
+            0% { 
+                filter: grayscale(80%);
+                transform: scale(1);
+            }
+            25% { 
+                filter: grayscale(0%) brightness(1.5) sepia(1) hue-rotate(-50deg);
+                transform: scale(1.1);
+            }
+            50% { 
+                filter: grayscale(80%);
+                transform: scale(1);
+            }
+            75% { 
+                filter: grayscale(0%) brightness(1.5) sepia(1) hue-rotate(-50deg);
+                transform: scale(1.05);
+            }
+            100% { 
+                filter: grayscale(80%);
+                transform: scale(1);
+            }
         }
 
         .combat-unit-image {
@@ -1307,6 +1364,18 @@
             transform: translateY(0);
         }
 
+        .teleport-btn {
+            background: var(--gold);
+            border-color: var(--burgundy-light);
+            color: var(--bg-dark);
+            font-weight: 700;
+        }
+
+        .teleport-btn:active {
+            background: var(--burgundy-light);
+            color: var(--white);
+        }
+
         @media (max-width: 600px) {
             .recruit-card {
                 flex-wrap: wrap;
@@ -1376,14 +1445,14 @@
             }
 
             .map-castle {
-                width: 200px;
-                height: 200px;
-                font-size: 6rem;
+                width: 80px;
+                height: 80px;
+                font-size: 3rem;
             }
 
             .map-castle::after {
-                font-size: 0.8rem;
-                bottom: -22px;
+                font-size: 0.6rem;
+                bottom: -18px;
             }
 
             .turn-order-unit {
@@ -1414,33 +1483,12 @@
             100% { transform: translateX(0); }
         }
 
-        @keyframes hitShake {
-            0%, 100% { transform: translateX(0); }
-            20% { transform: translateX(-3px); }
-            40% { transform: translateX(3px); }
-            60% { transform: translateX(-3px); }
-            80% { transform: translateX(3px); }
-        }
-
-        @keyframes damageFlash {
-            0%, 100% { filter: grayscale(80%); }
-            50% { filter: grayscale(0%) brightness(1.3) sepia(1) hue-rotate(-50deg); }
-        }
-
         .attacking-right {
             animation: attackLunge 0.5s ease;
         }
 
         .attacking-left {
             animation: attackLungeLeft 0.5s ease;
-        }
-
-        .hit {
-            animation: hitShake 0.3s ease;
-        }
-
-        .damage-flash {
-            animation: damageFlash 0.3s ease;
         }
 
         .damage-number {
@@ -1535,11 +1583,11 @@
         <!-- Основная игра -->
         <div id="mainGame" class="main-game">
             <div class="resource-bar">
-                <div class="resource" data-tooltip="Доход от шахт каждые 5 минут">
+                <div class="resource" data-tooltip="Доход казны: 1💰 в минуту">
                     <span class="resource-icon">💰</span>
                     <span class="resource-value" id="gold">200</span>
                 </div>
-                <div class="resource">
+                <div class="resource" data-tooltip="Захваченные шахты дают +1💰 в минуту каждая">
                     <span class="resource-icon">⛏️</span>
                     <span><span id="mineCount">0</span></span>
                 </div>
@@ -1547,6 +1595,7 @@
                     <span>⚔️</span> <span id="armyCountDisplay">0</span>
                 </button>
                 <button class="resource-btn" id="tavernBtn" onclick="openWindow('tavernWindow')" disabled>🍺</button>
+                <button class="resource-btn teleport-btn" id="teleportBtn" onclick="teleportToCastle()" disabled>🏰</button>
                 <button class="resource-btn" onclick="openWindow('menuWindow')">⚙️</button>
             </div>
 
@@ -1555,7 +1604,7 @@
                     <img src="https://image.qwenlm.ai/public_source/31e74d5a-2ac8-4895-b2e5-8bcf8fe014a1/175c3f3ff-9149-46ce-b0f2-ecfa34cbb3c0.png" alt="Карта мира" class="map-image" loading="lazy">
                     <div class="map-grid" id="mapGrid"></div>
                     <div class="hero-sprite" id="heroSprite">⚔️</div>
-                    <div class="map-castle" id="mapCastle" style="left: 1650px; top: 1350px;">🏰</div>
+                    <div class="map-castle" id="mapCastle" style="left: 1800px; top: 1500px;">🏰</div>
                 </div>
                 <div class="fog-of-war"></div>
             </div>
@@ -1603,7 +1652,9 @@
         <div class="modal-content">
             <button class="modal-close" onclick="closeWindow('tavernWindow')">✕</button>
             <h2 class="modal-title">🍺 ТАВЕРНА</h2>
-            <p class="tavern-info">Наймите воинов в свою армию (макс. 6)</p>
+            <p class="tavern-info">Наймите или полечите воинов (макс. 6)</p>
+
+            <button class="heal-all-btn" id="healAllBtn" onclick="healAllUnits()" disabled>💊 ЛЕЧЕНИЕ ВСЕЙ АРМИИ (50💰)</button>
 
             <div class="recruit-section" id="recruitSection"></div>
 
@@ -1720,10 +1771,7 @@
             inTavern: false,
             inCastle: false,
             blockedCells: [],
-            castleCells: [
-                {x: 17, y: 14}, {x: 18, y: 14},
-                {x: 17, y: 15}, {x: 18, y: 15}
-            ]
+            castleCell: { x: 18, y: 15 }
         };
 
         const minePositions = [
@@ -1771,9 +1819,11 @@
             {x: 15, y: 12, type: 'boss1', id: 'enemy_18'}, {x: 25, y: 12, type: 'boss2', id: 'enemy_19'}, {x: 20, y: 20, type: 'boss3', id: 'enemy_20'}
         ];
 
+        let incomeInterval = null;
         let mineInterval = null;
 
         function resetGame() {
+            if (incomeInterval) clearInterval(incomeInterval);
             if (mineInterval) clearInterval(mineInterval);
             
             gameState = {
@@ -1801,10 +1851,7 @@
                 inTavern: false,
                 inCastle: false,
                 blockedCells: [],
-                castleCells: [
-                    {x: 17, y: 14}, {x: 18, y: 14},
-                    {x: 17, y: 15}, {x: 18, y: 15}
-                ]
+                castleCell: { x: 18, y: 15 }
             };
         }
 
@@ -1853,11 +1900,9 @@
                 }
             }
             
-            // Убираем блокировку с клеток замка
-            gameState.castleCells.forEach(cell => {
-                const index = blocked.findIndex(c => c.x === cell.x && c.y === cell.y);
-                if (index !== -1) blocked.splice(index, 1);
-            });
+            // Убираем блокировку с клетки замка
+            const castleIndex = blocked.findIndex(c => c.x === gameState.castleCell.x && c.y === gameState.castleCell.y);
+            if (castleIndex !== -1) blocked.splice(castleIndex, 1);
             
             // Убираем блокировку с позиций шахт
             minePositions.forEach(mine => {
@@ -1873,7 +1918,7 @@
         }
 
         function isCastleCell(x, y) {
-            return gameState.castleCells.some(cell => cell.x === x && cell.y === y);
+            return gameState.castleCell.x === x && gameState.castleCell.y === y;
         }
 
         function startGame() {
@@ -1883,17 +1928,24 @@
             openWindow('classWindow');
             init();
             
-            // Доход с шахт каждые 5 минут
+            // Доход каждую минуту (базовый + шахты)
+            incomeInterval = setInterval(() => {
+                let income = 1 + gameState.capturedMines.length;
+                gameState.gold += income;
+                updateGold();
+                showNotification(`+${income}💰 доход казны!`);
+            }, 60000);
+            
+            // Доход с шахт каждые 5 минут (дополнительное уведомление)
             mineInterval = setInterval(() => {
                 if (gameState.capturedMines.length > 0) {
-                    gameState.gold += gameState.capturedMines.length;
-                    updateGold();
-                    showNotification(`+${gameState.capturedMines.length}💰 от шахт!`);
+                    showNotification(`Шахты приносят +${gameState.capturedMines.length}💰/мин`);
                 }
             }, 300000);
         }
 
         function returnToMainMenu() {
+            if (incomeInterval) clearInterval(incomeInterval);
             if (mineInterval) clearInterval(mineInterval);
             closeWindow('menuWindow');
             document.getElementById('mainGame').classList.remove('active');
@@ -1915,6 +1967,7 @@
             renderEnemyEmojis();
             renderMines();
             updateTavernButton();
+            updateTeleportButton();
         }
 
         function openWindow(windowId) {
@@ -1924,6 +1977,7 @@
             if (windowId === 'tavernWindow') {
                 gameState.inTavern = true;
                 updateArmyDisplay();
+                updateHealButton();
             }
         }
 
@@ -2063,7 +2117,7 @@
                     gameState.capturedMines.push(mine.id);
                     updateMineCount();
                     renderMines();
-                    showNotification(`Шахта захвачена! +1💰/5мин`);
+                    showNotification(`Шахта захвачена! +1💰/мин`);
                 }
             } else {
                 showNotification('Сначала победите врага!');
@@ -2095,11 +2149,26 @@
             showNotification(`Класс ${classStats[className].name} выбран!`);
             updateArmyDisplay();
             updateTavernButton();
+            updateTeleportButton();
             updateArmyButton();
         }
 
         function updateGold() {
             document.getElementById('gold').textContent = gameState.gold;
+        }
+
+        function teleportToCastle() {
+            if (gameState.inCombat) {
+                showNotification('Нельзя телепортироваться в бою!');
+                return;
+            }
+            
+            gameState.heroPosition = { ...gameState.castleCell };
+            updateHeroPosition();
+            updateTavernButton();
+            updateTeleportButton();
+            updateCastleGlow();
+            showNotification('Телепортация в город!');
         }
 
         function moveHeroTo(x, y) {
@@ -2116,6 +2185,7 @@
             updateHeroPosition();
             checkEnemyEncounter();
             updateTavernButton();
+            updateTeleportButton();
             checkMineCapture();
             updateCastleGlow();
         }
@@ -2185,8 +2255,44 @@
             updateCastleGlow();
         }
 
+        function updateTeleportButton() {
+            const teleportBtn = document.getElementById('teleportBtn');
+            teleportBtn.disabled = isCastleCell(gameState.heroPosition.x, gameState.heroPosition.y);
+        }
+
         function updateArmyButton() {
             document.getElementById('armyCountDisplay').textContent = gameState.army.length + (gameState.hero ? 1 : 0);
+        }
+
+        function updateHealButton() {
+            const healBtn = document.getElementById('healAllBtn');
+            const needsHealing = gameState.army.some(unit => unit.currentHealth < unit.maxHealth) || 
+                                (gameState.hero && gameState.hero.currentHealth < gameState.hero.maxHealth);
+            healBtn.disabled = !needsHealing || gameState.gold < 50;
+        }
+
+        function healAllUnits() {
+            if (gameState.gold < 50) {
+                showNotification('Недостаточно золота!');
+                return;
+            }
+            
+            gameState.gold -= 50;
+            
+            // Лечим героя
+            if (gameState.hero) {
+                gameState.hero.currentHealth = gameState.hero.maxHealth;
+            }
+            
+            // Лечим всю армию
+            gameState.army.forEach(unit => {
+                unit.currentHealth = unit.maxHealth;
+            });
+            
+            updateGold();
+            updateArmyDisplay();
+            updateHealButton();
+            showNotification('Вся армия исцелена!');
         }
 
         function checkEnemyEncounter() {
@@ -2251,6 +2357,7 @@
             updateGold();
             updateArmyDisplay();
             updateArmyButton();
+            updateHealButton();
             showNotification(`${unitData.name} нанят!`);
         }
 
@@ -2307,6 +2414,7 @@
             gameState.army.splice(index, 1);
             updateArmyDisplay();
             updateArmyButton();
+            updateHealButton();
             closeWindow('unitStatsWindow');
             showNotification('Юнит уволен');
         }
@@ -2544,7 +2652,7 @@
                 target.currentHealth = Math.max(0, target.currentHealth - finalDamage);
                 
                 if (targetEl) {
-                    targetEl.classList.add('hit', 'damage-flash');
+                    targetEl.classList.add('hit-animation');
                     showDamageNumber(targetEl, finalDamage, isCrit, isHero);
                 }
                 
@@ -2552,11 +2660,11 @@
                 
                 setTimeout(() => {
                     if (attackerEl) attackerEl.classList.remove('attacking-right', 'attacking-left');
-                    if (targetEl) targetEl.classList.remove('hit', 'damage-flash');
+                    if (targetEl) targetEl.classList.remove('hit-animation');
                     if (target.currentHealth <= 0) addCombatLog(`💀 ${target.name} погиб!`, 'damage');
                     updateCombatUI();
                     callback();
-                }, 300);
+                }, 400);
             }, 500);
         }
 
@@ -2593,8 +2701,11 @@
             gameState.gold += totalReward;
             updateGold();
             
+            // Герой возрождается с полным здоровьем после боя
             const heroUnit = gameState.playerUnits.find(u => u.isHero);
-            if (heroUnit) gameState.hero.currentHealth = heroUnit.currentHealth;
+            if (heroUnit) {
+                gameState.hero.currentHealth = gameState.hero.maxHealth;
+            }
             
             const survivingUnits = [];
             gameState.playerUnits.forEach((unit, i) => {
@@ -2615,6 +2726,7 @@
                 closeWindow('combatWindow');
                 updateArmyDisplay();
                 updateArmyButton();
+                updateHealButton();
                 updateEnemyMarkers();
                 renderMines();
             }, 1500);
@@ -2630,17 +2742,20 @@
                 gameState.hero.motivation = Math.max(1, gameState.hero.motivation - 1);
             }
             
+            // Герой возрождается с полным здоровьем после поражения
             gameState.hero.currentHealth = gameState.hero.maxHealth;
             gameState.army = [];
-            gameState.heroPosition = { x: 18, y: 15 };
+            gameState.heroPosition = { ...gameState.castleCell };
             
             setTimeout(() => {
-                showNotification('Поражение! Возврат в город...');
+                showNotification('Поражение! Возврат в город с полным здоровьем...');
                 closeWindow('combatWindow');
                 updateHeroPosition();
                 updateArmyDisplay();
                 updateArmyButton();
                 updateTavernButton();
+                updateTeleportButton();
+                updateHealButton();
             }, 1500);
         }
 
@@ -2683,13 +2798,18 @@
                 <p><strong>🎮 Как играть:</strong></p><br>
                 <p>1. Выберите класс героя</p>
                 <p>2. Ходите по соседним клеткам</p>
-                <p>3. В городе наймите воинов</p>
+                <p>3. В городе наймите или полечите воинов</p>
                 <p>4. Сражайтесь с врагами</p>
-                <p>5. Захватывайте шахты</p>
+                <p>5. Захватывайте шахты для пассивного дохода</p>
+                <br>
+                <p><strong>💰 Доход:</strong></p>
+                <p>• Базовая казна: +1💰 в минуту</p>
+                <p>• Каждая шахта: +1💰 в минуту</p>
                 <br>
                 <p><strong>⚔️ В бою:</strong></p>
                 <p>• Очередность по мотивации</p>
                 <p>• Герой помечен 👑</p>
+                <p>• Герой возрождается после боя с 100% HP</p>
                 <p>• Пауза и побег доступны</p>
             `;
             closeWindow('menuWindow');
